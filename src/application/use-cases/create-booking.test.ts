@@ -22,6 +22,7 @@ import {
 
 const TENANT: Tenant = {
   id: 'tenant-1',
+  ownerId: 'owner-1',
   name: 'Peluquería Juan',
   slug: 'peluqueria-juan',
   currency: 'EUR',
