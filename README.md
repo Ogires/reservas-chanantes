@@ -1,36 +1,120 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Reservas Chanantes
+
+Online booking platform for small businesses. Owners create their business page, configure services and weekly schedules, and customers book appointments through a public link.
+
+**Live:** [reservas-chanantes.vercel.app](https://reservas-chanantes.vercel.app)
+
+## Features
+
+**For business owners (admin panel):**
+- Register and create your business with a unique public URL
+- Add, edit, and delete services (name, duration, price)
+- Configure weekly availability with multiple time ranges per day
+- Dashboard with active services count and daily bookings overview
+
+**For customers (public booking page):**
+- Browse available services
+- Pick a date and see real-time 30-minute slot availability
+- Book an appointment with name and email confirmation
+- Booked slots are automatically blocked for other customers
+
+## Tech Stack
+
+- **Framework:** Next.js 16 (App Router), React 19, TypeScript (strict)
+- **Database & Auth:** Supabase (PostgreSQL + Auth + Row Level Security)
+- **Styling:** Tailwind CSS 4
+- **Testing:** Vitest (78 unit tests covering domain and application layers)
+- **Deployment:** Vercel
+
+## Architecture
+
+Clean Architecture with four layers:
+
+```
+domain/           Pure business logic (entities, value objects, domain services)
+application/      Use cases and repository port interfaces
+infrastructure/   Supabase repository adapters, auth helpers, clients
+app/              Next.js pages, server actions, client components
+```
+
+Server Actions act as the bridge between the presentation layer and use cases, instantiating repositories with the current Supabase client per request.
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- A [Supabase](https://supabase.com) project
+
+### Setup
+
+1. Clone the repo and install dependencies:
+
+```bash
+git clone https://github.com/Ogires/reservas-chanantes.git
+cd reservas-chanantes
+npm install
+```
+
+2. Create `.env.local` from the template:
+
+```bash
+cp .env.local.example .env.local
+```
+
+Fill in your Supabase credentials:
+
+```
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+```
+
+3. Run the database migration:
+
+```bash
+npx supabase login
+npx supabase link --project-ref YOUR_PROJECT_REF
+npx supabase db push
+```
+
+Or paste the contents of `supabase/schema.sql` into the Supabase SQL Editor.
+
+4. In your Supabase dashboard, go to **Authentication > Providers > Email** and disable "Confirm email" for development.
+
+5. Start the dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Testing
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm test
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Structure
 
-## Learn More
+```
+src/
+  domain/                     Business logic
+    entities/                 Tenant, Service, Booking, Customer, WeeklySchedule
+    value-objects/            TimeRange, Money, Slug
+    services/                 AvailabilityCalculator
+    errors/                   Domain-specific errors
+  application/                Use cases & ports
+    use-cases/                GetAvailability, CreateBooking
+    ports/                    Repository interfaces
+  infrastructure/supabase/    Supabase adapters
+  app/                        Next.js pages
+    admin/                    Login, register
+    admin/(dashboard)/        Sidebar layout, services CRUD, schedule editor
+    [slug]/                   Public tenant booking page
+  proxy.ts                    Session refresh & admin route protection
+supabase/
+  migrations/                 SQL schema
+```
 
-To learn more about Next.js, take a look at the following resources:
+## License
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
