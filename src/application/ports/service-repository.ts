@@ -3,4 +3,7 @@ import type { Service } from '@/domain/entities/service'
 export interface ServiceRepository {
   findByTenantId(tenantId: string): Promise<Service[]>
   findById(id: string): Promise<Service | null>
+  save(service: Service): Promise<Service>
+  update(service: Service): Promise<Service>
+  delete(id: string): Promise<void>
 }

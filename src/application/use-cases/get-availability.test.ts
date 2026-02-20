@@ -39,10 +39,13 @@ function createMockRepos(overrides?: {
     findBySlug: async () =>
       overrides?.tenant !== undefined ? overrides.tenant : TENANT,
     findById: async () => TENANT,
+    findByOwnerId: async () => TENANT,
+    save: async (t) => t,
   }
   const scheduleRepo: ScheduleRepository = {
     findByTenantId: async () =>
       overrides?.schedule !== undefined ? overrides.schedule : SCHEDULE,
+    save: async () => {},
   }
   const bookingRepo: BookingRepository = {
     findByTenantAndDate: async () => overrides?.bookings ?? [],
