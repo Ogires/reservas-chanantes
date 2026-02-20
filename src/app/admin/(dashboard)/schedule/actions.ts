@@ -1,5 +1,6 @@
 'use server'
 
+import { revalidatePath } from 'next/cache'
 import { requireAdmin } from '@/infrastructure/supabase/admin-auth'
 import { SupabaseScheduleRepository } from '@/infrastructure/supabase/schedule-repository'
 import { TimeRange } from '@/domain/value-objects/time-range'
@@ -32,6 +33,7 @@ export async function saveSchedule(
       }))
 
     await scheduleRepo.save(tenant.id, schedules)
+    revalidatePath('/admin/schedule')
     return { error: '', success: true }
   } catch (e) {
     return {

@@ -1,6 +1,7 @@
 'use server'
 
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 import { requireAdmin } from '@/infrastructure/supabase/admin-auth'
 import { SupabaseServiceRepository } from '@/infrastructure/supabase/service-repository'
 import { Money } from '@/domain/value-objects/money'
@@ -39,6 +40,7 @@ export async function saveService(
     return { error: e instanceof Error ? e.message : 'Failed to save service' }
   }
 
+  revalidatePath('/admin/services')
   redirect('/admin/services')
 }
 
@@ -59,5 +61,6 @@ export async function deleteService(
     }
   }
 
+  revalidatePath('/admin/services')
   redirect('/admin/services')
 }
