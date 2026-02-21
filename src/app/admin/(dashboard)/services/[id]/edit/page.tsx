@@ -22,11 +22,11 @@ export default async function EditServicePage({
       <div className="mb-6">
         <Link
           href="/admin/services"
-          className="text-sm text-blue-600 hover:underline"
+          className="text-sm text-slate-500 hover:text-slate-900 transition-colors"
         >
           &larr; Back to services
         </Link>
-        <h1 className="text-2xl font-bold mt-2">Edit service</h1>
+        <h1 className="text-2xl font-bold text-slate-900 mt-2">Edit service</h1>
       </div>
       <ServiceForm
         service={{
@@ -37,8 +37,11 @@ export default async function EditServicePage({
           active: service.active,
         }}
       />
-      <div className="mt-8 border-t pt-6">
-        <DeleteButton serviceId={service.id} />
+      <div className="mt-8">
+        <div className="rounded-xl border border-rose-200 bg-rose-50/50 p-6">
+          <h3 className="text-sm font-medium text-rose-800 mb-3">Danger zone</h3>
+          <DeleteButton serviceId={service.id} />
+        </div>
       </div>
     </div>
   )

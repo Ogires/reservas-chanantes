@@ -17,12 +17,12 @@ export function DeleteButton({ serviceId }: { serviceId: string }) {
     >
       <input type="hidden" name="id" value={serviceId} />
       {state?.error && (
-        <p className="text-sm text-red-600 mb-2">{state.error}</p>
+        <p className="text-sm text-rose-600 mb-2">{state.error}</p>
       )}
       <button
         type="submit"
         disabled={isPending}
-        className="rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700 disabled:opacity-50"
+        className="rounded-lg bg-rose-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-rose-700 disabled:opacity-50 transition-colors"
       >
         {isPending ? 'Deleting...' : 'Delete service'}
       </button>

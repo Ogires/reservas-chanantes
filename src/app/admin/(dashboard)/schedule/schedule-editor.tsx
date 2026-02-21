@@ -90,93 +90,101 @@ export function ScheduleEditor({ initialSchedule }: ScheduleEditorProps) {
   )
 
   return (
-    <form action={formAction}>
-      <input type="hidden" name="schedule" value={JSON.stringify(days)} />
+    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <form action={formAction}>
+        <input type="hidden" name="schedule" value={JSON.stringify(days)} />
 
-      {state?.error && (
-        <div className="rounded bg-red-50 p-3 text-sm text-red-600 mb-4">
-          {state.error}
-        </div>
-      )}
-      {state?.success && (
-        <div className="rounded bg-green-50 p-3 text-sm text-green-600 mb-4">
-          Schedule saved successfully!
-        </div>
-      )}
+        {state?.error && (
+          <div className="rounded-lg bg-rose-50 border border-rose-200 p-3 text-sm text-rose-600 mb-4">
+            {state.error}
+          </div>
+        )}
+        {state?.success && (
+          <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-3 text-sm text-emerald-600 mb-4">
+            Schedule saved successfully!
+          </div>
+        )}
 
-      <div className="space-y-4">
-        {ordered.map((day) => (
-          <div key={day.dayOfWeek} className="rounded-lg border p-4">
-            <div className="flex items-center gap-3 mb-2">
-              <input
-                type="checkbox"
-                checked={day.open}
-                onChange={() => toggleDay(day.dayOfWeek)}
-                id={`day-${day.dayOfWeek}`}
-              />
-              <label
-                htmlFor={`day-${day.dayOfWeek}`}
-                className="font-medium text-sm"
-              >
-                {day.dayName}
-              </label>
-              {!day.open && (
-                <span className="text-xs text-gray-400">Closed</span>
+        <div className="space-y-4">
+          {ordered.map((day) => (
+            <div
+              key={day.dayOfWeek}
+              className={`rounded-xl border border-slate-200 p-4 ${
+                day.open ? 'bg-white' : 'bg-slate-50/50'
+              }`}
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <input
+                  type="checkbox"
+                  checked={day.open}
+                  onChange={() => toggleDay(day.dayOfWeek)}
+                  id={`day-${day.dayOfWeek}`}
+                  className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                />
+                <label
+                  htmlFor={`day-${day.dayOfWeek}`}
+                  className="font-medium text-sm text-slate-900"
+                >
+                  {day.dayName}
+                </label>
+                {!day.open && (
+                  <span className="text-xs text-slate-400">Closed</span>
+                )}
+              </div>
+
+              {day.open && (
+                <div className="ml-7 space-y-2">
+                  {day.ranges.map((range, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <input
+                        type="time"
+                        value={range.start}
+                        onChange={(e) =>
+                          updateRange(day.dayOfWeek, i, 'start', e.target.value)
+                        }
+                        className="rounded-lg border border-slate-300 px-2 py-1 text-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                      />
+                      <span className="text-slate-400">-</span>
+                      <input
+                        type="time"
+                        value={range.end}
+                        onChange={(e) =>
+                          updateRange(day.dayOfWeek, i, 'end', e.target.value)
+                        }
+                        className="rounded-lg border border-slate-300 px-2 py-1 text-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                      />
+                      {day.ranges.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeRange(day.dayOfWeek, i)}
+                          className="text-rose-500 text-sm hover:text-rose-700 transition-colors"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => addRange(day.dayOfWeek)}
+                    className="text-indigo-600 text-sm hover:text-indigo-700 transition-colors"
+                  >
+                    + Add time range
+                  </button>
+                </div>
               )}
             </div>
+          ))}
+        </div>
 
-            {day.open && (
-              <div className="ml-6 space-y-2">
-                {day.ranges.map((range, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <input
-                      type="time"
-                      value={range.start}
-                      onChange={(e) =>
-                        updateRange(day.dayOfWeek, i, 'start', e.target.value)
-                      }
-                      className="rounded border px-2 py-1 text-sm"
-                    />
-                    <span className="text-gray-400">-</span>
-                    <input
-                      type="time"
-                      value={range.end}
-                      onChange={(e) =>
-                        updateRange(day.dayOfWeek, i, 'end', e.target.value)
-                      }
-                      className="rounded border px-2 py-1 text-sm"
-                    />
-                    {day.ranges.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeRange(day.dayOfWeek, i)}
-                        className="text-red-500 text-sm hover:underline"
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => addRange(day.dayOfWeek)}
-                  className="text-blue-600 text-sm hover:underline"
-                >
-                  + Add time range
-                </button>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-
-      <button
-        type="submit"
-        disabled={isPending}
-        className="mt-6 rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
-      >
-        {isPending ? 'Saving...' : 'Save schedule'}
-      </button>
-    </form>
+        <button
+          type="submit"
+          disabled={isPending}
+          className="mt-6 rounded-lg bg-indigo-600 px-4 py-2.5 font-medium text-white shadow-sm hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+        >
+          {isPending ? 'Saving...' : 'Save schedule'}
+        </button>
+      </form>
+    </div>
   )
 }

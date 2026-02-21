@@ -42,14 +42,19 @@ export function SlotPicker({
 
   if (confirmed) {
     return (
-      <div className="rounded-lg border border-green-200 bg-green-50 p-6 text-center">
-        <h3 className="text-lg font-semibold text-green-800 mb-2">
+      <div className="rounded-xl border-2 border-emerald-200 bg-emerald-50 p-8 text-center">
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100">
+          <svg className="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+          </svg>
+        </div>
+        <h3 className="text-lg font-semibold text-emerald-800 mb-2">
           Booking confirmed!
         </h3>
-        <p className="text-sm text-green-700">
+        <p className="text-sm text-emerald-700">
           {serviceName} on {date} at {selectedSlot}
         </p>
-        <p className="text-sm text-green-700 mt-1">
+        <p className="text-sm text-emerald-700 mt-1">
           A confirmation has been recorded for {customerEmail}.
         </p>
       </div>
@@ -57,11 +62,15 @@ export function SlotPicker({
   }
 
   if (loading) {
-    return <p className="text-gray-500">Loading available slots...</p>
+    return <p className="text-slate-500">Loading available slots...</p>
   }
 
   if (error) {
-    return <p className="text-red-600">{error}</p>
+    return (
+      <div className="rounded-lg bg-rose-50 border border-rose-200 p-3 text-sm text-rose-600">
+        {error}
+      </div>
+    )
   }
 
   const availableSlots = slots.filter((s) => s.available)
@@ -69,12 +78,12 @@ export function SlotPicker({
   if (availableSlots.length === 0) {
     return (
       <div>
-        <p className="text-gray-500 mb-4">
+        <p className="text-slate-500 mb-4">
           No available slots on this date. Please choose another date.
         </p>
         <button
           onClick={onBack}
-          className="text-sm text-blue-600 hover:underline"
+          className="text-sm text-slate-500 hover:text-slate-900 transition-colors"
         >
           &larr; Choose another date
         </button>
@@ -83,22 +92,44 @@ export function SlotPicker({
   }
 
   if (!selectedSlot) {
+    const morningSlots = slots.filter(
+      (s) => parseInt(s.start.split(':')[0], 10) < 12
+    )
+    const afternoonSlots = slots.filter(
+      (s) => parseInt(s.start.split(':')[0], 10) >= 12
+    )
+
+    const renderGroup = (label: string, group: SlotDTO[]) => {
+      if (group.length === 0) return null
+      return (
+        <div>
+          <p className="mb-2 text-xs font-medium uppercase tracking-wider text-slate-400">
+            {label}
+          </p>
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
+            {group.map((slot) => (
+              <button
+                key={slot.start}
+                disabled={!slot.available}
+                onClick={() => setSelectedSlot(slot.start)}
+                className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
+                  slot.available
+                    ? 'border-slate-200 bg-white hover:border-indigo-500 hover:bg-indigo-50'
+                    : 'cursor-not-allowed border-slate-100 bg-slate-50 text-slate-300 line-through'
+                }`}
+              >
+                {slot.start}
+              </button>
+            ))}
+          </div>
+        </div>
+      )
+    }
+
     return (
-      <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
-        {slots.map((slot) => (
-          <button
-            key={slot.start}
-            disabled={!slot.available}
-            onClick={() => setSelectedSlot(slot.start)}
-            className={`rounded border px-3 py-2 text-sm ${
-              slot.available
-                ? 'hover:border-blue-500 hover:bg-blue-50'
-                : 'cursor-not-allowed bg-gray-100 text-gray-400 line-through'
-            }`}
-          >
-            {slot.start}
-          </button>
-        ))}
+      <div className="space-y-4">
+        {renderGroup('Morning', morningSlots)}
+        {renderGroup('Afternoon', afternoonSlots)}
       </div>
     )
   }
@@ -127,11 +158,11 @@ export function SlotPicker({
 
   return (
     <div>
-      <p className="text-sm text-gray-500 mb-4">
-        Selected time: <strong>{selectedSlot}</strong>{' '}
+      <p className="text-sm text-slate-500 mb-4">
+        Selected time: <strong className="text-slate-900">{selectedSlot}</strong>{' '}
         <button
           onClick={() => setSelectedSlot(null)}
-          className="text-blue-600 hover:underline"
+          className="text-indigo-600 hover:text-indigo-700 transition-colors"
         >
           change
         </button>
@@ -139,13 +170,13 @@ export function SlotPicker({
 
       <form onSubmit={handleSubmit} className="max-w-sm space-y-4">
         {error && (
-          <div className="rounded bg-red-50 p-3 text-sm text-red-600">
+          <div className="rounded-lg bg-rose-50 border border-rose-200 p-3 text-sm text-rose-600">
             {error}
           </div>
         )}
 
         <div>
-          <label htmlFor="name" className="block text-sm font-medium mb-1">
+          <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1.5">
             Your name
           </label>
           <input
@@ -154,12 +185,12 @@ export function SlotPicker({
             required
             value={customerName}
             onChange={(e) => setCustomerName(e.target.value)}
-            className="w-full rounded border px-3 py-2"
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
           />
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium mb-1">
+          <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1.5">
             Your email
           </label>
           <input
@@ -168,14 +199,14 @@ export function SlotPicker({
             required
             value={customerEmail}
             onChange={(e) => setCustomerEmail(e.target.value)}
-            className="w-full rounded border px-3 py-2"
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
           />
         </div>
 
         <button
           type="submit"
           disabled={submitting}
-          className="w-full rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
+          className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 font-medium text-white shadow-sm hover:bg-indigo-700 disabled:opacity-50 transition-colors"
         >
           {submitting ? 'Booking...' : 'Confirm booking'}
         </button>
