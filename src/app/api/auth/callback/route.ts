@@ -28,10 +28,24 @@ export async function GET(request: NextRequest) {
     }
   )
 
-  const { error } = await supabase.auth.exchangeCodeForSession(code)
+  const { error, data } = await supabase.auth.exchangeCodeForSession(code)
 
   if (error) {
     return NextResponse.redirect(new URL('/admin/login?error=auth', origin))
+  }
+
+  // Check if user already has a tenant — if not, send to register
+  const userId = data.user?.id
+  if (userId) {
+    const { data: tenant } = await supabase
+      .from('tenants')
+      .select('id')
+      .eq('owner_id', userId)
+      .single()
+
+    if (!tenant) {
+      return NextResponse.redirect(new URL('/admin/register', origin))
+    }
   }
 
   return NextResponse.redirect(new URL('/admin/dashboard', origin))
