@@ -64,3 +64,29 @@ export class ServiceDoesNotFitError extends DomainError {
     )
   }
 }
+
+export class BookingTooSoonError extends DomainError {
+  constructor(minAdvanceMinutes: number) {
+    super(
+      `Booking must be made at least ${minAdvanceMinutes} minutes in advance`
+    )
+  }
+}
+
+export class BookingInPastError extends DomainError {
+  constructor(date: string) {
+    super(`Cannot book date ${date}: it is in the past`)
+  }
+}
+
+export class BookingTooFarAheadError extends DomainError {
+  constructor(maxAdvanceDays: number) {
+    super(`Booking cannot be made more than ${maxAdvanceDays} days in advance`)
+  }
+}
+
+export class InvalidBookingPolicyError extends DomainError {
+  constructor(message: string) {
+    super(message)
+  }
+}

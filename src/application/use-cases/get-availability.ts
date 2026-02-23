@@ -6,11 +6,17 @@ import {
   generateSlots,
 } from '@/domain/services/availability-calculator'
 import { TenantNotFoundError } from '@/domain/errors/domain-errors'
+import {
+  getTenantLocalDate,
+  getTenantLocalMinutes,
+  addDaysToLocalDate,
+} from '@/domain/services/tenant-clock'
 import type { DayOfWeek } from '@/domain/types'
 
 export interface GetAvailabilityInput {
   tenantSlug: string
   date: string // YYYY-MM-DD
+  now?: Date
 }
 
 export interface SlotDTO {
@@ -35,8 +41,19 @@ export class GetAvailabilityUseCase {
   ) {}
 
   async execute(input: GetAvailabilityInput): Promise<GetAvailabilityOutput> {
+    const now = input.now ?? new Date()
     const tenant = await this.tenantRepo.findBySlug(input.tenantSlug)
     if (!tenant) throw new TenantNotFoundError(input.tenantSlug)
+
+    const { timezone, minAdvanceMinutes, maxAdvanceDays } =
+      tenant.bookingPolicy
+    const tenantLocalDate = getTenantLocalDate(timezone, now)
+    const tenantLocalMinutes = getTenantLocalMinutes(timezone, now)
+    const maxAllowedDate = addDaysToLocalDate(tenantLocalDate, maxAdvanceDays)
+
+    if (input.date < tenantLocalDate || input.date > maxAllowedDate) {
+      return { tenantName: tenant.name, date: input.date, slots: [] }
+    }
 
     const schedule = await this.scheduleRepo.findByTenantId(tenant.id)
     const dayOfWeek = new Date(input.date).getUTCDay() as DayOfWeek
@@ -57,14 +74,21 @@ export class GetAvailabilityUseCase {
       SLOT_INTERVAL_MINUTES
     )
 
-    const slots: SlotDTO[] = allSlots.map((slot) => {
-      const hhmm = slot.toHHMM()
-      return {
-        start: hhmm.start,
-        end: hhmm.end,
-        available: freeRanges.some((free) => free.contains(slot)),
-      }
-    })
+    const cutoffMinutes =
+      input.date === tenantLocalDate
+        ? tenantLocalMinutes + minAdvanceMinutes
+        : -1
+
+    const slots: SlotDTO[] = allSlots
+      .filter((slot) => slot.start >= cutoffMinutes)
+      .map((slot) => {
+        const hhmm = slot.toHHMM()
+        return {
+          start: hhmm.start,
+          end: hhmm.end,
+          available: freeRanges.some((free) => free.contains(slot)),
+        }
+      })
 
     return { tenantName: tenant.name, date: input.date, slots }
   }

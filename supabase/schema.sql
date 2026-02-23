@@ -6,6 +6,9 @@ create table public.tenants (
   slug text unique not null,
   currency text not null default 'EUR' check (currency in ('EUR', 'USD', 'GBP')),
   default_locale text not null default 'es-ES' check (default_locale in ('es-ES', 'en-US')),
+  timezone text not null default 'Europe/Madrid',
+  min_advance_minutes integer not null default 120 check (min_advance_minutes >= 0),
+  max_advance_days integer not null default 30 check (max_advance_days >= 1),
   created_at timestamptz not null default now()
 );
 create unique index tenants_slug_idx on public.tenants(slug);

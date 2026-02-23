@@ -2,6 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Tenant } from '@/domain/entities/tenant'
 import type { TenantRepository } from '@/application/ports/tenant-repository'
 import type { Currency, Locale } from '@/domain/types'
+import { createBookingPolicy } from '@/domain/value-objects/booking-policy'
 
 interface TenantRow {
   id: string
@@ -10,6 +11,9 @@ interface TenantRow {
   slug: string
   currency: string
   default_locale: string
+  timezone: string
+  min_advance_minutes: number
+  max_advance_days: number
   created_at: string
 }
 
@@ -21,6 +25,11 @@ function toDomain(row: TenantRow): Tenant {
     slug: row.slug,
     currency: row.currency as Currency,
     defaultLocale: row.default_locale as Locale,
+    bookingPolicy: createBookingPolicy({
+      timezone: row.timezone,
+      minAdvanceMinutes: row.min_advance_minutes,
+      maxAdvanceDays: row.max_advance_days,
+    }),
     createdAt: new Date(row.created_at),
   }
 }
@@ -71,6 +80,9 @@ export class SupabaseTenantRepository implements TenantRepository {
         slug: tenant.slug,
         currency: tenant.currency,
         default_locale: tenant.defaultLocale,
+        timezone: tenant.bookingPolicy.timezone,
+        min_advance_minutes: tenant.bookingPolicy.minAdvanceMinutes,
+        max_advance_days: tenant.bookingPolicy.maxAdvanceDays,
       })
       .select()
       .single()

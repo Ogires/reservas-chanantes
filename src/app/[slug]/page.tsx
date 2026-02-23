@@ -1,8 +1,38 @@
+import { cache } from 'react'
 import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
 import { createSupabaseServer } from '@/infrastructure/supabase/server'
 import { SupabaseTenantRepository } from '@/infrastructure/supabase/tenant-repository'
 import { SupabaseServiceRepository } from '@/infrastructure/supabase/service-repository'
+import {
+  getTenantLocalDate,
+  addDaysToLocalDate,
+} from '@/domain/services/tenant-clock'
 import { BookingWidget } from './booking-widget'
+
+const getTenant = cache(async (slug: string) => {
+  const supabase = await createSupabaseServer()
+  const tenantRepo = new SupabaseTenantRepository(supabase)
+  return tenantRepo.findBySlug(slug)
+})
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+  const { slug } = await params
+  const tenant = await getTenant(slug)
+
+  if (!tenant) {
+    return { title: 'Not found' }
+  }
+
+  return {
+    title: `Book with ${tenant.name}`,
+    description: `Schedule your appointment online with ${tenant.name}.`,
+  }
+}
 
 export default async function TenantPage({
   params,
@@ -10,13 +40,15 @@ export default async function TenantPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const supabase = await createSupabaseServer()
-
-  const tenantRepo = new SupabaseTenantRepository(supabase)
-  const tenant = await tenantRepo.findBySlug(slug)
+  const tenant = await getTenant(slug)
 
   if (!tenant) notFound()
 
+  const { timezone, maxAdvanceDays } = tenant.bookingPolicy
+  const today = getTenantLocalDate(timezone)
+  const maxDate = addDaysToLocalDate(today, maxAdvanceDays)
+
+  const supabase = await createSupabaseServer()
   const serviceRepo = new SupabaseServiceRepository(supabase)
   const allServices = await serviceRepo.findByTenantId(tenant.id)
   const activeServices = allServices.filter((s) => s.active)
@@ -43,7 +75,12 @@ export default async function TenantPage({
             </p>
           </div>
         ) : (
-          <BookingWidget slug={slug} services={services} />
+          <BookingWidget
+            slug={slug}
+            services={services}
+            minDate={today}
+            maxDate={maxDate}
+          />
         )}
       </div>
     </div>

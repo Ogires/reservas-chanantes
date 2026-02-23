@@ -9,12 +9,20 @@ import {
   subtractBookings,
   canFitService,
 } from '@/domain/services/availability-calculator'
+import {
+  getTenantLocalDate,
+  getTenantLocalMinutes,
+  addDaysToLocalDate,
+} from '@/domain/services/tenant-clock'
 import { BookingStatus, type DayOfWeek } from '@/domain/types'
 import {
   TenantNotFoundError,
   ServiceNotFoundError,
   BusinessClosedError,
   ServiceDoesNotFitError,
+  BookingTooSoonError,
+  BookingInPastError,
+  BookingTooFarAheadError,
 } from '@/domain/errors/domain-errors'
 
 export interface CreateBookingInput {
@@ -24,6 +32,7 @@ export interface CreateBookingInput {
   customerName: string
   date: string // YYYY-MM-DD
   startTime: string // HH:MM
+  now?: Date
 }
 
 export class CreateBookingUseCase {
@@ -36,8 +45,30 @@ export class CreateBookingUseCase {
   ) {}
 
   async execute(input: CreateBookingInput): Promise<Booking> {
+    const now = input.now ?? new Date()
     const tenant = await this.tenantRepo.findBySlug(input.tenantSlug)
     if (!tenant) throw new TenantNotFoundError(input.tenantSlug)
+
+    const { timezone, minAdvanceMinutes, maxAdvanceDays } =
+      tenant.bookingPolicy
+    const tenantLocalDate = getTenantLocalDate(timezone, now)
+    const tenantLocalMinutes = getTenantLocalMinutes(timezone, now)
+    const maxAllowedDate = addDaysToLocalDate(tenantLocalDate, maxAdvanceDays)
+
+    if (input.date > maxAllowedDate) {
+      throw new BookingTooFarAheadError(maxAdvanceDays)
+    }
+    if (input.date < tenantLocalDate) {
+      throw new BookingInPastError(input.date)
+    }
+
+    const startMinute = TimeRange.parseHHMM(input.startTime)
+
+    if (input.date === tenantLocalDate) {
+      if (startMinute < tenantLocalMinutes + minAdvanceMinutes) {
+        throw new BookingTooSoonError(minAdvanceMinutes)
+      }
+    }
 
     const service = await this.serviceRepo.findById(input.serviceId)
     if (!service || service.tenantId !== tenant.id) {
@@ -56,7 +87,6 @@ export class CreateBookingUseCase {
     const bookedRanges = existingBookings.map((b) => b.timeRange)
     const freeRanges = subtractBookings(daySchedule.timeRanges, bookedRanges)
 
-    const startMinute = TimeRange.parseHHMM(input.startTime)
     if (!canFitService(startMinute, service.durationMinutes, freeRanges)) {
       throw new ServiceDoesNotFitError(service.durationMinutes, input.startTime)
     }

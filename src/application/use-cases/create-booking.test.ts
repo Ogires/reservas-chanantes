@@ -18,7 +18,11 @@ import {
   ServiceNotFoundError,
   ServiceDoesNotFitError,
   BusinessClosedError,
+  BookingTooSoonError,
+  BookingInPastError,
+  BookingTooFarAheadError,
 } from '@/domain/errors/domain-errors'
+import { createBookingPolicy } from '@/domain/value-objects/booking-policy'
 
 const TENANT: Tenant = {
   id: 'tenant-1',
@@ -27,6 +31,11 @@ const TENANT: Tenant = {
   slug: 'peluqueria-juan',
   currency: 'EUR',
   defaultLocale: 'es-ES',
+  bookingPolicy: createBookingPolicy({
+    minAdvanceMinutes: 0,
+    maxAdvanceDays: 365,
+    timezone: 'UTC',
+  }),
   createdAt: new Date('2026-01-01'),
 }
 
@@ -102,6 +111,7 @@ describe('CreateBookingUseCase', () => {
     customerName: 'Ana García',
     date: '2026-02-23', // Monday
     startTime: '09:00',
+    now: new Date('2026-02-23T00:00:00Z'),
   }
 
   it('creates a booking successfully', async () => {
@@ -166,7 +176,11 @@ describe('CreateBookingUseCase', () => {
     )
 
     await expect(
-      useCase.execute({ ...validInput, date: '2026-02-22' }) // Sunday
+      useCase.execute({
+        ...validInput,
+        date: '2026-02-22', // Sunday
+        now: new Date('2026-02-22T00:00:00Z'),
+      })
     ).rejects.toThrow(BusinessClosedError)
   })
 
@@ -210,5 +224,103 @@ describe('CreateBookingUseCase', () => {
 
     expect(saveSpy).toHaveBeenCalledOnce()
     expect(booking.customerId).toBeDefined()
+  })
+
+  it('throws BookingTooSoonError when booking within min advance time', async () => {
+    const tenantWithAdvance: Tenant = {
+      ...TENANT,
+      bookingPolicy: createBookingPolicy({
+        minAdvanceMinutes: 120,
+        maxAdvanceDays: 365,
+        timezone: 'UTC',
+      }),
+    }
+    const repos = createMockRepos({ tenant: tenantWithAdvance })
+    const useCase = new CreateBookingUseCase(
+      repos.tenantRepo,
+      repos.serviceRepo,
+      repos.scheduleRepo,
+      repos.bookingRepo,
+      repos.customerRepo
+    )
+
+    // "now" is 08:00 UTC, minAdvance=120 → cutoff 10:00, trying to book 09:00
+    const now = new Date('2026-02-23T08:00:00Z')
+    await expect(
+      useCase.execute({ ...validInput, now })
+    ).rejects.toThrow(BookingTooSoonError)
+  })
+
+  it('throws BookingInPastError when date is in the past', async () => {
+    const repos = createMockRepos()
+    const useCase = new CreateBookingUseCase(
+      repos.tenantRepo,
+      repos.serviceRepo,
+      repos.scheduleRepo,
+      repos.bookingRepo,
+      repos.customerRepo
+    )
+
+    // "now" is Feb 23, trying to book Feb 20 (past)
+    await expect(
+      useCase.execute({
+        ...validInput,
+        date: '2026-02-20',
+        now: new Date('2026-02-23T10:00:00Z'),
+      })
+    ).rejects.toThrow(BookingInPastError)
+  })
+
+  it('throws BookingTooFarAheadError when date exceeds max advance', async () => {
+    const tenantShortWindow: Tenant = {
+      ...TENANT,
+      bookingPolicy: createBookingPolicy({
+        minAdvanceMinutes: 0,
+        maxAdvanceDays: 7,
+        timezone: 'UTC',
+      }),
+    }
+    const repos = createMockRepos({ tenant: tenantShortWindow })
+    const useCase = new CreateBookingUseCase(
+      repos.tenantRepo,
+      repos.serviceRepo,
+      repos.scheduleRepo,
+      repos.bookingRepo,
+      repos.customerRepo
+    )
+
+    const now = new Date('2026-02-23T10:00:00Z')
+    await expect(
+      useCase.execute({ ...validInput, date: '2026-03-23', now })
+    ).rejects.toThrow(BookingTooFarAheadError)
+  })
+
+  it('allows booking exactly on maxAllowedDate', async () => {
+    const tenantShortWindow: Tenant = {
+      ...TENANT,
+      bookingPolicy: createBookingPolicy({
+        minAdvanceMinutes: 0,
+        maxAdvanceDays: 7,
+        timezone: 'UTC',
+      }),
+    }
+    const repos = createMockRepos({ tenant: tenantShortWindow })
+    const useCase = new CreateBookingUseCase(
+      repos.tenantRepo,
+      repos.serviceRepo,
+      repos.scheduleRepo,
+      repos.bookingRepo,
+      repos.customerRepo
+    )
+
+    // Feb 23 + 7 days = March 2 (Monday)
+    const now = new Date('2026-02-23T00:00:00Z')
+    const booking = await useCase.execute({
+      ...validInput,
+      date: '2026-03-02', // Monday, exactly 7 days ahead
+      now,
+    })
+
+    expect(booking.date).toBe('2026-03-02')
   })
 })
