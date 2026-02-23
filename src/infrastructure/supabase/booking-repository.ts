@@ -13,6 +13,7 @@ interface BookingRow {
   start_minutes: number
   end_minutes: number
   status: string
+  stripe_checkout_session_id: string | null
   created_at: string
 }
 
@@ -25,6 +26,7 @@ function toDomain(row: BookingRow): Booking {
     date: row.date,
     timeRange: new TimeRange(row.start_minutes, row.end_minutes),
     status: row.status as BookingStatus,
+    stripeCheckoutSessionId: row.stripe_checkout_session_id ?? undefined,
     createdAt: new Date(row.created_at),
   }
 }
@@ -46,6 +48,20 @@ export class SupabaseBookingRepository implements BookingRepository {
     return (data ?? []).map(toDomain)
   }
 
+  async findById(id: string): Promise<Booking | null> {
+    const { data, error } = await this.supabase
+      .from('bookings')
+      .select('*')
+      .eq('id', id)
+      .single()
+
+    if (error) {
+      if (error.code === 'PGRST116') return null
+      throw new Error(`Failed to fetch booking: ${error.message}`)
+    }
+    return toDomain(data)
+  }
+
   async save(booking: Booking): Promise<Booking> {
     const { data, error } = await this.supabase
       .from('bookings')
@@ -64,5 +80,24 @@ export class SupabaseBookingRepository implements BookingRepository {
 
     if (error) throw new Error(`Failed to save booking: ${error.message}`)
     return toDomain(data)
+  }
+
+  async updateStatus(id: string, status: BookingStatus): Promise<void> {
+    const { error } = await this.supabase
+      .from('bookings')
+      .update({ status })
+      .eq('id', id)
+
+    if (error) throw new Error(`Failed to update booking status: ${error.message}`)
+  }
+
+  async updateStripeSessionId(id: string, sessionId: string): Promise<void> {
+    const { error } = await this.supabase
+      .from('bookings')
+      .update({ stripe_checkout_session_id: sessionId })
+      .eq('id', id)
+
+    if (error)
+      throw new Error(`Failed to update stripe session id: ${error.message}`)
   }
 }

@@ -1,9 +1,11 @@
 'use server'
 
+import { headers } from 'next/headers'
 import { createSupabaseServer } from '@/infrastructure/supabase/server'
 import { createRepositories } from '@/infrastructure/supabase/repositories'
 import { GetAvailabilityUseCase } from '@/application/use-cases/get-availability'
 import { CreateBookingUseCase } from '@/application/use-cases/create-booking'
+import { StripePaymentService } from '@/infrastructure/stripe/payment-service'
 import type { SlotDTO } from '@/application/use-cases/get-availability'
 
 export async function getAvailability(
@@ -38,7 +40,7 @@ export async function createBooking(input: {
   customerName: string
   date: string
   startTime: string
-}): Promise<{ success: boolean; error?: string }> {
+}): Promise<{ success: boolean; checkoutUrl?: string; error?: string }> {
   try {
     const supabase = await createSupabaseServer()
     const { tenantRepo, serviceRepo, scheduleRepo, bookingRepo, customerRepo } =
@@ -52,8 +54,34 @@ export async function createBooking(input: {
       customerRepo
     )
 
-    await useCase.execute(input)
-    return { success: true }
+    const booking = await useCase.execute(input)
+
+    const service = await serviceRepo.findById(input.serviceId)
+    if (!service) {
+      return { success: false, error: 'Service not found' }
+    }
+
+    const hdrs = await headers()
+    const host = hdrs.get('host') ?? 'localhost:3000'
+    const protocol = hdrs.get('x-forwarded-proto') ?? 'http'
+    const origin = `${protocol}://${host}`
+
+    const successUrl = `${origin}/${input.tenantSlug}/booking-success?session_id={CHECKOUT_SESSION_ID}`
+    const cancelUrl = `${origin}/${input.tenantSlug}`
+
+    const paymentService = new StripePaymentService()
+    const checkout = await paymentService.createCheckoutSession({
+      bookingId: booking.id,
+      serviceName: service.name,
+      price: service.price,
+      customerEmail: input.customerEmail,
+      successUrl,
+      cancelUrl,
+    })
+
+    await bookingRepo.updateStripeSessionId(booking.id, checkout.sessionId)
+
+    return { success: true, checkoutUrl: checkout.checkoutUrl }
   } catch (e) {
     return {
       success: false,

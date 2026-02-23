@@ -9,5 +9,6 @@ export interface Booking {
   readonly date: string // YYYY-MM-DD
   readonly timeRange: TimeRange
   readonly status: BookingStatus
+  readonly stripeCheckoutSessionId?: string
   readonly createdAt: Date
 }

@@ -26,7 +26,6 @@ export function SlotPicker({
   const [customerEmail, setCustomerEmail] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
-  const [confirmed, setConfirmed] = useState(false)
 
   useEffect(() => {
     setLoading(true)
@@ -39,27 +38,6 @@ export function SlotPicker({
       setLoading(false)
     })
   }, [slug, date])
-
-  if (confirmed) {
-    return (
-      <div className="rounded-xl border-2 border-emerald-200 bg-emerald-50 p-8 text-center">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100">
-          <svg className="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-          </svg>
-        </div>
-        <h3 className="text-lg font-semibold text-emerald-800 mb-2">
-          Booking confirmed!
-        </h3>
-        <p className="text-sm text-emerald-700">
-          {serviceName} on {date} at {selectedSlot}
-        </p>
-        <p className="text-sm text-emerald-700 mt-1">
-          A confirmation has been recorded for {customerEmail}.
-        </p>
-      </div>
-    )
-  }
 
   if (loading) {
     return <p className="text-slate-500">Loading available slots...</p>
@@ -148,11 +126,11 @@ export function SlotPicker({
       startTime: selectedSlot!,
     })
 
-    if (result.success) {
-      setConfirmed(true)
-    } else {
-      setError(result.error || 'Booking failed')
+    if (result.success && result.checkoutUrl) {
+      window.location.href = result.checkoutUrl
+      return
     }
+    setError(result.error || 'Booking failed')
     setSubmitting(false)
   }
 
@@ -208,7 +186,7 @@ export function SlotPicker({
           disabled={submitting}
           className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 font-medium text-white shadow-sm hover:bg-indigo-700 disabled:opacity-50 transition-colors"
         >
-          {submitting ? 'Booking...' : 'Confirm booking'}
+          {submitting ? 'Redirecting...' : 'Proceed to payment'}
         </button>
       </form>
     </div>

@@ -81,7 +81,10 @@ function createMockRepos(overrides?: {
   }
   const bookingRepo: BookingRepository = {
     findByTenantAndDate: async () => overrides?.bookings ?? [],
+    findById: async () => null,
     save: async (b) => b,
+    updateStatus: async () => {},
+    updateStripeSessionId: async () => {},
   }
   const customerRepo: CustomerRepository = {
     findByEmail: async () =>
