@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { LoginForm } from './login-form'
+import { GoogleSignInButton } from '../_components/google-sign-in-button'
 
 export default function LoginPage() {
   return (
@@ -10,6 +11,15 @@ export default function LoginPage() {
         </div>
         <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-lg">
           <h1 className="text-2xl font-bold text-center text-slate-900 mb-6">Sign in</h1>
+          <GoogleSignInButton />
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-slate-200" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="bg-white px-2 text-slate-400">or</span>
+            </div>
+          </div>
           <LoginForm />
         </div>
         <p className="text-center text-sm text-slate-500">
