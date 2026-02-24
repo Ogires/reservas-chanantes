@@ -1,5 +1,6 @@
 'use server'
 
+import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createSupabaseServer } from '@/infrastructure/supabase/server'
 
@@ -22,4 +23,25 @@ export async function login(
   }
 
   redirect('/admin/dashboard')
+}
+
+export async function resetPassword(
+  _prevState: { error?: string; success?: boolean } | null,
+  formData: FormData
+): Promise<{ error?: string; success?: boolean }> {
+  const email = formData.get('email') as string
+
+  const supabase = await createSupabaseServer()
+  const headersList = await headers()
+  const origin = headersList.get('origin') ?? ''
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: origin + '/admin/login',
+  })
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  return { success: true }
 }

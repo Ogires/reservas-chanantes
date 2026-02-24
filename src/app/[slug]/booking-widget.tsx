@@ -50,6 +50,9 @@ export function BookingWidget({ slug, services, minDate, maxDate }: BookingWidge
     null
   )
   const [selectedDate, setSelectedDate] = useState('')
+  const [customerName, setCustomerName] = useState('')
+  const [customerEmail, setCustomerEmail] = useState('')
+  const [customerPhone, setCustomerPhone] = useState('')
 
   if (!selectedService) {
     return (
@@ -135,6 +138,12 @@ export function BookingWidget({ slug, services, minDate, maxDate }: BookingWidge
         serviceName={selectedService.name}
         date={selectedDate}
         onBack={() => setSelectedDate('')}
+        customerName={customerName}
+        customerEmail={customerEmail}
+        customerPhone={customerPhone}
+        onCustomerNameChange={setCustomerName}
+        onCustomerEmailChange={setCustomerEmail}
+        onCustomerPhoneChange={setCustomerPhone}
       />
     </div>
   )

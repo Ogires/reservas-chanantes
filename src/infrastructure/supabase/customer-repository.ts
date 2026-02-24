@@ -21,6 +21,17 @@ function toDomain(row: CustomerRow): Customer {
 export class SupabaseCustomerRepository implements CustomerRepository {
   constructor(private readonly supabase: SupabaseClient) {}
 
+  async findById(id: string): Promise<Customer | null> {
+    const { data, error } = await this.supabase
+      .from('customers')
+      .select('*')
+      .eq('id', id)
+      .single()
+
+    if (error || !data) return null
+    return toDomain(data)
+  }
+
   async findByEmail(email: string): Promise<Customer | null> {
     const { data, error } = await this.supabase
       .from('customers')

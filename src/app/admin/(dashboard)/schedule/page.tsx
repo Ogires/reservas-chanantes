@@ -33,7 +33,7 @@ export default async function SchedulePage() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-slate-900 mb-6">Weekly Schedule</h1>
-      <ScheduleEditor initialSchedule={initialSchedule} />
+      <ScheduleEditor initialSchedule={initialSchedule} timezone={tenant.bookingPolicy.timezone} />
     </div>
   )
 }

@@ -22,9 +22,10 @@ interface DayState {
 
 interface ScheduleEditorProps {
   initialSchedule: DayState[]
+  timezone: string
 }
 
-export function ScheduleEditor({ initialSchedule }: ScheduleEditorProps) {
+export function ScheduleEditor({ initialSchedule, timezone }: ScheduleEditorProps) {
   const [days, setDays] = useState<DayState[]>(initialSchedule)
   const [state, formAction, isPending] = useActionState(saveSchedule, null)
 
@@ -91,6 +92,7 @@ export function ScheduleEditor({ initialSchedule }: ScheduleEditorProps) {
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <p className="text-sm text-slate-500 mb-4">All times in {timezone}</p>
       <form action={formAction}>
         <input type="hidden" name="schedule" value={JSON.stringify(days)} />
 

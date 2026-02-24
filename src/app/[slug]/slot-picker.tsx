@@ -10,6 +10,12 @@ interface SlotPickerProps {
   serviceName: string
   date: string
   onBack: () => void
+  customerName: string
+  customerEmail: string
+  customerPhone: string
+  onCustomerNameChange: (value: string) => void
+  onCustomerEmailChange: (value: string) => void
+  onCustomerPhoneChange: (value: string) => void
 }
 
 export function SlotPicker({
@@ -18,13 +24,16 @@ export function SlotPicker({
   serviceName,
   date,
   onBack,
+  customerName,
+  customerEmail,
+  customerPhone,
+  onCustomerNameChange,
+  onCustomerEmailChange,
+  onCustomerPhoneChange,
 }: SlotPickerProps) {
   const [slots, setSlots] = useState<SlotDTO[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null)
-  const [customerName, setCustomerName] = useState('')
-  const [customerEmail, setCustomerEmail] = useState('')
-  const [customerPhone, setCustomerPhone] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
@@ -164,7 +173,7 @@ export function SlotPicker({
             type="text"
             required
             value={customerName}
-            onChange={(e) => setCustomerName(e.target.value)}
+            onChange={(e) => onCustomerNameChange(e.target.value)}
             className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
           />
         </div>
@@ -179,7 +188,7 @@ export function SlotPicker({
             required
             autoComplete="email"
             value={customerEmail}
-            onChange={(e) => setCustomerEmail(e.target.value)}
+            onChange={(e) => onCustomerEmailChange(e.target.value)}
             className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
           />
         </div>
@@ -195,7 +204,7 @@ export function SlotPicker({
             autoComplete="tel"
             placeholder="+34 600 123 456"
             value={customerPhone}
-            onChange={(e) => setCustomerPhone(e.target.value)}
+            onChange={(e) => onCustomerPhoneChange(e.target.value)}
             className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
           />
         </div>

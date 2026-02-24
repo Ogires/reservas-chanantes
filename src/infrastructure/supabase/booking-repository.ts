@@ -48,6 +48,24 @@ export class SupabaseBookingRepository implements BookingRepository {
     return (data ?? []).map(toDomain)
   }
 
+  async findByTenantAndDateRange(
+    tenantId: string,
+    startDate: string,
+    endDate: string
+  ): Promise<Booking[]> {
+    const { data, error } = await this.supabase
+      .from('bookings')
+      .select('*')
+      .eq('tenant_id', tenantId)
+      .gte('date', startDate)
+      .lte('date', endDate)
+      .order('date', { ascending: true })
+      .order('start_minutes', { ascending: true })
+
+    if (error) throw new Error(`Failed to fetch bookings: ${error.message}`)
+    return (data ?? []).map(toDomain)
+  }
+
   async findById(id: string): Promise<Booking | null> {
     const { data, error } = await this.supabase
       .from('bookings')
