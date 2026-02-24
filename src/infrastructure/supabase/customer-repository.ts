@@ -6,7 +6,7 @@ interface CustomerRow {
   id: string
   name: string
   email: string
-  phone: string | null
+  phone: string
 }
 
 function toDomain(row: CustomerRow): Customer {
@@ -14,7 +14,7 @@ function toDomain(row: CustomerRow): Customer {
     id: row.id,
     name: row.name,
     email: row.email,
-    phone: row.phone ?? undefined,
+    phone: row.phone,
   }
 }
 
@@ -39,7 +39,7 @@ export class SupabaseCustomerRepository implements CustomerRepository {
         id: customer.id,
         name: customer.name,
         email: customer.email,
-        phone: customer.phone ?? null,
+        phone: customer.phone,
       })
       .select()
       .single()

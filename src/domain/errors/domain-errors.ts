@@ -90,3 +90,11 @@ export class InvalidBookingPolicyError extends DomainError {
     super(message)
   }
 }
+
+export class InvalidPhoneError extends DomainError {
+  constructor(phone: string) {
+    super(
+      `Invalid phone number: "${phone}". Must contain at least 6 digits.`
+    )
+  }
+}

@@ -21,6 +21,7 @@ import {
   BookingTooSoonError,
   BookingInPastError,
   BookingTooFarAheadError,
+  InvalidPhoneError,
 } from '@/domain/errors/domain-errors'
 import { createBookingPolicy } from '@/domain/value-objects/booking-policy'
 
@@ -52,6 +53,7 @@ const CUSTOMER: Customer = {
   id: 'customer-1',
   name: 'Ana García',
   email: 'ana@example.com',
+  phone: '600123456',
 }
 
 const SCHEDULE = new WeeklySchedule('tenant-1', [
@@ -109,6 +111,7 @@ describe('CreateBookingUseCase', () => {
     serviceId: 'service-1',
     customerEmail: 'ana@example.com',
     customerName: 'Ana García',
+    customerPhone: '600123456',
     date: '2026-02-23', // Monday
     startTime: '09:00',
     now: new Date('2026-02-23T00:00:00Z'),
@@ -223,7 +226,25 @@ describe('CreateBookingUseCase', () => {
     const booking = await useCase.execute(validInput)
 
     expect(saveSpy).toHaveBeenCalledOnce()
+    expect(saveSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ phone: '600123456' })
+    )
     expect(booking.customerId).toBeDefined()
+  })
+
+  it('throws InvalidPhoneError when phone has fewer than 6 digits', async () => {
+    const repos = createMockRepos()
+    const useCase = new CreateBookingUseCase(
+      repos.tenantRepo,
+      repos.serviceRepo,
+      repos.scheduleRepo,
+      repos.bookingRepo,
+      repos.customerRepo
+    )
+
+    await expect(
+      useCase.execute({ ...validInput, customerPhone: '123' })
+    ).rejects.toThrow(InvalidPhoneError)
   })
 
   it('throws BookingTooSoonError when booking within min advance time', async () => {

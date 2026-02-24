@@ -23,6 +23,7 @@ import {
   BookingTooSoonError,
   BookingInPastError,
   BookingTooFarAheadError,
+  InvalidPhoneError,
 } from '@/domain/errors/domain-errors'
 
 export interface CreateBookingInput {
@@ -30,6 +31,7 @@ export interface CreateBookingInput {
   serviceId: string
   customerEmail: string
   customerName: string
+  customerPhone: string
   date: string // YYYY-MM-DD
   startTime: string // HH:MM
   now?: Date
@@ -91,12 +93,18 @@ export class CreateBookingUseCase {
       throw new ServiceDoesNotFitError(service.durationMinutes, input.startTime)
     }
 
+    const phoneDigits = input.customerPhone.replace(/\D/g, '')
+    if (phoneDigits.length < 6) {
+      throw new InvalidPhoneError(input.customerPhone)
+    }
+
     let customer = await this.customerRepo.findByEmail(input.customerEmail)
     if (!customer) {
       customer = await this.customerRepo.save({
         id: crypto.randomUUID(),
         name: input.customerName,
         email: input.customerEmail,
+        phone: input.customerPhone,
       })
     }
 

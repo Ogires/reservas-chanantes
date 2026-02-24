@@ -38,6 +38,7 @@ export async function createBooking(input: {
   serviceId: string
   customerEmail: string
   customerName: string
+  customerPhone: string
   date: string
   startTime: string
 }): Promise<{ success: boolean; checkoutUrl?: string; error?: string }> {

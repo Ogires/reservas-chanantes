@@ -40,7 +40,7 @@ create table public.customers (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   email text unique not null,
-  phone text
+  phone text not null
 );
 
 -- Bookings
