@@ -90,4 +90,21 @@ export class SupabaseTenantRepository implements TenantRepository {
     if (error) throw new Error(`Failed to save tenant: ${error.message}`)
     return toDomain(data)
   }
+
+  async update(tenant: Tenant): Promise<Tenant> {
+    const { data, error } = await this.supabase
+      .from('tenants')
+      .update({
+        name: tenant.name,
+        timezone: tenant.bookingPolicy.timezone,
+        min_advance_minutes: tenant.bookingPolicy.minAdvanceMinutes,
+        max_advance_days: tenant.bookingPolicy.maxAdvanceDays,
+      })
+      .eq('id', tenant.id)
+      .select()
+      .single()
+
+    if (error) throw new Error(`Failed to update tenant: ${error.message}`)
+    return toDomain(data)
+  }
 }

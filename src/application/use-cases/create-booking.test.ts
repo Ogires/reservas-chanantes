@@ -76,6 +76,7 @@ function createMockRepos(overrides?: {
     findById: async () => TENANT,
     findByOwnerId: async () => TENANT,
     save: async (t) => t,
+    update: async (t) => t,
   }
   const serviceRepo: ServiceRepository = {
     findById: async () =>

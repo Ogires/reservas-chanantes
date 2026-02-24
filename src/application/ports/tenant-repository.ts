@@ -5,4 +5,5 @@ export interface TenantRepository {
   findById(id: string): Promise<Tenant | null>
   findByOwnerId(ownerId: string): Promise<Tenant | null>
   save(tenant: Tenant): Promise<Tenant>
+  update(tenant: Tenant): Promise<Tenant>
 }

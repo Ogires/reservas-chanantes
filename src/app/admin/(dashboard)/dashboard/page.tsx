@@ -1,6 +1,8 @@
 import { requireAdmin } from '@/infrastructure/supabase/admin-auth'
 import { SupabaseServiceRepository } from '@/infrastructure/supabase/service-repository'
 import { SupabaseBookingRepository } from '@/infrastructure/supabase/booking-repository'
+import { SupabaseScheduleRepository } from '@/infrastructure/supabase/schedule-repository'
+import { SetupChecklist } from './setup-checklist'
 import Link from 'next/link'
 
 export default async function DashboardPage() {
@@ -8,16 +10,25 @@ export default async function DashboardPage() {
 
   const serviceRepo = new SupabaseServiceRepository(supabase)
   const bookingRepo = new SupabaseBookingRepository(supabase)
+  const scheduleRepo = new SupabaseScheduleRepository(supabase)
 
-  const services = await serviceRepo.findByTenantId(tenant.id)
+  const [services, schedule] = await Promise.all([
+    serviceRepo.findByTenantId(tenant.id),
+    scheduleRepo.findByTenantId(tenant.id),
+  ])
   const activeServices = services.filter((s) => s.active)
 
   const today = new Date().toISOString().split('T')[0]
   const todayBookings = await bookingRepo.findByTenantAndDate(tenant.id, today)
 
+  const hasServices = activeServices.length > 0
+  const hasSchedule = schedule !== null
+
   return (
     <div>
       <h1 className="text-2xl font-bold text-slate-900 mb-6">Dashboard</h1>
+
+      <SetupChecklist hasServices={hasServices} hasSchedule={hasSchedule} slug={tenant.slug} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 stagger-children">
         <div className="animate-fade-in-up rounded-xl border border-slate-200 border-l-4 border-l-indigo-500 bg-white p-6 shadow-sm">
