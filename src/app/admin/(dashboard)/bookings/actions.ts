@@ -7,8 +7,12 @@ import { BookingStatus } from '@/domain/types'
 
 export async function cancelBooking(id: string): Promise<{ error?: string }> {
   try {
-    const { supabase } = await requireAdmin()
+    const { tenant, supabase } = await requireAdmin()
     const bookingRepo = new SupabaseBookingRepository(supabase)
+    const booking = await bookingRepo.findById(id)
+    if (!booking || booking.tenantId !== tenant.id) {
+      return { error: 'Booking not found.' }
+    }
     await bookingRepo.updateStatus(id, BookingStatus.CANCELLED)
     revalidatePath('/admin/bookings')
     return {}

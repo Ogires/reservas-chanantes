@@ -12,8 +12,8 @@ export function CancelBookingButton({ bookingId }: { bookingId: string }) {
     const result = await cancelBooking(bookingId)
     if (result.error) {
       alert(result.error)
-      setPending(false)
     }
+    setPending(false)
   }
 
   return (

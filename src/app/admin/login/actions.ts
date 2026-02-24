@@ -33,7 +33,9 @@ export async function resetPassword(
 
   const supabase = await createSupabaseServer()
   const headersList = await headers()
-  const origin = headersList.get('origin') ?? ''
+  const host = headersList.get('x-forwarded-host') ?? headersList.get('host') ?? ''
+  const proto = headersList.get('x-forwarded-proto') ?? 'https'
+  const origin = host ? `${proto}://${host}` : ''
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: origin + '/admin/login',
