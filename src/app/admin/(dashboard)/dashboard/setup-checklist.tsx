@@ -24,9 +24,6 @@ function StepIcon({ done, step }: { done: boolean; step: number }) {
 }
 
 export function SetupChecklist({ hasServices, hasSchedule, slug }: SetupChecklistProps) {
-  const allDone = hasServices && hasSchedule
-  if (allDone) return null
-
   const canSharePage = hasServices && hasSchedule
 
   return (

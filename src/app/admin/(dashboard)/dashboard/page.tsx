@@ -28,7 +28,9 @@ export default async function DashboardPage() {
     <div>
       <h1 className="text-2xl font-bold text-slate-900 mb-6">Dashboard</h1>
 
-      <SetupChecklist hasServices={hasServices} hasSchedule={hasSchedule} slug={tenant.slug} />
+      {(!hasServices || !hasSchedule) && (
+        <SetupChecklist hasServices={hasServices} hasSchedule={hasSchedule} slug={tenant.slug} />
+      )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 stagger-children">
         <div className="animate-fade-in-up rounded-xl border border-slate-200 border-l-4 border-l-indigo-500 bg-white p-6 shadow-sm">

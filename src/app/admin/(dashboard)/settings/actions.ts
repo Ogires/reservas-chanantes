@@ -20,6 +20,9 @@ export async function saveSettings(
   if (!name) {
     return { error: 'Business name is required' }
   }
+  if (isNaN(minAdvanceMinutes) || isNaN(maxAdvanceDays)) {
+    return { error: 'Advance time and days must be valid numbers' }
+  }
 
   try {
     const bookingPolicy = createBookingPolicy({
@@ -28,7 +31,7 @@ export async function saveSettings(
       maxAdvanceDays,
     })
 
-    const updated = await tenantRepo.update({
+    await tenantRepo.update({
       ...tenant,
       name,
       bookingPolicy,

@@ -36,6 +36,10 @@ interface SettingsFormProps {
 export function SettingsForm({ name, timezone, minAdvanceMinutes, maxAdvanceDays }: SettingsFormProps) {
   const [state, formAction, isPending] = useActionState(saveSettings, null)
 
+  const timezoneOptions = COMMON_TIMEZONES.includes(timezone)
+    ? COMMON_TIMEZONES
+    : [timezone, ...COMMON_TIMEZONES]
+
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
       <form action={formAction} className="max-w-md space-y-4">
@@ -74,7 +78,7 @@ export function SettingsForm({ name, timezone, minAdvanceMinutes, maxAdvanceDays
             defaultValue={timezone}
             className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
           >
-            {COMMON_TIMEZONES.map((tz) => (
+            {timezoneOptions.map((tz) => (
               <option key={tz} value={tz}>{tz}</option>
             ))}
           </select>
