@@ -98,6 +98,8 @@ function createMockRepos(overrides?: {
     save: async (b) => b,
     updateStatus: async () => {},
     updateStripeSessionId: async () => {},
+    findConfirmedForDateWithoutReminder: async () => [],
+    updateReminderSentAt: async () => {},
   }
   const customerRepo: CustomerRepository = {
     findById: async () => CUSTOMER,

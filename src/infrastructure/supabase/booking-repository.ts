@@ -118,4 +118,29 @@ export class SupabaseBookingRepository implements BookingRepository {
     if (error)
       throw new Error(`Failed to update stripe session id: ${error.message}`)
   }
+
+  async findConfirmedForDateWithoutReminder(
+    date: string
+  ): Promise<Booking[]> {
+    const { data, error } = await this.supabase
+      .from('bookings')
+      .select('*')
+      .eq('date', date)
+      .eq('status', 'CONFIRMED')
+      .is('reminder_sent_at', null)
+
+    if (error)
+      throw new Error(`Failed to fetch bookings for reminder: ${error.message}`)
+    return (data ?? []).map(toDomain)
+  }
+
+  async updateReminderSentAt(id: string, sentAt: Date): Promise<void> {
+    const { error } = await this.supabase
+      .from('bookings')
+      .update({ reminder_sent_at: sentAt.toISOString() })
+      .eq('id', id)
+
+    if (error)
+      throw new Error(`Failed to update reminder_sent_at: ${error.message}`)
+  }
 }

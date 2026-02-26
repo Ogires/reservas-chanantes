@@ -4,6 +4,7 @@ import { getStripe } from '@/infrastructure/stripe/client'
 import { createSupabaseAdmin } from '@/infrastructure/supabase/admin-client'
 import { SupabaseBookingRepository } from '@/infrastructure/supabase/booking-repository'
 import { BookingStatus } from '@/domain/types'
+import { sendConfirmationEmails } from '@/infrastructure/resend/send-booking-emails'
 
 export async function POST(request: Request) {
   const stripe = getStripe()
@@ -36,6 +37,7 @@ export async function POST(request: Request) {
       const booking = await bookingRepo.findById(bookingId)
       if (booking && booking.status === BookingStatus.PENDING) {
         await bookingRepo.updateStatus(bookingId, BookingStatus.CONFIRMED)
+        await sendConfirmationEmails(supabase, bookingId)
       }
     }
   }

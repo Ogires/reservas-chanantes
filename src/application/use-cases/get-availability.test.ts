@@ -61,6 +61,8 @@ function createMockRepos(overrides?: {
     save: async (b) => b,
     updateStatus: async () => {},
     updateStripeSessionId: async () => {},
+    findConfirmedForDateWithoutReminder: async () => [],
+    updateReminderSentAt: async () => {},
   }
   return { tenantRepo, scheduleRepo, bookingRepo }
 }

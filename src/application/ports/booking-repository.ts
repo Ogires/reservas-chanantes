@@ -8,4 +8,6 @@ export interface BookingRepository {
   save(booking: Booking): Promise<Booking>
   updateStatus(id: string, status: BookingStatus): Promise<void>
   updateStripeSessionId(id: string, sessionId: string): Promise<void>
+  findConfirmedForDateWithoutReminder(date: string): Promise<Booking[]>
+  updateReminderSentAt(id: string, sentAt: Date): Promise<void>
 }
