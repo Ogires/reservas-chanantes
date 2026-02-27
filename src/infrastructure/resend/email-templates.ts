@@ -1,8 +1,9 @@
 import type { BookingEmailData } from '@/application/ports/notification-service'
+import type { Locale } from '@/domain/types'
 import { getEmailTranslations } from './email-translations'
 import { formatEmailDate } from './email-formatters'
 
-function layout(tenantName: string, locale: string, body: string): string {
+function layout(tenantName: string, locale: Locale, body: string): string {
   return `<!DOCTYPE html>
 <html lang="${locale}">
 <head><meta charset="utf-8" /></head>
@@ -10,7 +11,7 @@ function layout(tenantName: string, locale: string, body: string): string {
   <h2 style="color:#111">${tenantName}</h2>
   ${body}
   <hr style="border:none;border-top:1px solid #eee;margin:24px 0" />
-  <p style="font-size:12px;color:#999">${getEmailTranslations(locale as 'es-ES' | 'en-US').footer(tenantName)}</p>
+  <p style="font-size:12px;color:#999">${getEmailTranslations(locale).footer(tenantName)}</p>
 </body>
 </html>`
 }
