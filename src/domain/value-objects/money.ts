@@ -1,5 +1,5 @@
 import { InvalidMoneyError } from '../errors/domain-errors'
-import type { Currency } from '../types'
+import type { Currency, Locale } from '../types'
 
 const CURRENCY_FORMATS: Record<Currency, (amount: string) => string> = {
   EUR: (a) => `${a} €`,
@@ -24,6 +24,13 @@ export class Money {
   format(): string {
     const decimal = (this.amountCents / 100).toFixed(2)
     return CURRENCY_FORMATS[this.currency](decimal)
+  }
+
+  formatLocalized(locale: Locale): string {
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: this.currency,
+    }).format(this.amountCents / 100)
   }
 
   equals(other: Money): boolean {

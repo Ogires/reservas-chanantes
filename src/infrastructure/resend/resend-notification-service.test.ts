@@ -52,6 +52,16 @@ const EMAIL_DATA: BookingEmailData = {
   },
 }
 
+const EN_DATA: BookingEmailData = {
+  ...EMAIL_DATA,
+  service: { ...EMAIL_DATA.service, name: 'Haircut' },
+  tenant: {
+    ...EMAIL_DATA.tenant,
+    name: 'John Barber',
+    defaultLocale: 'en-US',
+  },
+}
+
 describe('ResendNotificationService', () => {
   const service = new ResendNotificationService()
 
@@ -60,62 +70,62 @@ describe('ResendNotificationService', () => {
     mockSend.mockResolvedValue({ id: 'msg-1' })
   })
 
-  it('sends booking confirmation to customer', async () => {
+  it('sends booking confirmation to customer (es-ES)', async () => {
     await service.sendBookingConfirmation(EMAIL_DATA)
 
     expect(mockSend).toHaveBeenCalledOnce()
     expect(mockSend).toHaveBeenCalledWith(
       expect.objectContaining({
         to: 'ana@example.com',
-        subject: 'Booking confirmed – Corte de pelo',
+        subject: 'Reserva confirmada – Corte de pelo',
       })
     )
   })
 
-  it('sends cancellation to customer', async () => {
+  it('sends cancellation to customer (es-ES)', async () => {
     await service.sendBookingCancellation(EMAIL_DATA)
 
     expect(mockSend).toHaveBeenCalledOnce()
     expect(mockSend).toHaveBeenCalledWith(
       expect.objectContaining({
         to: 'ana@example.com',
-        subject: 'Booking cancelled – Corte de pelo',
+        subject: 'Reserva cancelada – Corte de pelo',
       })
     )
   })
 
-  it('sends reminder to customer', async () => {
+  it('sends reminder to customer (es-ES)', async () => {
     await service.sendBookingReminder(EMAIL_DATA)
 
     expect(mockSend).toHaveBeenCalledOnce()
     expect(mockSend).toHaveBeenCalledWith(
       expect.objectContaining({
         to: 'ana@example.com',
-        subject: 'Reminder: Corte de pelo tomorrow',
+        subject: 'Recordatorio: Corte de pelo mañana',
       })
     )
   })
 
-  it('sends new booking notification to owner', async () => {
+  it('sends new booking notification to owner (es-ES)', async () => {
     await service.sendOwnerNewBooking(EMAIL_DATA, 'owner@example.com')
 
     expect(mockSend).toHaveBeenCalledOnce()
     expect(mockSend).toHaveBeenCalledWith(
       expect.objectContaining({
         to: 'owner@example.com',
-        subject: 'New booking: Corte de pelo',
+        subject: 'Nueva reserva: Corte de pelo',
       })
     )
   })
 
-  it('sends cancellation notification to owner', async () => {
+  it('sends cancellation notification to owner (es-ES)', async () => {
     await service.sendOwnerCancellation(EMAIL_DATA, 'owner@example.com')
 
     expect(mockSend).toHaveBeenCalledOnce()
     expect(mockSend).toHaveBeenCalledWith(
       expect.objectContaining({
         to: 'owner@example.com',
-        subject: 'Booking cancelled: Corte de pelo',
+        subject: 'Reserva cancelada: Corte de pelo',
       })
     )
   })
@@ -128,13 +138,32 @@ describe('ResendNotificationService', () => {
     ).resolves.toBeUndefined()
   })
 
-  it('includes HTML with booking details', async () => {
+  it('includes HTML with localized booking details (es-ES)', async () => {
     await service.sendBookingConfirmation(EMAIL_DATA)
 
     const html = mockSend.mock.calls[0][0].html as string
     expect(html).toContain('Corte de pelo')
-    expect(html).toContain('2026-03-01')
-    expect(html).toContain('10:00')
-    expect(html).toContain('15.00 €')
+    expect(html).toContain('domingo')
+    expect(html).toContain('marzo')
+    expect(html).toContain('15,00')
+    expect(html).toContain('lang="es-ES"')
+    expect(html).toContain('Servicio')
+  })
+
+  it('sends confirmation in English for en-US tenant', async () => {
+    await service.sendBookingConfirmation(EN_DATA)
+
+    expect(mockSend).toHaveBeenCalledWith(
+      expect.objectContaining({
+        subject: 'Booking confirmed – Haircut',
+      })
+    )
+
+    const html = mockSend.mock.calls[0][0].html as string
+    expect(html).toContain('lang="en-US"')
+    expect(html).toContain('Service')
+    expect(html).toContain('Sunday')
+    expect(html).toContain('March')
+    expect(html).toContain('confirmed')
   })
 })

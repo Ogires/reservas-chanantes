@@ -31,6 +31,24 @@ describe('Money', () => {
     })
   })
 
+  describe('formatLocalized', () => {
+    it('formats EUR in es-ES', () => {
+      expect(new Money(1550, 'EUR').formatLocalized('es-ES')).toBe('15,50\u00a0€')
+    })
+
+    it('formats EUR in en-US', () => {
+      expect(new Money(1550, 'EUR').formatLocalized('en-US')).toBe('€15.50')
+    })
+
+    it('formats USD in en-US', () => {
+      expect(new Money(1550, 'USD').formatLocalized('en-US')).toBe('$15.50')
+    })
+
+    it('formats zero', () => {
+      expect(new Money(0, 'EUR').formatLocalized('es-ES')).toBe('0,00\u00a0€')
+    })
+  })
+
   describe('equals', () => {
     it('returns true for same amount and currency', () => {
       expect(new Money(1500, 'EUR').equals(new Money(1500, 'EUR'))).toBe(true)

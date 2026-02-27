@@ -3,6 +3,7 @@ import type {
   BookingEmailData,
 } from '@/application/ports/notification-service'
 import { getResend } from './client'
+import { getEmailTranslations } from './email-translations'
 import {
   buildConfirmationHtml,
   buildCancellationHtml,
@@ -26,25 +27,28 @@ export class ResendNotificationService implements NotificationService {
   }
 
   async sendBookingConfirmation(data: BookingEmailData): Promise<void> {
+    const t = getEmailTranslations(data.tenant.defaultLocale)
     await this.send(
       data.customer.email,
-      `Booking confirmed – ${data.service.name}`,
+      t.subjects.confirmation(data.service.name),
       buildConfirmationHtml(data)
     )
   }
 
   async sendBookingCancellation(data: BookingEmailData): Promise<void> {
+    const t = getEmailTranslations(data.tenant.defaultLocale)
     await this.send(
       data.customer.email,
-      `Booking cancelled – ${data.service.name}`,
+      t.subjects.cancellation(data.service.name),
       buildCancellationHtml(data)
     )
   }
 
   async sendBookingReminder(data: BookingEmailData): Promise<void> {
+    const t = getEmailTranslations(data.tenant.defaultLocale)
     await this.send(
       data.customer.email,
-      `Reminder: ${data.service.name} tomorrow`,
+      t.subjects.reminder(data.service.name),
       buildReminderHtml(data)
     )
   }
@@ -53,9 +57,10 @@ export class ResendNotificationService implements NotificationService {
     data: BookingEmailData,
     ownerEmail: string
   ): Promise<void> {
+    const t = getEmailTranslations(data.tenant.defaultLocale)
     await this.send(
       ownerEmail,
-      `New booking: ${data.service.name}`,
+      t.subjects.ownerNewBooking(data.service.name),
       buildOwnerNewBookingHtml(data)
     )
   }
@@ -64,9 +69,10 @@ export class ResendNotificationService implements NotificationService {
     data: BookingEmailData,
     ownerEmail: string
   ): Promise<void> {
+    const t = getEmailTranslations(data.tenant.defaultLocale)
     await this.send(
       ownerEmail,
-      `Booking cancelled: ${data.service.name}`,
+      t.subjects.ownerCancellation(data.service.name),
       buildOwnerCancellationHtml(data)
     )
   }
