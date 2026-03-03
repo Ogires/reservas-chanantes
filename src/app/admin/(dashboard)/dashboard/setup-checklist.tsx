@@ -17,7 +17,7 @@ function StepIcon({ done, step }: { done: boolean; step: number }) {
     )
   }
   return (
-    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 text-sm font-semibold">
+    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-teal-100 text-teal-700 text-sm font-semibold">
       {step}
     </span>
   )
@@ -27,8 +27,8 @@ export function SetupChecklist({ hasServices, hasSchedule, slug }: SetupChecklis
   const canSharePage = hasServices && hasSchedule
 
   return (
-    <div className="mb-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm animate-fade-in-up">
-      <h2 className="text-lg font-semibold text-slate-900 mb-1">Get started</h2>
+    <div className="mb-6 rounded-xl border border-[var(--color-warm-border)] bg-white p-6 shadow-sm animate-fade-in-up">
+      <h2 className="text-lg font-semibold font-serif text-slate-900 mb-1">Get started</h2>
       <p className="text-sm text-slate-500 mb-4">Complete these steps to start receiving bookings.</p>
 
       <ol className="space-y-3">
@@ -37,7 +37,7 @@ export function SetupChecklist({ hasServices, hasSchedule, slug }: SetupChecklis
           {hasServices ? (
             <span className="text-sm text-slate-400 line-through">Create a service</span>
           ) : (
-            <Link href="/admin/services/new" className="text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
+            <Link href="/admin/services/new" className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors">
               Create a service
             </Link>
           )}
@@ -48,7 +48,7 @@ export function SetupChecklist({ hasServices, hasSchedule, slug }: SetupChecklis
           {hasSchedule ? (
             <span className="text-sm text-slate-400 line-through">Define your schedule</span>
           ) : (
-            <Link href="/admin/schedule" className="text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
+            <Link href="/admin/schedule" className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors">
               Define your schedule
             </Link>
           )}
@@ -57,7 +57,7 @@ export function SetupChecklist({ hasServices, hasSchedule, slug }: SetupChecklis
         <li className="flex items-center gap-3">
           <StepIcon done={false} step={3} />
           {canSharePage ? (
-            <Link href={`/${slug}`} target="_blank" className="text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
+            <Link href={`/${slug}`} target="_blank" className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors">
               Share your booking page
             </Link>
           ) : (

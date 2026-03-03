@@ -61,7 +61,7 @@ export default async function BookingsPage({
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900 mb-6">Bookings</h1>
+      <h1 className="text-2xl font-bold font-serif text-slate-900 mb-6">Bookings</h1>
 
       <form className="mb-6 flex flex-wrap items-end gap-3">
         <div>
@@ -73,7 +73,7 @@ export default async function BookingsPage({
             name="from"
             type="date"
             defaultValue={from}
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+            className="rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
           />
         </div>
         <div>
@@ -85,12 +85,12 @@ export default async function BookingsPage({
             name="to"
             type="date"
             defaultValue={to}
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+            className="rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
           />
         </div>
         <button
           type="submit"
-          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 transition-colors"
+          className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-teal-700 transition-colors"
         >
           Filter
         </button>
@@ -99,9 +99,9 @@ export default async function BookingsPage({
       {enriched.length === 0 ? (
         <p className="text-slate-500">No bookings in this period.</p>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div className="overflow-x-auto rounded-xl border border-[var(--color-warm-border)] bg-white shadow-sm">
           <table className="min-w-full divide-y divide-slate-200">
-            <thead className="bg-slate-50">
+            <thead className="bg-stone-50">
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Date</th>
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Time</th>

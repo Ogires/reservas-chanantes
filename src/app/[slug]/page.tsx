@@ -61,15 +61,15 @@ export default async function TenantPage({
   }))
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-warm-bg">
       <div className="mx-auto max-w-2xl px-4 py-12">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-slate-900">{tenant.name}</h1>
+          <h1 className="font-serif text-3xl font-bold text-slate-900">{tenant.name}</h1>
           <p className="mt-2 text-slate-500">Book your appointment online</p>
         </div>
 
         {activeServices.length === 0 ? (
-          <div className="rounded-xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+          <div className="rounded-xl border border-warm-border bg-white p-8 text-center shadow-sm">
             <p className="text-slate-500">
               No services available at the moment. Please check back later.
             </p>

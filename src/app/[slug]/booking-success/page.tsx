@@ -44,7 +44,7 @@ export default async function BookingSuccessPage({
   const timeStart = `${String(Math.floor(booking.timeRange.start / 60)).padStart(2, '0')}:${String(booking.timeRange.start % 60).padStart(2, '0')}`
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-warm-bg">
       <div className="mx-auto max-w-2xl px-4 py-12">
         <div className="rounded-xl border-2 border-emerald-200 bg-emerald-50 p-8 text-center">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100">
@@ -62,7 +62,7 @@ export default async function BookingSuccessPage({
               />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-emerald-800 mb-2">
+          <h1 className="font-serif text-2xl font-bold text-emerald-800 mb-2">
             Booking confirmed!
           </h1>
           <p className="text-emerald-700 mb-1">

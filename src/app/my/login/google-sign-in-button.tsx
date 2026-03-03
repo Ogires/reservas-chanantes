@@ -2,13 +2,13 @@
 
 import { createSupabaseBrowser } from '@/infrastructure/supabase/client'
 
-export function GoogleSignInButton() {
+export function CustomerGoogleSignInButton() {
   async function handleClick() {
     const supabase = createSupabaseBrowser()
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/api/auth/callback`,
+        redirectTo: `${window.location.origin}/api/auth/callback?next=my`,
       },
     })
   }
@@ -17,7 +17,7 @@ export function GoogleSignInButton() {
     <button
       type="button"
       onClick={handleClick}
-      className="flex w-full items-center justify-center gap-3 rounded-lg border border-warm-border bg-white px-4 py-2.5 font-medium text-slate-700 shadow-sm hover:bg-stone-50 transition-colors"
+      className="flex w-full items-center justify-center gap-3 rounded-lg border border-[var(--color-warm-border)] bg-white px-4 py-2.5 font-medium text-slate-700 shadow-sm hover:bg-stone-50 transition-colors"
     >
       <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
         <path

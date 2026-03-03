@@ -26,7 +26,7 @@ export default async function EditServicePage({
         >
           &larr; Back to services
         </Link>
-        <h1 className="text-2xl font-bold text-slate-900 mt-2">Edit service</h1>
+        <h1 className="text-2xl font-bold font-serif text-slate-900 mt-2">Edit service</h1>
       </div>
       <ServiceForm
         service={{

@@ -102,7 +102,7 @@ export function SlotPicker({
                 onClick={() => setSelectedSlot(slot.start)}
                 className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
                   slot.available
-                    ? 'border-slate-200 bg-white hover:border-indigo-500 hover:bg-indigo-50'
+                    ? 'border-warm-border bg-white hover:border-teal-500 hover:bg-teal-50'
                     : 'cursor-not-allowed border-slate-100 bg-slate-50 text-slate-300 line-through'
                 }`}
               >
@@ -151,7 +151,7 @@ export function SlotPicker({
         Selected time: <strong className="text-slate-900">{selectedSlot}</strong>{' '}
         <button
           onClick={() => setSelectedSlot(null)}
-          className="text-indigo-600 hover:text-indigo-700 transition-colors"
+          className="text-teal-600 hover:text-teal-700 transition-colors"
         >
           change
         </button>
@@ -174,7 +174,7 @@ export function SlotPicker({
             required
             value={customerName}
             onChange={(e) => onCustomerNameChange(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
           />
         </div>
 
@@ -189,7 +189,7 @@ export function SlotPicker({
             autoComplete="email"
             value={customerEmail}
             onChange={(e) => onCustomerEmailChange(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
           />
         </div>
 
@@ -205,14 +205,14 @@ export function SlotPicker({
             placeholder="+34 600 123 456"
             value={customerPhone}
             onChange={(e) => onCustomerPhoneChange(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
           />
         </div>
 
         <button
           type="submit"
           disabled={submitting}
-          className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 font-medium text-white shadow-sm hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+          className="w-full rounded-lg bg-coral px-4 py-2.5 font-medium text-white shadow-sm hover:bg-coral-dark disabled:opacity-50 transition-colors"
         >
           {submitting ? 'Redirecting...' : 'Proceed to payment'}
         </button>

@@ -26,17 +26,17 @@ export default async function DashboardPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900 mb-6">Dashboard</h1>
+      <h1 className="text-2xl font-bold font-serif text-slate-900 mb-6">Dashboard</h1>
 
       {(!hasServices || !hasSchedule) && (
         <SetupChecklist hasServices={hasServices} hasSchedule={hasSchedule} slug={tenant.slug} />
       )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 stagger-children">
-        <div className="animate-fade-in-up rounded-xl border border-slate-200 border-l-4 border-l-indigo-500 bg-white p-6 shadow-sm">
+        <div className="animate-fade-in-up rounded-xl border border-[var(--color-warm-border)] border-l-4 border-l-teal-500 bg-white p-6 shadow-sm">
           <div className="flex items-center gap-3 mb-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-50">
-              <svg className="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-50">
+              <svg className="h-5 w-5 text-teal-600" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
               </svg>
             </div>
@@ -45,7 +45,7 @@ export default async function DashboardPage() {
           <p className="text-3xl font-bold text-slate-900">{activeServices.length}</p>
         </div>
 
-        <div className="animate-fade-in-up rounded-xl border border-slate-200 border-l-4 border-l-emerald-500 bg-white p-6 shadow-sm">
+        <div className="animate-fade-in-up rounded-xl border border-[var(--color-warm-border)] border-l-4 border-l-emerald-500 bg-white p-6 shadow-sm">
           <div className="flex items-center gap-3 mb-2">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-50">
               <svg className="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -57,7 +57,7 @@ export default async function DashboardPage() {
           <p className="text-3xl font-bold text-slate-900">{todayBookings.length}</p>
         </div>
 
-        <div className="animate-fade-in-up rounded-xl border border-slate-200 border-l-4 border-l-violet-500 bg-white p-6 shadow-sm">
+        <div className="animate-fade-in-up rounded-xl border border-[var(--color-warm-border)] border-l-4 border-l-violet-500 bg-white p-6 shadow-sm">
           <div className="flex items-center gap-3 mb-2">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-50">
               <svg className="h-5 w-5 text-violet-600" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -69,7 +69,7 @@ export default async function DashboardPage() {
           <Link
             href={`/${tenant.slug}`}
             target="_blank"
-            className="text-indigo-600 hover:text-indigo-700 font-medium break-all transition-colors"
+            className="text-teal-600 hover:text-teal-700 font-medium break-all transition-colors"
           >
             /{tenant.slug}
           </Link>

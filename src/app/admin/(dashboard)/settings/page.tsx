@@ -6,7 +6,7 @@ export default async function SettingsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900 mb-6">Settings</h1>
+      <h1 className="text-2xl font-bold font-serif text-slate-900 mb-6">Settings</h1>
 
       <SettingsForm
         name={tenant.name}

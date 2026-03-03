@@ -17,7 +17,7 @@ export function ServiceForm({ service }: ServiceFormProps) {
   const [state, formAction, isPending] = useActionState(saveService, null)
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="rounded-xl border border-[var(--color-warm-border)] bg-white p-6 shadow-sm">
       <form action={formAction} className="max-w-md space-y-4">
         {state?.error && (
           <div className="rounded-lg bg-rose-50 border border-rose-200 p-3 text-sm text-rose-600">
@@ -38,7 +38,7 @@ export function ServiceForm({ service }: ServiceFormProps) {
             required
             defaultValue={service?.name}
             placeholder="e.g. Corte de pelo"
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
           />
         </div>
 
@@ -57,7 +57,7 @@ export function ServiceForm({ service }: ServiceFormProps) {
             min={1}
             step={1}
             defaultValue={service?.durationMinutes ?? 30}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
           />
         </div>
 
@@ -73,7 +73,7 @@ export function ServiceForm({ service }: ServiceFormProps) {
             min={0}
             step={0.01}
             defaultValue={service?.priceEur ?? 0}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
           />
         </div>
 
@@ -83,7 +83,7 @@ export function ServiceForm({ service }: ServiceFormProps) {
             name="active"
             type="checkbox"
             defaultChecked={service?.active ?? true}
-            className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+            className="h-4 w-4 rounded border-slate-300 text-teal-600 focus:ring-teal-500"
           />
           <label htmlFor="active" className="text-sm font-medium text-slate-700">
             Active (visible to customers)
@@ -93,7 +93,7 @@ export function ServiceForm({ service }: ServiceFormProps) {
         <button
           type="submit"
           disabled={isPending}
-          className="rounded-lg bg-indigo-600 px-4 py-2.5 font-medium text-white shadow-sm hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+          className="rounded-lg bg-teal-600 px-4 py-2.5 font-medium text-white shadow-sm hover:bg-teal-700 disabled:opacity-50 transition-colors"
         >
           {isPending ? 'Saving...' : service ? 'Update service' : 'Create service'}
         </button>

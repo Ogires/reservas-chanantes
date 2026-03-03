@@ -73,10 +73,10 @@ export function Sidebar({ tenant, setupStatus }: { tenant: Tenant; setupStatus: 
   }
 
   return (
-    <aside className="flex h-screen w-56 flex-col border-r border-slate-200 bg-white p-4">
+    <aside className="flex h-screen w-56 flex-col bg-slate-900 p-4">
       <div className="mb-6">
-        <h2 className="text-lg font-bold text-slate-900 truncate">{tenant.name}</h2>
-        <p className="text-xs text-slate-500">/{tenant.slug}</p>
+        <h2 className="font-serif text-lg font-bold text-white truncate">{tenant.name}</h2>
+        <p className="text-xs text-slate-400">/{tenant.slug}</p>
       </div>
 
       <nav className="flex flex-1 flex-col gap-1">
@@ -88,8 +88,8 @@ export function Sidebar({ tenant, setupStatus }: { tenant: Tenant; setupStatus: 
               href={item.href}
               className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
                 isActive
-                  ? 'bg-indigo-50 text-indigo-700 font-medium'
-                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                  ? 'bg-teal-500/10 text-teal-400 font-medium'
+                  : 'text-slate-400 hover:bg-slate-800 hover:text-white'
               }`}
             >
               {item.icon}
@@ -103,7 +103,7 @@ export function Sidebar({ tenant, setupStatus }: { tenant: Tenant; setupStatus: 
         <Link
           href={`/${tenant.slug}`}
           target="_blank"
-          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
         >
           <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />

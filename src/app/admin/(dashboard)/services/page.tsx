@@ -10,10 +10,10 @@ export default async function ServicesPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">Services</h1>
+        <h1 className="text-2xl font-bold font-serif text-slate-900">Services</h1>
         <Link
           href="/admin/services/new"
-          className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 transition-colors"
+          className="inline-flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-teal-700 transition-colors"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -23,7 +23,7 @@ export default async function ServicesPage() {
       </div>
 
       {services.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 bg-white p-12 text-center shadow-sm">
+        <div className="rounded-xl border border-[var(--color-warm-border)] bg-white p-12 text-center shadow-sm">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
             <svg className="h-6 w-6 text-slate-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
@@ -38,7 +38,7 @@ export default async function ServicesPage() {
           {services.map((service) => (
             <div
               key={service.id}
-              className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 shadow-sm hover:shadow-md transition-shadow"
+              className="flex items-center justify-between rounded-xl border border-[var(--color-warm-border)] bg-white p-4 shadow-sm hover:shadow-md transition-shadow"
             >
               <div>
                 <p className="font-medium text-slate-900">{service.name}</p>
@@ -54,7 +54,7 @@ export default async function ServicesPage() {
               </div>
               <Link
                 href={`/admin/services/${service.id}/edit`}
-                className="text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors"
+                className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors"
               >
                 Edit
               </Link>
