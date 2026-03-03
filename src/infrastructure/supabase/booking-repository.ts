@@ -119,6 +119,18 @@ export class SupabaseBookingRepository implements BookingRepository {
       throw new Error(`Failed to update stripe session id: ${error.message}`)
   }
 
+  async findByCustomerId(customerId: string): Promise<Booking[]> {
+    const { data, error } = await this.supabase
+      .from('bookings')
+      .select('*')
+      .eq('customer_id', customerId)
+      .order('date', { ascending: false })
+      .order('start_minutes', { ascending: false })
+
+    if (error) throw new Error(`Failed to fetch customer bookings: ${error.message}`)
+    return (data ?? []).map(toDomain)
+  }
+
   async findConfirmedForDateWithoutReminder(
     date: string
   ): Promise<Booking[]> {

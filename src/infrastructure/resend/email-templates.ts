@@ -1,5 +1,6 @@
 import type { BookingEmailData } from '@/application/ports/notification-service'
 import type { Locale } from '@/domain/types'
+import { resolveLocale } from '@/domain/services/locale-resolver'
 import { getEmailTranslations } from './email-translations'
 import { formatEmailDate } from './email-formatters'
 
@@ -16,9 +17,13 @@ function layout(tenantName: string, locale: Locale, body: string): string {
 </html>`
 }
 
+function getCustomerLocale(data: BookingEmailData): Locale {
+  return resolveLocale(data.customer.preferredLocale, data.tenant.defaultLocale)
+}
+
 function bookingDetails(data: BookingEmailData): string {
-  const { booking, service, tenant } = data
-  const locale = tenant.defaultLocale
+  const { booking, service } = data
+  const locale = getCustomerLocale(data)
   const t = getEmailTranslations(locale)
   const time = booking.timeRange.toHHMM()
   return `<table style="border-collapse:collapse;margin:16px 0">
@@ -30,7 +35,7 @@ function bookingDetails(data: BookingEmailData): string {
 }
 
 function customerDetails(data: BookingEmailData): string {
-  const t = getEmailTranslations(data.tenant.defaultLocale)
+  const t = getEmailTranslations(getCustomerLocale(data))
   const { customer } = data
   return `<h3 style="margin:16px 0 8px">${t.labels.customer}</h3>
     <table style="border-collapse:collapse">
@@ -41,28 +46,35 @@ function customerDetails(data: BookingEmailData): string {
 }
 
 export function buildConfirmationHtml(data: BookingEmailData): string {
-  const t = getEmailTranslations(data.tenant.defaultLocale)
+  const locale = getCustomerLocale(data)
+  const t = getEmailTranslations(locale)
+  const portalUrl = process.env.NEXT_PUBLIC_APP_URL ?? ''
+  const portalLink = portalUrl
+    ? `<p style="margin-top:16px"><a href="${portalUrl}/my" style="color:#4f46e5">${t.body.portalLink}</a></p>`
+    : ''
   return layout(
     data.tenant.name,
-    data.tenant.defaultLocale,
-    `<p>${t.body.confirmationIntro}</p>${bookingDetails(data)}<p>${t.body.confirmationOutro}</p>`
+    locale,
+    `<p>${t.body.confirmationIntro}</p>${bookingDetails(data)}<p>${t.body.confirmationOutro}</p>${portalLink}`
   )
 }
 
 export function buildCancellationHtml(data: BookingEmailData): string {
-  const t = getEmailTranslations(data.tenant.defaultLocale)
+  const locale = getCustomerLocale(data)
+  const t = getEmailTranslations(locale)
   return layout(
     data.tenant.name,
-    data.tenant.defaultLocale,
+    locale,
     `<p>${t.body.cancellationIntro}</p>${bookingDetails(data)}<p>${t.body.cancellationOutro}</p>`
   )
 }
 
 export function buildReminderHtml(data: BookingEmailData): string {
-  const t = getEmailTranslations(data.tenant.defaultLocale)
+  const locale = getCustomerLocale(data)
+  const t = getEmailTranslations(locale)
   return layout(
     data.tenant.name,
-    data.tenant.defaultLocale,
+    locale,
     `<p>${t.body.reminderIntro}</p>${bookingDetails(data)}<p>${t.body.reminderOutro}</p>`
   )
 }

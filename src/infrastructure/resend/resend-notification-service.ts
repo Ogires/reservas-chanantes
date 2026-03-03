@@ -2,6 +2,7 @@ import type {
   NotificationService,
   BookingEmailData,
 } from '@/application/ports/notification-service'
+import { resolveLocale } from '@/domain/services/locale-resolver'
 import { getResend } from './client'
 import { getEmailTranslations } from './email-translations'
 import {
@@ -27,7 +28,8 @@ export class ResendNotificationService implements NotificationService {
   }
 
   async sendBookingConfirmation(data: BookingEmailData): Promise<void> {
-    const t = getEmailTranslations(data.tenant.defaultLocale)
+    const locale = resolveLocale(data.customer.preferredLocale, data.tenant.defaultLocale)
+    const t = getEmailTranslations(locale)
     await this.send(
       data.customer.email,
       t.subjects.confirmation(data.service.name),
@@ -36,7 +38,8 @@ export class ResendNotificationService implements NotificationService {
   }
 
   async sendBookingCancellation(data: BookingEmailData): Promise<void> {
-    const t = getEmailTranslations(data.tenant.defaultLocale)
+    const locale = resolveLocale(data.customer.preferredLocale, data.tenant.defaultLocale)
+    const t = getEmailTranslations(locale)
     await this.send(
       data.customer.email,
       t.subjects.cancellation(data.service.name),
@@ -45,7 +48,8 @@ export class ResendNotificationService implements NotificationService {
   }
 
   async sendBookingReminder(data: BookingEmailData): Promise<void> {
-    const t = getEmailTranslations(data.tenant.defaultLocale)
+    const locale = resolveLocale(data.customer.preferredLocale, data.tenant.defaultLocale)
+    const t = getEmailTranslations(locale)
     await this.send(
       data.customer.email,
       t.subjects.reminder(data.service.name),

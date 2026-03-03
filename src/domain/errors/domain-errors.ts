@@ -98,3 +98,35 @@ export class InvalidPhoneError extends DomainError {
     )
   }
 }
+
+export class CustomerNotFoundError extends DomainError {
+  constructor(identifier: string) {
+    super(`Customer not found: "${identifier}"`)
+  }
+}
+
+export class BookingNotFoundError extends DomainError {
+  constructor(id: string) {
+    super(`Booking not found: "${id}"`)
+  }
+}
+
+export class CancellationTooLateError extends DomainError {
+  constructor(minAdvanceMinutes: number) {
+    super(
+      `Cancellation must be made at least ${minAdvanceMinutes} minutes in advance`
+    )
+  }
+}
+
+export class BookingAlreadyCancelledError extends DomainError {
+  constructor(id: string) {
+    super(`Booking "${id}" is already cancelled`)
+  }
+}
+
+export class ReservedSlugError extends DomainError {
+  constructor(slug: string) {
+    super(`Slug "${slug}" is reserved and cannot be used`)
+  }
+}

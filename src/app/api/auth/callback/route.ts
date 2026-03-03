@@ -5,9 +5,13 @@ import { cookies } from 'next/headers'
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl
   const code = searchParams.get('code')
+  const next = searchParams.get('next')
+
+  const isCustomerFlow = next === 'my'
 
   if (!code) {
-    return NextResponse.redirect(new URL('/admin/login?error=auth', origin))
+    const loginUrl = isCustomerFlow ? '/my/login?error=auth' : '/admin/login?error=auth'
+    return NextResponse.redirect(new URL(loginUrl, origin))
   }
 
   const cookieStore = await cookies()
@@ -31,10 +35,32 @@ export async function GET(request: NextRequest) {
   const { error, data } = await supabase.auth.exchangeCodeForSession(code)
 
   if (error) {
-    return NextResponse.redirect(new URL('/admin/login?error=auth', origin))
+    const loginUrl = isCustomerFlow ? '/my/login?error=auth' : '/admin/login?error=auth'
+    return NextResponse.redirect(new URL(loginUrl, origin))
   }
 
-  // Check if user already has a tenant — if not, send to register
+  // Customer flow: link by email if customer exists, then redirect to portal
+  if (isCustomerFlow) {
+    const userId = data.user?.id
+    const email = data.user?.email
+    if (userId && email) {
+      const { data: existingCustomer } = await supabase
+        .from('customers')
+        .select('id, auth_user_id')
+        .eq('email', email)
+        .single()
+
+      if (existingCustomer && !existingCustomer.auth_user_id) {
+        await supabase
+          .from('customers')
+          .update({ auth_user_id: userId })
+          .eq('id', existingCustomer.id)
+      }
+    }
+    return NextResponse.redirect(new URL('/my', origin))
+  }
+
+  // Admin flow: check if user already has a tenant — if not, send to register
   const userId = data.user?.id
   if (userId) {
     const { data: tenant } = await supabase

@@ -27,6 +27,7 @@ export interface EmailTranslations {
     reminderOutro: string
     ownerNewBookingIntro: string
     ownerCancellationIntro: string
+    portalLink: string
   }
   footer: (tenantName: string) => string
 }
@@ -58,6 +59,7 @@ const es: EmailTranslations = {
     reminderOutro: '¡Nos vemos pronto!',
     ownerNewBookingIntro: '¡Tienes una nueva reserva!',
     ownerCancellationIntro: 'Se ha cancelado una reserva.',
+    portalLink: 'Accede a tu portal de reservas',
   },
   footer: (name) => `Este es un mensaje automático de ${name}.`,
 }
@@ -89,6 +91,7 @@ const en: EmailTranslations = {
     reminderOutro: 'See you soon!',
     ownerNewBookingIntro: 'You have a new booking!',
     ownerCancellationIntro: 'A booking has been cancelled.',
+    portalLink: 'Access your booking portal',
   },
   footer: (name) => `This is an automated message from ${name}.`,
 }

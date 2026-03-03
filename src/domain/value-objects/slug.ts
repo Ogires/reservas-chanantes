@@ -1,11 +1,15 @@
-import { InvalidSlugError } from '../errors/domain-errors'
+import { InvalidSlugError, ReservedSlugError } from '../errors/domain-errors'
 
 const SLUG_REGEX = /^[a-z0-9]+(-[a-z0-9]+)*$/
+const RESERVED_SLUGS = ['my', 'admin', 'api']
 
 export class Slug {
   readonly value: string
 
   constructor(value: string) {
+    if (RESERVED_SLUGS.includes(value)) {
+      throw new ReservedSlugError(value)
+    }
     if (value.length < 3 || value.length > 60 || !SLUG_REGEX.test(value)) {
       throw new InvalidSlugError(value)
     }
