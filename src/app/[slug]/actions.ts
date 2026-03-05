@@ -6,6 +6,7 @@ import { createRepositories } from '@/infrastructure/supabase/repositories'
 import { GetAvailabilityUseCase } from '@/application/use-cases/get-availability'
 import { CreateBookingUseCase } from '@/application/use-cases/create-booking'
 import { StripePaymentService } from '@/infrastructure/stripe/payment-service'
+import { getCommissionRateBps } from '@/domain/services/plan-limits'
 import type { SlotDTO } from '@/application/use-cases/get-availability'
 
 export async function getAvailability(
@@ -57,9 +58,15 @@ export async function createBooking(input: {
 
     const booking = await useCase.execute(input)
 
-    const service = await serviceRepo.findById(input.serviceId)
+    const [service, tenant] = await Promise.all([
+      serviceRepo.findById(input.serviceId),
+      tenantRepo.findBySlug(input.tenantSlug),
+    ])
     if (!service) {
       return { success: false, error: 'Service not found' }
+    }
+    if (!tenant?.stripeAccountId || !tenant.stripeAccountEnabled) {
+      return { success: false, error: 'Payment not configured for this business' }
     }
 
     const hdrs = await headers()
@@ -78,6 +85,8 @@ export async function createBooking(input: {
       customerEmail: input.customerEmail,
       successUrl,
       cancelUrl,
+      stripeAccountId: tenant.stripeAccountId,
+      commissionRateBps: getCommissionRateBps(tenant.plan),
     })
 
     await bookingRepo.updateStripeSessionId(booking.id, checkout.sessionId)

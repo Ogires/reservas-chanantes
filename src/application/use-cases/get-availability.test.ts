@@ -24,7 +24,9 @@ const TENANT: Tenant = {
     timezone: 'UTC',
   }),
   createdAt: new Date('2026-01-01'),
-}
+  plan: 'FREE' as const,
+  stripeAccountEnabled: false,
+} as Tenant
 
 const SCHEDULE = new WeeklySchedule('tenant-1', [
   {
@@ -48,6 +50,7 @@ function createMockRepos(overrides?: {
     findByOwnerId: async () => TENANT,
     save: async (t) => t,
     update: async (t) => t,
+    updateStripeAccount: async () => {},
   }
   const scheduleRepo: ScheduleRepository = {
     findByTenantId: async () =>
@@ -58,6 +61,7 @@ function createMockRepos(overrides?: {
     findByTenantAndDate: async () => overrides?.bookings ?? [],
     findByTenantAndDateRange: async () => [],
     findById: async () => null,
+    findByCustomerId: async () => [],
     save: async (b) => b,
     updateStatus: async () => {},
     updateStripeSessionId: async () => {},

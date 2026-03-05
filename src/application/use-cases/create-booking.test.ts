@@ -38,7 +38,9 @@ const TENANT: Tenant = {
     timezone: 'UTC',
   }),
   createdAt: new Date('2026-01-01'),
-}
+  plan: 'FREE' as const,
+  stripeAccountEnabled: false,
+} as Tenant
 
 const SERVICE: Service = {
   id: 'service-1',
@@ -77,6 +79,7 @@ function createMockRepos(overrides?: {
     findByOwnerId: async () => TENANT,
     save: async (t) => t,
     update: async (t) => t,
+    updateStripeAccount: async () => {},
   }
   const serviceRepo: ServiceRepository = {
     findById: async () =>
@@ -95,6 +98,7 @@ function createMockRepos(overrides?: {
     findByTenantAndDate: async () => overrides?.bookings ?? [],
     findByTenantAndDateRange: async () => [],
     findById: async () => null,
+    findByCustomerId: async () => [],
     save: async (b) => b,
     updateStatus: async () => {},
     updateStripeSessionId: async () => {},
@@ -105,7 +109,9 @@ function createMockRepos(overrides?: {
     findById: async () => CUSTOMER,
     findByEmail: async () =>
       overrides?.customer !== undefined ? overrides.customer : CUSTOMER,
+    findByAuthUserId: async () => null,
     save: async (c) => c,
+    update: async (c) => c,
   }
   return { tenantRepo, serviceRepo, scheduleRepo, bookingRepo, customerRepo }
 }

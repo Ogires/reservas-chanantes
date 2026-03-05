@@ -7,6 +7,8 @@ export interface CreateCheckoutRequest {
   customerEmail: string
   successUrl: string
   cancelUrl: string
+  stripeAccountId: string
+  commissionRateBps: number
 }
 
 export interface CreateCheckoutResult {

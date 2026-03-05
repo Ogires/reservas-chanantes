@@ -37,7 +37,7 @@ export function GoogleSignInButton() {
           fill="#EA4335"
         />
       </svg>
-      Continue with Google
+      Continuar con Google
     </button>
   )
 }

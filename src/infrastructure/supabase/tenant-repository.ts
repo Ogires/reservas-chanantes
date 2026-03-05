@@ -2,6 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Tenant } from '@/domain/entities/tenant'
 import type { TenantRepository } from '@/application/ports/tenant-repository'
 import type { Currency, Locale } from '@/domain/types'
+import { TenantPlan } from '@/domain/types'
 import { createBookingPolicy } from '@/domain/value-objects/booking-policy'
 
 interface TenantRow {
@@ -15,6 +16,9 @@ interface TenantRow {
   min_advance_minutes: number
   max_advance_days: number
   created_at: string
+  plan?: string
+  stripe_account_id: string | null
+  stripe_account_enabled: boolean
 }
 
 function toDomain(row: TenantRow): Tenant {
@@ -31,6 +35,9 @@ function toDomain(row: TenantRow): Tenant {
       maxAdvanceDays: row.max_advance_days,
     }),
     createdAt: new Date(row.created_at),
+    plan: (row.plan as TenantPlan) ?? TenantPlan.FREE,
+    stripeAccountId: row.stripe_account_id ?? undefined,
+    stripeAccountEnabled: row.stripe_account_enabled ?? false,
   }
 }
 
@@ -106,5 +113,37 @@ export class SupabaseTenantRepository implements TenantRepository {
 
     if (error) throw new Error(`Failed to update tenant: ${error.message}`)
     return toDomain(data)
+  }
+
+  async updateStripeAccount(
+    tenantId: string,
+    stripeAccountId: string,
+    enabled: boolean
+  ): Promise<void> {
+    const { error } = await this.supabase
+      .from('tenants')
+      .update({
+        stripe_account_id: stripeAccountId,
+        stripe_account_enabled: enabled,
+      })
+      .eq('id', tenantId)
+
+    if (error)
+      throw new Error(`Failed to update stripe account: ${error.message}`)
+  }
+
+  async updateStripeAccountEnabled(
+    stripeAccountId: string,
+    enabled: boolean
+  ): Promise<void> {
+    const { error } = await this.supabase
+      .from('tenants')
+      .update({ stripe_account_enabled: enabled })
+      .eq('stripe_account_id', stripeAccountId)
+
+    if (error)
+      throw new Error(
+        `Failed to update stripe account enabled: ${error.message}`
+      )
   }
 }

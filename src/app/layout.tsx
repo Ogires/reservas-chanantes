@@ -24,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="es">
       <body
         className={`${dmSerifDisplay.variable} ${dmSans.variable} bg-warm-bg font-sans antialiased`}
       >

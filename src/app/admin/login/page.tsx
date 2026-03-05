@@ -10,22 +10,22 @@ export default function LoginPage() {
           <p className="text-lg font-bold font-serif text-slate-900">Reservas Chanantes</p>
         </div>
         <div className="rounded-2xl border border-warm-border bg-white p-8 shadow-lg">
-          <h1 className="text-2xl font-bold text-center text-slate-900 mb-6">Sign in</h1>
+          <h1 className="text-2xl font-bold text-center text-slate-900 mb-6">Iniciar sesión</h1>
           <GoogleSignInButton />
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-warm-border" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="bg-white px-2 text-slate-400">or</span>
+              <span className="bg-white px-2 text-slate-400">o</span>
             </div>
           </div>
           <LoginForm />
         </div>
         <p className="text-center text-sm text-slate-500">
-          Don&apos;t have an account?{' '}
+          ¿No tienes cuenta?{' '}
           <Link href="/admin/register" className="text-teal-600 hover:text-teal-700 font-medium transition-colors">
-            Register
+            Regístrate
           </Link>
         </p>
       </div>

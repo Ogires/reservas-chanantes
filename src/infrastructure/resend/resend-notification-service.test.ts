@@ -49,7 +49,9 @@ const EMAIL_DATA: BookingEmailData = {
     defaultLocale: 'es-ES',
     bookingPolicy: createBookingPolicy({}),
     createdAt: new Date('2026-01-01'),
-  },
+    plan: 'FREE',
+    stripeAccountEnabled: false,
+  } as BookingEmailData['tenant'],
 }
 
 const EN_DATA: BookingEmailData = {

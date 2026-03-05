@@ -130,3 +130,9 @@ export class ReservedSlugError extends DomainError {
     super(`Slug "${slug}" is reserved and cannot be used`)
   }
 }
+
+export class StripeAccountNotConnectedError extends DomainError {
+  constructor(tenantId: string) {
+    super(`Tenant "${tenantId}" has not connected a Stripe account`)
+  }
+}

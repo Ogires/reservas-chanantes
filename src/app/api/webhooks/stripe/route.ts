@@ -2,9 +2,7 @@ import { NextResponse } from 'next/server'
 import type Stripe from 'stripe'
 import { getStripe } from '@/infrastructure/stripe/client'
 import { createSupabaseAdmin } from '@/infrastructure/supabase/admin-client'
-import { SupabaseBookingRepository } from '@/infrastructure/supabase/booking-repository'
-import { BookingStatus } from '@/domain/types'
-import { sendConfirmationEmails } from '@/infrastructure/resend/send-booking-emails'
+import { SupabaseTenantRepository } from '@/infrastructure/supabase/tenant-repository'
 
 export async function POST(request: Request) {
   const stripe = getStripe()
@@ -26,20 +24,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
 
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object as Stripe.Checkout.Session
-    const bookingId = session.metadata?.bookingId
-
-    if (bookingId) {
-      const supabase = createSupabaseAdmin()
-      const bookingRepo = new SupabaseBookingRepository(supabase)
-
-      const booking = await bookingRepo.findById(bookingId)
-      if (booking && booking.status === BookingStatus.PENDING) {
-        await bookingRepo.updateStatus(bookingId, BookingStatus.CONFIRMED)
-        await sendConfirmationEmails(supabase, bookingId)
-      }
-    }
+  if (event.type === 'account.updated') {
+    const account = event.data.object as Stripe.Account
+    const supabase = createSupabaseAdmin()
+    const tenantRepo = new SupabaseTenantRepository(supabase)
+    await tenantRepo.updateStripeAccountEnabled(
+      account.id,
+      account.charges_enabled ?? false
+    )
   }
 
   return NextResponse.json({ received: true })

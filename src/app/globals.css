@@ -7,6 +7,7 @@
   --color-coral-dark: #D15A41;
   --color-warm-bg: #FDFBF9;
   --color-warm-border: #E7E0DA;
+  --color-focus-ring: #14b8a6;
 }
 
 @theme inline {
@@ -27,7 +28,7 @@ body {
 
 /* Focus-visible ring */
 *:focus-visible {
-  outline: 2px solid var(--color-teal-500);
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 

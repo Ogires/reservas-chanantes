@@ -31,6 +31,8 @@ describe('StripePaymentService', () => {
       successUrl:
         'http://localhost:3000/test/booking-success?session_id={CHECKOUT_SESSION_ID}',
       cancelUrl: 'http://localhost:3000/test',
+      stripeAccountId: 'acct_test_123',
+      commissionRateBps: 500,
     })
 
     expect(result.checkoutUrl).toBe(
@@ -43,6 +45,9 @@ describe('StripePaymentService', () => {
         mode: 'payment',
         customer_email: 'ana@example.com',
         metadata: { bookingId: 'booking-1' },
+        payment_intent_data: {
+          application_fee_amount: 75, // 1500 * 500 / 10000 = 75
+        },
         line_items: [
           expect.objectContaining({
             price_data: expect.objectContaining({
@@ -52,7 +57,8 @@ describe('StripePaymentService', () => {
             quantity: 1,
           }),
         ],
-      })
+      }),
+      { stripeAccount: 'acct_test_123' }
     )
   })
 
@@ -69,6 +75,8 @@ describe('StripePaymentService', () => {
         customerEmail: 'test@example.com',
         successUrl: 'http://localhost:3000/success',
         cancelUrl: 'http://localhost:3000/cancel',
+        stripeAccountId: 'acct_test_456',
+        commissionRateBps: 100,
       })
     ).rejects.toThrow('Stripe did not return a checkout URL')
   })

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { Slug } from './slug'
-import { InvalidSlugError } from '../errors/domain-errors'
+import { InvalidSlugError, ReservedSlugError } from '../errors/domain-errors'
 
 describe('Slug', () => {
   it('creates a valid slug', () => {
@@ -44,6 +44,20 @@ describe('Slug', () => {
 
     it('removes accents', () => {
       expect(Slug.fromName('Café María').value).toBe('cafe-maria')
+    })
+  })
+
+  describe('reserved slugs', () => {
+    it('throws ReservedSlugError for "my"', () => {
+      expect(() => new Slug('my')).toThrow(ReservedSlugError)
+    })
+
+    it('throws ReservedSlugError for "admin"', () => {
+      expect(() => new Slug('admin')).toThrow(ReservedSlugError)
+    })
+
+    it('throws ReservedSlugError for "api"', () => {
+      expect(() => new Slug('api')).toThrow(ReservedSlugError)
     })
   })
 

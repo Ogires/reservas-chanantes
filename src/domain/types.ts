@@ -17,3 +17,8 @@ export enum BookingStatus {
   CONFIRMED = 'CONFIRMED',
   CANCELLED = 'CANCELLED',
 }
+
+export enum TenantPlan {
+  FREE = 'FREE',
+  PRO = 'PRO',
+}

@@ -5,6 +5,7 @@ import { createSupabaseServer } from '@/infrastructure/supabase/server'
 import { SupabaseTenantRepository } from '@/infrastructure/supabase/tenant-repository'
 import { Slug } from '@/domain/value-objects/slug'
 import { createBookingPolicy } from '@/domain/value-objects/booking-policy'
+import { TenantPlan } from '@/domain/types'
 
 export async function register(
   _prevState: { error: string } | null,
@@ -67,6 +68,8 @@ export async function register(
       defaultLocale: 'es-ES',
       bookingPolicy: createBookingPolicy(),
       createdAt: new Date(),
+      plan: TenantPlan.FREE,
+      stripeAccountEnabled: false,
     })
   } catch (e) {
     return {

@@ -6,4 +6,9 @@ export interface TenantRepository {
   findByOwnerId(ownerId: string): Promise<Tenant | null>
   save(tenant: Tenant): Promise<Tenant>
   update(tenant: Tenant): Promise<Tenant>
+  updateStripeAccount(
+    tenantId: string,
+    stripeAccountId: string,
+    enabled: boolean
+  ): Promise<void>
 }
