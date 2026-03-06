@@ -1,6 +1,8 @@
 import type { MetadataRoute } from 'next'
 import { createServerClient } from '@supabase/ssr'
 
+export const revalidate = 3600
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://reservas-chanantes.vercel.app'
 
@@ -12,11 +14,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const { data: tenants } = await supabase
     .from('tenants')
-    .select('slug, updated_at')
+    .select('slug, created_at')
 
   const tenantUrls: MetadataRoute.Sitemap = (tenants ?? []).map((t) => ({
     url: `${baseUrl}/${t.slug}`,
-    lastModified: t.updated_at ?? new Date().toISOString(),
+    lastModified: t.created_at ?? new Date().toISOString(),
     changeFrequency: 'weekly',
     priority: 0.8,
   }))

@@ -1,0 +1,43 @@
+export const BUSINESS_CATEGORIES = [
+  'LocalBusiness',
+  'HairSalon',
+  'BeautySalon',
+  'DaySpa',
+  'HealthAndBeautyBusiness',
+  'TattooParlor',
+  'Dentist',
+  'Physician',
+  'MedicalBusiness',
+  'ProfessionalService',
+  'LegalService',
+  'FinancialService',
+  'AutomotiveBusiness',
+  'FitnessCenter',
+  'SportsActivityLocation',
+  'EntertainmentBusiness',
+  'FoodEstablishment',
+  'Veterinarian',
+] as const
+
+export type BusinessCategory = (typeof BUSINESS_CATEGORIES)[number]
+
+export const CATEGORY_LABELS: Record<BusinessCategory, string> = {
+  LocalBusiness: 'Other / General',
+  HairSalon: 'Hair Salon',
+  BeautySalon: 'Beauty Salon',
+  DaySpa: 'Day Spa',
+  HealthAndBeautyBusiness: 'Health & Beauty',
+  TattooParlor: 'Tattoo Parlor',
+  Dentist: 'Dentist',
+  Physician: 'Physician',
+  MedicalBusiness: 'Medical Practice',
+  ProfessionalService: 'Professional Service',
+  LegalService: 'Legal Service',
+  FinancialService: 'Financial Service',
+  AutomotiveBusiness: 'Automotive',
+  FitnessCenter: 'Fitness Center',
+  SportsActivityLocation: 'Sports & Activities',
+  EntertainmentBusiness: 'Entertainment',
+  FoodEstablishment: 'Restaurant / Cafe',
+  Veterinarian: 'Veterinarian',
+}

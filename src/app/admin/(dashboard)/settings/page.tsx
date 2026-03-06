@@ -33,6 +33,13 @@ export default async function SettingsPage() {
         timezone={tenant.bookingPolicy.timezone}
         minAdvanceMinutes={tenant.bookingPolicy.minAdvanceMinutes}
         maxAdvanceDays={tenant.bookingPolicy.maxAdvanceDays}
+        description={tenant.description ?? ''}
+        category={tenant.category ?? 'LocalBusiness'}
+        city={tenant.city ?? ''}
+        address={tenant.address ?? ''}
+        phone={tenant.phone ?? ''}
+        seoTitle={tenant.seoTitle ?? ''}
+        seoDescription={tenant.seoDescription ?? ''}
       />
     </div>
   )

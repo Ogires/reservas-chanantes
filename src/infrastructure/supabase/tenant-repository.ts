@@ -4,6 +4,7 @@ import type { TenantRepository } from '@/application/ports/tenant-repository'
 import type { Currency, Locale } from '@/domain/types'
 import { TenantPlan } from '@/domain/types'
 import { createBookingPolicy } from '@/domain/value-objects/booking-policy'
+import type { BusinessCategory } from '@/domain/value-objects/business-category'
 
 interface TenantRow {
   id: string
@@ -19,6 +20,13 @@ interface TenantRow {
   plan?: string
   stripe_account_id: string | null
   stripe_account_enabled: boolean
+  description: string | null
+  category: string | null
+  city: string | null
+  address: string | null
+  phone: string | null
+  seo_title: string | null
+  seo_description: string | null
 }
 
 function toDomain(row: TenantRow): Tenant {
@@ -38,6 +46,13 @@ function toDomain(row: TenantRow): Tenant {
     plan: (row.plan as TenantPlan) ?? TenantPlan.FREE,
     stripeAccountId: row.stripe_account_id ?? undefined,
     stripeAccountEnabled: row.stripe_account_enabled ?? false,
+    description: row.description ?? undefined,
+    category: (row.category as BusinessCategory) ?? undefined,
+    city: row.city ?? undefined,
+    address: row.address ?? undefined,
+    phone: row.phone ?? undefined,
+    seoTitle: row.seo_title ?? undefined,
+    seoDescription: row.seo_description ?? undefined,
   }
 }
 
@@ -106,6 +121,13 @@ export class SupabaseTenantRepository implements TenantRepository {
         timezone: tenant.bookingPolicy.timezone,
         min_advance_minutes: tenant.bookingPolicy.minAdvanceMinutes,
         max_advance_days: tenant.bookingPolicy.maxAdvanceDays,
+        description: tenant.description ?? null,
+        category: tenant.category ?? 'LocalBusiness',
+        city: tenant.city ?? null,
+        address: tenant.address ?? null,
+        phone: tenant.phone ?? null,
+        seo_title: tenant.seoTitle ?? null,
+        seo_description: tenant.seoDescription ?? null,
       })
       .eq('id', tenant.id)
       .select()
