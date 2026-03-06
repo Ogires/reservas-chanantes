@@ -1,8 +1,27 @@
 import Link from 'next/link'
 
 export default function Home() {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Reservas Chanantes',
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web',
+    description:
+      'Plataforma de reservas online para pequenos negocios. Crea tu pagina de reservas en minutos.',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'EUR',
+    },
+  }
+
   return (
     <div className="min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Nav */}
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
         <span className="text-lg font-bold font-serif text-slate-900">Reservas Chanantes</span>
@@ -88,6 +107,7 @@ export default function Home() {
 
       {/* Features */}
       <section className="mx-auto max-w-6xl px-6 pb-24">
+        <h2 className="sr-only">How it works</h2>
         <div className="grid gap-8 sm:grid-cols-3">
           {[
             {

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import type Stripe from 'stripe'
@@ -6,6 +7,10 @@ import { createSupabaseServer } from '@/infrastructure/supabase/server'
 import { SupabaseTenantRepository } from '@/infrastructure/supabase/tenant-repository'
 import { SupabaseServiceRepository } from '@/infrastructure/supabase/service-repository'
 import { SupabaseBookingRepository } from '@/infrastructure/supabase/booking-repository'
+
+export const metadata: Metadata = {
+  robots: { index: false },
+}
 
 export default async function BookingSuccessPage({
   params,

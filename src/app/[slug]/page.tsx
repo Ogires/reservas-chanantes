@@ -29,8 +29,13 @@ export async function generateMetadata({
   }
 
   return {
-    title: `Book with ${tenant.name}`,
-    description: `Schedule your appointment online with ${tenant.name}.`,
+    title: `Reserva cita en ${tenant.name}`,
+    description: `Reserva tu cita online en ${tenant.name}. Elige servicio, dia y hora disponible. Confirmacion inmediata.`,
+    openGraph: {
+      title: `Reserva cita en ${tenant.name}`,
+      description: `Reserva tu cita online en ${tenant.name}. Elige servicio, dia y hora disponible.`,
+      type: 'website',
+    },
   }
 }
 
@@ -60,8 +65,28 @@ export default async function TenantPage({
     priceFormatted: s.price.format(),
   }))
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://reservas-chanantes.vercel.app'
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    name: tenant.name,
+    url: `${baseUrl}/${slug}`,
+    makesOffer: services.map((s) => ({
+      '@type': 'Offer',
+      itemOffered: {
+        '@type': 'Service',
+        name: s.name,
+      },
+    })),
+  }
+
   return (
     <div className="min-h-screen bg-warm-bg">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="mx-auto max-w-2xl px-4 py-12">
         <div className="mb-8 text-center">
           <h1 className="font-serif text-3xl font-bold text-slate-900">{tenant.name}</h1>
