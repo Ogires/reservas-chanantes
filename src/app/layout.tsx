@@ -16,6 +16,7 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: "Reservas Chanantes",
   description: "Online booking platform for small businesses",
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({
