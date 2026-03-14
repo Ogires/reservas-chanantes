@@ -2,16 +2,7 @@
 
 import { useActionState, useState } from 'react'
 import { saveSchedule } from './actions'
-
-const DAY_NAMES = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-]
+import type { AdminTranslations } from '@/infrastructure/i18n/admin-translations'
 
 interface DayState {
   dayOfWeek: number
@@ -23,9 +14,11 @@ interface DayState {
 interface ScheduleEditorProps {
   initialSchedule: DayState[]
   timezone: string
+  translations: AdminTranslations['schedule']
+  commonTranslations: AdminTranslations['common']
 }
 
-export function ScheduleEditor({ initialSchedule, timezone }: ScheduleEditorProps) {
+export function ScheduleEditor({ initialSchedule, timezone, translations: t, commonTranslations: common }: ScheduleEditorProps) {
   const [days, setDays] = useState<DayState[]>(initialSchedule)
   const [state, formAction, isPending] = useActionState(saveSchedule, null)
 
@@ -92,7 +85,7 @@ export function ScheduleEditor({ initialSchedule, timezone }: ScheduleEditorProp
 
   return (
     <div className="rounded-xl border border-[var(--color-warm-border)] bg-white p-6 shadow-sm">
-      <p className="text-sm text-slate-500 mb-4">All times in {timezone}</p>
+      <p className="text-sm text-slate-500 mb-4">{t.timesInTimezone(timezone)}</p>
       <form action={formAction}>
         <input type="hidden" name="schedule" value={JSON.stringify(days)} />
 
@@ -103,7 +96,7 @@ export function ScheduleEditor({ initialSchedule, timezone }: ScheduleEditorProp
         )}
         {state?.success && (
           <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-3 text-sm text-emerald-600 mb-4">
-            Schedule saved successfully!
+            {t.savedSuccess}
           </div>
         )}
 
@@ -130,7 +123,7 @@ export function ScheduleEditor({ initialSchedule, timezone }: ScheduleEditorProp
                   {day.dayName}
                 </label>
                 {!day.open && (
-                  <span className="text-xs text-slate-400">Closed</span>
+                  <span className="text-xs text-slate-400">{common.closed}</span>
                 )}
               </div>
 
@@ -161,7 +154,7 @@ export function ScheduleEditor({ initialSchedule, timezone }: ScheduleEditorProp
                           onClick={() => removeRange(day.dayOfWeek, i)}
                           className="text-rose-500 text-sm hover:text-rose-700 transition-colors"
                         >
-                          Remove
+                          {common.remove}
                         </button>
                       )}
                     </div>
@@ -171,7 +164,7 @@ export function ScheduleEditor({ initialSchedule, timezone }: ScheduleEditorProp
                     onClick={() => addRange(day.dayOfWeek)}
                     className="text-teal-600 text-sm hover:text-teal-700 transition-colors"
                   >
-                    + Add time range
+                    {t.addTimeRange}
                   </button>
                 </div>
               )}
@@ -184,7 +177,7 @@ export function ScheduleEditor({ initialSchedule, timezone }: ScheduleEditorProp
           disabled={isPending}
           className="mt-6 rounded-lg bg-teal-600 px-4 py-2.5 font-medium text-white shadow-sm hover:bg-teal-700 disabled:opacity-50 transition-colors"
         >
-          {isPending ? 'Saving...' : 'Save schedule'}
+          {isPending ? common.saving : t.saveSchedule}
         </button>
       </form>
     </div>

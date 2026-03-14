@@ -2,8 +2,13 @@ import Link from 'next/link'
 import { RegisterForm } from './register-form'
 import { GoogleSignInButton } from '../_components/google-sign-in-button'
 import { createSupabaseServer } from '@/infrastructure/supabase/server'
+import { detectLocaleFromHeaders } from '@/infrastructure/i18n/detect-locale'
+import { getAdminTranslations } from '@/infrastructure/i18n/admin-translations'
 
 export default async function RegisterPage() {
+  const locale = await detectLocaleFromHeaders()
+  const t = getAdminTranslations(locale)
+
   const supabase = await createSupabaseServer()
   const { data: { user } } = await supabase.auth.getUser()
   const isOAuthUser = !!user
@@ -20,39 +25,39 @@ export default async function RegisterPage() {
             <>
               {userName && (
                 <p className="text-center text-sm text-teal-600 mb-1">
-                  Hola, {userName}
+                  {t.auth.hello(userName)}
                 </p>
               )}
-              <h1 className="text-2xl font-bold text-center text-slate-900 mb-2">Configura tu negocio</h1>
+              <h1 className="text-2xl font-bold text-center text-slate-900 mb-2">{t.auth.configureYourBusiness}</h1>
               <p className="text-center text-sm text-slate-500 mb-6">
-                Solo un paso más: pon el nombre de tu negocio para crear tu página de reservas
+                {t.auth.oauthSetupSubtitle}
               </p>
-              <RegisterForm isOAuthUser />
+              <RegisterForm isOAuthUser translations={t.auth} />
             </>
           ) : (
             <>
-              <h1 className="text-2xl font-bold text-center text-slate-900 mb-2">Crea tu cuenta</h1>
+              <h1 className="text-2xl font-bold text-center text-slate-900 mb-2">{t.auth.createAccount}</h1>
               <p className="text-center text-sm text-slate-500 mb-6">
-                Configura tu página de reservas en minutos
+                {t.auth.registerSubtitle}
               </p>
-              <GoogleSignInButton />
+              <GoogleSignInButton label={t.auth.continueWithGoogle} />
               <div className="relative my-6">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-warm-border" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="bg-white px-2 text-slate-400">o</span>
+                  <span className="bg-white px-2 text-slate-400">{t.common.or}</span>
                 </div>
               </div>
-              <RegisterForm />
+              <RegisterForm translations={t.auth} />
             </>
           )}
         </div>
         {!isOAuthUser && (
           <p className="text-center text-sm text-slate-500">
-            ¿Ya tienes una cuenta?{' '}
+            {t.auth.haveAccount}{' '}
             <Link href="/admin/login" className="text-teal-600 hover:text-teal-700 font-medium transition-colors">
-              Iniciar sesión
+              {t.auth.signIn}
             </Link>
           </p>
         )}

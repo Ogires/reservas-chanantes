@@ -1,9 +1,11 @@
 import Link from 'next/link'
+import type { AdminTranslations } from '@/infrastructure/i18n/admin-translations'
 
 interface SetupChecklistProps {
   hasServices: boolean
   hasSchedule: boolean
   slug: string
+  translations: AdminTranslations['setup']
 }
 
 function StepIcon({ done, step }: { done: boolean; step: number }) {
@@ -23,22 +25,22 @@ function StepIcon({ done, step }: { done: boolean; step: number }) {
   )
 }
 
-export function SetupChecklist({ hasServices, hasSchedule, slug }: SetupChecklistProps) {
+export function SetupChecklist({ hasServices, hasSchedule, slug, translations: t }: SetupChecklistProps) {
   const canSharePage = hasServices && hasSchedule
 
   return (
     <div className="mb-6 rounded-xl border border-[var(--color-warm-border)] bg-white p-6 shadow-sm animate-fade-in-up">
-      <h2 className="text-lg font-semibold font-serif text-slate-900 mb-1">Get started</h2>
-      <p className="text-sm text-slate-500 mb-4">Complete these steps to start receiving bookings.</p>
+      <h2 className="text-lg font-semibold font-serif text-slate-900 mb-1">{t.title}</h2>
+      <p className="text-sm text-slate-500 mb-4">{t.subtitle}</p>
 
       <ol className="space-y-3">
         <li className="flex items-center gap-3">
           <StepIcon done={hasServices} step={1} />
           {hasServices ? (
-            <span className="text-sm text-slate-400 line-through">Create a service</span>
+            <span className="text-sm text-slate-400 line-through">{t.createService}</span>
           ) : (
             <Link href="/admin/services/new" className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors">
-              Create a service
+              {t.createService}
             </Link>
           )}
         </li>
@@ -46,10 +48,10 @@ export function SetupChecklist({ hasServices, hasSchedule, slug }: SetupChecklis
         <li className="flex items-center gap-3">
           <StepIcon done={hasSchedule} step={2} />
           {hasSchedule ? (
-            <span className="text-sm text-slate-400 line-through">Define your schedule</span>
+            <span className="text-sm text-slate-400 line-through">{t.defineSchedule}</span>
           ) : (
             <Link href="/admin/schedule" className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors">
-              Define your schedule
+              {t.defineSchedule}
             </Link>
           )}
         </li>
@@ -58,10 +60,10 @@ export function SetupChecklist({ hasServices, hasSchedule, slug }: SetupChecklis
           <StepIcon done={false} step={3} />
           {canSharePage ? (
             <Link href={`/${slug}`} target="_blank" className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors">
-              Share your booking page
+              {t.shareBookingPage}
             </Link>
           ) : (
-            <span className="text-sm text-slate-400">Share your booking page</span>
+            <span className="text-sm text-slate-400">{t.shareBookingPage}</span>
           )}
         </li>
       </ol>

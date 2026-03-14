@@ -1,16 +1,18 @@
 import Link from 'next/link'
 import { requireAdmin } from '@/infrastructure/supabase/admin-auth'
 import { SupabaseServiceRepository } from '@/infrastructure/supabase/service-repository'
+import { getAdminTranslations } from '@/infrastructure/i18n/admin-translations'
 
 export default async function ServicesPage() {
   const { tenant, supabase } = await requireAdmin()
+  const t = getAdminTranslations(tenant.defaultLocale)
   const serviceRepo = new SupabaseServiceRepository(supabase)
   const services = await serviceRepo.findByTenantId(tenant.id)
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold font-serif text-slate-900">Services</h1>
+        <h1 className="text-2xl font-bold font-serif text-slate-900">{t.services.title}</h1>
         <Link
           href="/admin/services/new"
           className="inline-flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-teal-700 transition-colors"
@@ -18,7 +20,7 @@ export default async function ServicesPage() {
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>
-          New service
+          {t.services.newService}
         </Link>
       </div>
 
@@ -30,7 +32,7 @@ export default async function ServicesPage() {
             </svg>
           </div>
           <p className="text-slate-500">
-            No services yet. Create your first service to get started.
+            {t.services.noServicesYet}
           </p>
         </div>
       ) : (
@@ -47,7 +49,7 @@ export default async function ServicesPage() {
                   {service.price.format()}
                   {!service.active && (
                     <span className="ml-2 inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700 ring-1 ring-amber-200">
-                      inactive
+                      {t.common.inactive}
                     </span>
                   )}
                 </p>
@@ -56,7 +58,7 @@ export default async function ServicesPage() {
                 href={`/admin/services/${service.id}/edit`}
                 className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors"
               >
-                Edit
+                {t.common.edit}
               </Link>
             </div>
           ))}

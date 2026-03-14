@@ -2,7 +2,7 @@
 
 import { createSupabaseBrowser } from '@/infrastructure/supabase/client'
 
-export function GoogleSignInButton() {
+export function GoogleSignInButton({ label }: { label: string }) {
   async function handleClick() {
     const supabase = createSupabaseBrowser()
     await supabase.auth.signInWithOAuth({
@@ -37,7 +37,7 @@ export function GoogleSignInButton() {
           fill="#EA4335"
         />
       </svg>
-      Continuar con Google
+      {label}
     </button>
   )
 }

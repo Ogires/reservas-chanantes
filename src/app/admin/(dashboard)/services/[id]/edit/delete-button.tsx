@@ -3,14 +3,23 @@
 import { useActionState } from 'react'
 import { deleteService } from '../../actions'
 
-export function DeleteButton({ serviceId }: { serviceId: string }) {
+interface DeleteButtonProps {
+  serviceId: string
+  translations: {
+    confirmDelete: string
+    deleteService: string
+    deleting: string
+  }
+}
+
+export function DeleteButton({ serviceId, translations: t }: DeleteButtonProps) {
   const [state, formAction, isPending] = useActionState(deleteService, null)
 
   return (
     <form
       action={formAction}
       onSubmit={(e) => {
-        if (!confirm('Are you sure you want to delete this service?')) {
+        if (!confirm(t.confirmDelete)) {
           e.preventDefault()
         }
       }}
@@ -24,7 +33,7 @@ export function DeleteButton({ serviceId }: { serviceId: string }) {
         disabled={isPending}
         className="rounded-lg bg-rose-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-rose-700 disabled:opacity-50 transition-colors"
       >
-        {isPending ? 'Deleting...' : 'Delete service'}
+        {isPending ? t.deleting : t.deleteService}
       </button>
     </form>
   )

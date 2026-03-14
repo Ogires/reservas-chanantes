@@ -118,6 +118,7 @@ export class SupabaseTenantRepository implements TenantRepository {
       .from('tenants')
       .update({
         name: tenant.name,
+        default_locale: tenant.defaultLocale,
         timezone: tenant.bookingPolicy.timezone,
         min_advance_minutes: tenant.bookingPolicy.minAdvanceMinutes,
         max_advance_days: tenant.bookingPolicy.maxAdvanceDays,

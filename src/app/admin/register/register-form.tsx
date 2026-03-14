@@ -2,8 +2,14 @@
 
 import { useActionState } from 'react'
 import { register } from './actions'
+import type { AdminTranslations } from '@/infrastructure/i18n/admin-translations'
 
-export function RegisterForm({ isOAuthUser }: { isOAuthUser?: boolean }) {
+interface RegisterFormProps {
+  isOAuthUser?: boolean
+  translations: AdminTranslations['auth']
+}
+
+export function RegisterForm({ isOAuthUser, translations: t }: RegisterFormProps) {
   const [state, formAction, isPending] = useActionState(register, null)
 
   return (
@@ -21,14 +27,14 @@ export function RegisterForm({ isOAuthUser }: { isOAuthUser?: boolean }) {
           htmlFor="businessName"
           className="block text-sm font-medium text-slate-700 mb-1.5"
         >
-          Nombre del negocio
+          {t.businessName}
         </label>
         <input
           id="businessName"
           name="businessName"
           type="text"
           required
-          placeholder="Ej: Peluquería Juan"
+          placeholder={t.businessNamePlaceholder}
           className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
         />
       </div>
@@ -37,7 +43,7 @@ export function RegisterForm({ isOAuthUser }: { isOAuthUser?: boolean }) {
         <>
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1.5">
-              Correo electrónico
+              {t.email}
             </label>
             <input
               id="email"
@@ -50,7 +56,7 @@ export function RegisterForm({ isOAuthUser }: { isOAuthUser?: boolean }) {
 
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1.5">
-              Contraseña
+              {t.password}
             </label>
             <input
               id="password"
@@ -70,8 +76,8 @@ export function RegisterForm({ isOAuthUser }: { isOAuthUser?: boolean }) {
         className="w-full rounded-lg bg-teal-600 px-4 py-2.5 font-medium text-white shadow-sm hover:bg-teal-700 disabled:opacity-50 transition-colors"
       >
         {isPending
-          ? (isOAuthUser ? 'Configurando...' : 'Creando cuenta...')
-          : (isOAuthUser ? 'Crear mi página' : 'Crear cuenta')
+          ? (isOAuthUser ? t.configuringPage : t.creatingAccount)
+          : (isOAuthUser ? t.createMyPage : t.createAccount)
         }
       </button>
     </form>

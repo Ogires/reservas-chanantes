@@ -3,11 +3,20 @@
 import { useState } from 'react'
 import { cancelBooking } from './actions'
 
-export function CancelBookingButton({ bookingId }: { bookingId: string }) {
+interface CancelBookingButtonProps {
+  bookingId: string
+  translations: {
+    confirmCancel: string
+    cancel: string
+    cancelling: string
+  }
+}
+
+export function CancelBookingButton({ bookingId, translations: t }: CancelBookingButtonProps) {
   const [pending, setPending] = useState(false)
 
   async function handleCancel() {
-    if (!confirm('Are you sure you want to cancel this booking?')) return
+    if (!confirm(t.confirmCancel)) return
     setPending(true)
     const result = await cancelBooking(bookingId)
     if (result.error) {
@@ -22,7 +31,7 @@ export function CancelBookingButton({ bookingId }: { bookingId: string }) {
       disabled={pending}
       className="text-rose-600 hover:text-rose-800 text-sm font-medium disabled:opacity-50 transition-colors"
     >
-      {pending ? 'Cancelling...' : 'Cancel'}
+      {pending ? t.cancelling : t.cancel}
     </button>
   )
 }

@@ -1,10 +1,12 @@
 import { requireAdmin } from '@/infrastructure/supabase/admin-auth'
+import { getAdminTranslations } from '@/infrastructure/i18n/admin-translations'
 import { SettingsForm } from './settings-form'
 import { StripeConnectSection } from './stripe-connect-section'
 import { StripeConnectServiceImpl } from '@/infrastructure/stripe/stripe-connect-service'
 
 export default async function SettingsPage() {
   const { tenant } = await requireAdmin()
+  const t = getAdminTranslations(tenant.defaultLocale)
 
   let stripeDashboardUrl: string | undefined
   if (tenant.stripeAccountId && tenant.stripeAccountEnabled) {
@@ -20,12 +22,13 @@ export default async function SettingsPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-bold font-serif text-slate-900">Settings</h1>
+      <h1 className="text-2xl font-bold font-serif text-slate-900">{t.settings.title}</h1>
 
       <StripeConnectSection
         stripeAccountId={tenant.stripeAccountId}
         stripeAccountEnabled={tenant.stripeAccountEnabled}
         stripeDashboardUrl={stripeDashboardUrl}
+        translations={t.settings}
       />
 
       <SettingsForm
@@ -40,6 +43,8 @@ export default async function SettingsPage() {
         phone={tenant.phone ?? ''}
         seoTitle={tenant.seoTitle ?? ''}
         seoDescription={tenant.seoDescription ?? ''}
+        defaultLocale={tenant.defaultLocale}
+        translations={{ settings: t.settings, common: t.common }}
       />
     </div>
   )

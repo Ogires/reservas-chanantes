@@ -2,8 +2,13 @@
 
 import { useActionState, useState } from 'react'
 import { login, resetPassword } from './actions'
+import type { AdminTranslations } from '@/infrastructure/i18n/admin-translations'
 
-export function LoginForm() {
+interface LoginFormProps {
+  translations: AdminTranslations['auth']
+}
+
+export function LoginForm({ translations: t }: LoginFormProps) {
   const [state, formAction, isPending] = useActionState(login, null)
   const [resetState, resetFormAction, isResetting] = useActionState(resetPassword, null)
   const [showReset, setShowReset] = useState(false)
@@ -18,14 +23,14 @@ export function LoginForm() {
         )}
         {resetState?.success && (
           <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-3 text-sm text-emerald-600">
-            Revisa tu correo para restablecer la contraseña.
+            {t.checkEmailReset}
           </div>
         )}
 
         <form action={resetFormAction} className="space-y-4">
           <div>
             <label htmlFor="reset-email" className="block text-sm font-medium text-slate-700 mb-1.5">
-              Correo electrónico
+              {t.email}
             </label>
             <input
               id="reset-email"
@@ -41,7 +46,7 @@ export function LoginForm() {
             disabled={isResetting}
             className="w-full rounded-lg bg-teal-600 px-4 py-2.5 font-medium text-white shadow-sm hover:bg-teal-700 disabled:opacity-50 transition-colors"
           >
-            {isResetting ? 'Enviando...' : 'Enviar enlace'}
+            {isResetting ? t.sending : t.sendResetLink}
           </button>
         </form>
 
@@ -49,7 +54,7 @@ export function LoginForm() {
           onClick={() => setShowReset(false)}
           className="text-sm text-slate-500 hover:text-slate-900 transition-colors"
         >
-          Volver
+          {t.goBack}
         </button>
       </div>
     )
@@ -65,7 +70,7 @@ export function LoginForm() {
 
       <div>
         <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1.5">
-          Correo electrónico
+          {t.email}
         </label>
         <input
           id="email"
@@ -78,7 +83,7 @@ export function LoginForm() {
 
       <div>
         <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1.5">
-          Contraseña
+          {t.password}
         </label>
         <input
           id="password"
@@ -94,7 +99,7 @@ export function LoginForm() {
         disabled={isPending}
         className="w-full rounded-lg bg-teal-600 px-4 py-2.5 font-medium text-white shadow-sm hover:bg-teal-700 disabled:opacity-50 transition-colors"
       >
-        {isPending ? 'Iniciando sesión...' : 'Iniciar sesión'}
+        {isPending ? t.signingIn : t.signIn}
       </button>
 
       <button
@@ -102,7 +107,7 @@ export function LoginForm() {
         onClick={() => setShowReset(true)}
         className="text-sm text-slate-500 hover:text-slate-900 transition-colors"
       >
-        ¿Olvidaste tu contraseña?
+        {t.forgotPassword}
       </button>
     </form>
   )

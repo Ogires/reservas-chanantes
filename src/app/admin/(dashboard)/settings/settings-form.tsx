@@ -2,7 +2,10 @@
 
 import { useActionState } from 'react'
 import { saveSettings } from './actions'
-import { BUSINESS_CATEGORIES, CATEGORY_LABELS } from '@/domain/value-objects/business-category'
+import { BUSINESS_CATEGORIES } from '@/domain/value-objects/business-category'
+import { getCategoryLabels } from '@/domain/value-objects/business-category'
+import type { AdminTranslations } from '@/infrastructure/i18n/admin-translations'
+import type { Locale } from '@/domain/types'
 
 const COMMON_TIMEZONES = [
   'Europe/Madrid',
@@ -39,6 +42,8 @@ interface SettingsFormProps {
   phone: string
   seoTitle: string
   seoDescription: string
+  defaultLocale: Locale
+  translations: Pick<AdminTranslations, 'settings' | 'common'>
 }
 
 export function SettingsForm({
@@ -53,12 +58,16 @@ export function SettingsForm({
   phone,
   seoTitle,
   seoDescription,
+  defaultLocale,
+  translations: { settings: t, common },
 }: SettingsFormProps) {
   const [state, formAction, isPending] = useActionState(saveSettings, null)
 
   const timezoneOptions = COMMON_TIMEZONES.includes(timezone)
     ? COMMON_TIMEZONES
     : [timezone, ...COMMON_TIMEZONES]
+
+  const categoryLabels = getCategoryLabels(defaultLocale)
 
   return (
     <div className="rounded-xl border border-[var(--color-warm-border)] bg-white p-6 shadow-sm">
@@ -70,13 +79,13 @@ export function SettingsForm({
         )}
         {state?.success && (
           <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-3 text-sm text-emerald-600">
-            Settings saved successfully.
+            {t.savedSuccess}
           </div>
         )}
 
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1.5">
-            Business name
+            {t.businessName}
           </label>
           <input
             id="name"
@@ -89,8 +98,26 @@ export function SettingsForm({
         </div>
 
         <div>
+          <label htmlFor="defaultLocale" className="block text-sm font-medium text-slate-700 mb-1.5">
+            {t.language}
+          </label>
+          <select
+            id="defaultLocale"
+            name="defaultLocale"
+            defaultValue={defaultLocale}
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
+          >
+            <option value="es-ES">Espanol</option>
+            <option value="en-US">English</option>
+          </select>
+          <p className="mt-1 text-xs text-slate-500">
+            {t.languageHelp}
+          </p>
+        </div>
+
+        <div>
           <label htmlFor="timezone" className="block text-sm font-medium text-slate-700 mb-1.5">
-            Timezone
+            {t.timezone}
           </label>
           <select
             id="timezone"
@@ -106,7 +133,7 @@ export function SettingsForm({
 
         <div>
           <label htmlFor="minAdvanceMinutes" className="block text-sm font-medium text-slate-700 mb-1.5">
-            Minimum advance time (minutes)
+            {t.minAdvanceMinutes}
           </label>
           <input
             id="minAdvanceMinutes"
@@ -119,13 +146,13 @@ export function SettingsForm({
             className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
           />
           <p className="mt-1 text-xs text-slate-500">
-            How far in advance customers must book. 0 = no minimum.
+            {t.minAdvanceHelp}
           </p>
         </div>
 
         <div>
           <label htmlFor="maxAdvanceDays" className="block text-sm font-medium text-slate-700 mb-1.5">
-            Maximum advance booking (days)
+            {t.maxAdvanceDays}
           </label>
           <input
             id="maxAdvanceDays"
@@ -138,18 +165,18 @@ export function SettingsForm({
             className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
           />
           <p className="mt-1 text-xs text-slate-500">
-            How far ahead customers can book.
+            {t.maxAdvanceHelp}
           </p>
         </div>
 
         {/* Business Profile */}
         <div className="border-t border-slate-200 pt-4 mt-6">
-          <h2 className="text-sm font-semibold text-slate-800 mb-3">Business Profile</h2>
+          <h2 className="text-sm font-semibold text-slate-800 mb-3">{t.businessProfile}</h2>
 
           <div className="space-y-4">
             <div>
               <label htmlFor="category" className="block text-sm font-medium text-slate-700 mb-1.5">
-                Business category
+                {t.businessCategory}
               </label>
               <select
                 id="category"
@@ -158,17 +185,17 @@ export function SettingsForm({
                 className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
               >
                 {BUSINESS_CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>{CATEGORY_LABELS[cat]}</option>
+                  <option key={cat} value={cat}>{categoryLabels[cat]}</option>
                 ))}
               </select>
               <p className="mt-1 text-xs text-slate-500">
-                Used for search engine rich results.
+                {t.categoryHelp}
               </p>
             </div>
 
             <div>
               <label htmlFor="description" className="block text-sm font-medium text-slate-700 mb-1.5">
-                Description
+                {t.description}
               </label>
               <textarea
                 id="description"
@@ -176,38 +203,38 @@ export function SettingsForm({
                 maxLength={500}
                 rows={3}
                 defaultValue={description}
-                placeholder="Tell customers about your business..."
+                placeholder={t.descriptionPlaceholder}
                 className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
               />
               <p className="mt-1 text-xs text-slate-500">
-                Shown on your booking page and in search results. Max 500 characters.
+                {t.descriptionHelp}
               </p>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label htmlFor="city" className="block text-sm font-medium text-slate-700 mb-1.5">
-                  City
+                  {t.city}
                 </label>
                 <input
                   id="city"
                   name="city"
                   type="text"
                   defaultValue={city}
-                  placeholder="e.g. Madrid"
+                  placeholder={t.cityPlaceholder}
                   className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
                 />
               </div>
               <div>
                 <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-1.5">
-                  Phone
+                  {t.phone}
                 </label>
                 <input
                   id="phone"
                   name="phone"
                   type="tel"
                   defaultValue={phone}
-                  placeholder="+34 612 345 678"
+                  placeholder={t.phonePlaceholder}
                   className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
                 />
               </div>
@@ -215,14 +242,14 @@ export function SettingsForm({
 
             <div>
               <label htmlFor="address" className="block text-sm font-medium text-slate-700 mb-1.5">
-                Address
+                {t.address}
               </label>
               <input
                 id="address"
                 name="address"
                 type="text"
                 defaultValue={address}
-                placeholder="e.g. Calle Gran Via 42"
+                placeholder={t.addressPlaceholder}
                 className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
               />
             </div>
@@ -231,12 +258,12 @@ export function SettingsForm({
 
         {/* SEO Overrides */}
         <div className="border-t border-slate-200 pt-4 mt-6">
-          <h2 className="text-sm font-semibold text-slate-800 mb-3">SEO</h2>
+          <h2 className="text-sm font-semibold text-slate-800 mb-3">{t.seo}</h2>
 
           <div className="space-y-4">
             <div>
               <label htmlFor="seoTitle" className="block text-sm font-medium text-slate-700 mb-1.5">
-                Custom page title
+                {t.customPageTitle}
               </label>
               <input
                 id="seoTitle"
@@ -247,13 +274,13 @@ export function SettingsForm({
                 className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
               />
               <p className="mt-1 text-xs text-slate-500">
-                Leave empty to use the auto-generated title.
+                {t.pageTitleHelp}
               </p>
             </div>
 
             <div>
               <label htmlFor="seoDescription" className="block text-sm font-medium text-slate-700 mb-1.5">
-                Custom meta description
+                {t.customMetaDescription}
               </label>
               <textarea
                 id="seoDescription"
@@ -265,7 +292,7 @@ export function SettingsForm({
                 className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
               />
               <p className="mt-1 text-xs text-slate-500">
-                Leave empty to use the auto-generated description. Max 160 characters.
+                {t.metaDescriptionHelp}
               </p>
             </div>
           </div>
@@ -276,7 +303,7 @@ export function SettingsForm({
           disabled={isPending}
           className="rounded-lg bg-teal-600 px-4 py-2.5 font-medium text-white shadow-sm hover:bg-teal-700 disabled:opacity-50 transition-colors"
         >
-          {isPending ? 'Saving...' : 'Save settings'}
+          {isPending ? common.saving : common.save + ' ' + t.title.toLowerCase()}
         </button>
       </form>
     </div>

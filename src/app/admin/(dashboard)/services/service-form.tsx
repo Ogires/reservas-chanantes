@@ -2,6 +2,7 @@
 
 import { useActionState } from 'react'
 import { saveService } from './actions'
+import type { AdminTranslations } from '@/infrastructure/i18n/admin-translations'
 
 interface ServiceFormProps {
   service?: {
@@ -11,9 +12,10 @@ interface ServiceFormProps {
     priceEur: number
     active: boolean
   }
+  translations: Pick<AdminTranslations, 'services' | 'common'>
 }
 
-export function ServiceForm({ service }: ServiceFormProps) {
+export function ServiceForm({ service, translations: { services: t, common } }: ServiceFormProps) {
   const [state, formAction, isPending] = useActionState(saveService, null)
 
   return (
@@ -29,7 +31,7 @@ export function ServiceForm({ service }: ServiceFormProps) {
 
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1.5">
-            Service name
+            {t.serviceName}
           </label>
           <input
             id="name"
@@ -37,7 +39,7 @@ export function ServiceForm({ service }: ServiceFormProps) {
             type="text"
             required
             defaultValue={service?.name}
-            placeholder="e.g. Corte de pelo"
+            placeholder={t.serviceNamePlaceholder}
             className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
           />
         </div>
@@ -47,7 +49,7 @@ export function ServiceForm({ service }: ServiceFormProps) {
             htmlFor="durationMinutes"
             className="block text-sm font-medium text-slate-700 mb-1.5"
           >
-            Duration (minutes)
+            {t.duration}
           </label>
           <input
             id="durationMinutes"
@@ -63,7 +65,7 @@ export function ServiceForm({ service }: ServiceFormProps) {
 
         <div>
           <label htmlFor="price" className="block text-sm font-medium text-slate-700 mb-1.5">
-            Price (EUR)
+            {t.price}
           </label>
           <input
             id="price"
@@ -86,7 +88,7 @@ export function ServiceForm({ service }: ServiceFormProps) {
             className="h-4 w-4 rounded border-slate-300 text-teal-600 focus:ring-teal-500"
           />
           <label htmlFor="active" className="text-sm font-medium text-slate-700">
-            Active (visible to customers)
+            {t.activeLabel}
           </label>
         </div>
 
@@ -95,7 +97,7 @@ export function ServiceForm({ service }: ServiceFormProps) {
           disabled={isPending}
           className="rounded-lg bg-teal-600 px-4 py-2.5 font-medium text-white shadow-sm hover:bg-teal-700 disabled:opacity-50 transition-colors"
         >
-          {isPending ? 'Saving...' : service ? 'Update service' : 'Create service'}
+          {isPending ? common.saving : service ? t.updateService : t.createService}
         </button>
       </form>
     </div>

@@ -29,6 +29,8 @@ export async function saveSettings(
   const phone = (formData.get('phone') as string)?.trim() || undefined
   const seoTitle = (formData.get('seoTitle') as string)?.trim() || undefined
   const seoDescription = (formData.get('seoDescription') as string)?.trim() || undefined
+  const rawLocale = formData.get('defaultLocale') as string
+  const defaultLocale = rawLocale === 'en-US' ? 'en-US' : 'es-ES'
 
   if (!name) {
     return { error: 'Business name is required' }
@@ -48,6 +50,7 @@ export async function saveSettings(
       ...tenant,
       name,
       bookingPolicy,
+      defaultLocale,
       description,
       category: category as Tenant['category'],
       city,
