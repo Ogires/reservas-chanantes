@@ -8,6 +8,7 @@ import { getAdminTranslations } from '@/infrastructure/i18n/admin-translations'
 export default async function RegisterPage() {
   const locale = await detectLocaleFromHeaders()
   const t = getAdminTranslations(locale)
+  const { hello: _, ...authFormTranslations } = t.auth
 
   const supabase = await createSupabaseServer()
   const { data: { user } } = await supabase.auth.getUser()
@@ -32,7 +33,7 @@ export default async function RegisterPage() {
               <p className="text-center text-sm text-slate-500 mb-6">
                 {t.auth.oauthSetupSubtitle}
               </p>
-              <RegisterForm isOAuthUser translations={t.auth} />
+              <RegisterForm isOAuthUser translations={authFormTranslations} />
             </>
           ) : (
             <>
@@ -49,7 +50,7 @@ export default async function RegisterPage() {
                   <span className="bg-white px-2 text-slate-400">{t.common.or}</span>
                 </div>
               </div>
-              <RegisterForm translations={t.auth} />
+              <RegisterForm translations={authFormTranslations} />
             </>
           )}
         </div>

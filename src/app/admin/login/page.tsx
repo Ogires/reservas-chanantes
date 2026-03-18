@@ -7,6 +7,7 @@ import { getAdminTranslations } from '@/infrastructure/i18n/admin-translations'
 export default async function LoginPage() {
   const locale = await detectLocaleFromHeaders()
   const t = getAdminTranslations(locale)
+  const { hello: _, ...authFormTranslations } = t.auth
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#FDFBF9] to-[#F5F0EB] px-4">
@@ -25,7 +26,7 @@ export default async function LoginPage() {
               <span className="bg-white px-2 text-slate-400">{t.common.or}</span>
             </div>
           </div>
-          <LoginForm translations={t.auth} />
+          <LoginForm translations={authFormTranslations} />
         </div>
         <p className="text-center text-sm text-slate-500">
           {t.auth.noAccount}{' '}

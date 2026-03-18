@@ -14,11 +14,12 @@ interface DayState {
 interface ScheduleEditorProps {
   initialSchedule: DayState[]
   timezone: string
-  translations: AdminTranslations['schedule']
+  timezoneLabel: string
+  translations: Omit<AdminTranslations['schedule'], 'timesInTimezone'>
   commonTranslations: AdminTranslations['common']
 }
 
-export function ScheduleEditor({ initialSchedule, timezone, translations: t, commonTranslations: common }: ScheduleEditorProps) {
+export function ScheduleEditor({ initialSchedule, timezone, timezoneLabel, translations: t, commonTranslations: common }: ScheduleEditorProps) {
   const [days, setDays] = useState<DayState[]>(initialSchedule)
   const [state, formAction, isPending] = useActionState(saveSchedule, null)
 
@@ -85,7 +86,7 @@ export function ScheduleEditor({ initialSchedule, timezone, translations: t, com
 
   return (
     <div className="rounded-xl border border-[var(--color-warm-border)] bg-white p-6 shadow-sm">
-      <p className="text-sm text-slate-500 mb-4">{t.timesInTimezone(timezone)}</p>
+      <p className="text-sm text-slate-500 mb-4">{timezoneLabel}</p>
       <form action={formAction}>
         <input type="hidden" name="schedule" value={JSON.stringify(days)} />
 

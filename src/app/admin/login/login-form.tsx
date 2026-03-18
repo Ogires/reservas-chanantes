@@ -5,7 +5,7 @@ import { login, resetPassword } from './actions'
 import type { AdminTranslations } from '@/infrastructure/i18n/admin-translations'
 
 interface LoginFormProps {
-  translations: AdminTranslations['auth']
+  translations: Omit<AdminTranslations['auth'], 'hello'>
 }
 
 export function LoginForm({ translations: t }: LoginFormProps) {

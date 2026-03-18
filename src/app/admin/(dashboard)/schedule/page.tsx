@@ -22,13 +22,16 @@ export default async function SchedulePage() {
     }
   })
 
+  const { timesInTimezone, ...scheduleTranslations } = t.schedule
+
   return (
     <div>
       <h1 className="text-2xl font-bold font-serif text-slate-900 mb-6">{t.schedule.title}</h1>
       <ScheduleEditor
         initialSchedule={initialSchedule}
         timezone={tenant.bookingPolicy.timezone}
-        translations={t.schedule}
+        timezoneLabel={timesInTimezone(tenant.bookingPolicy.timezone)}
+        translations={scheduleTranslations}
         commonTranslations={t.common}
       />
     </div>

@@ -6,7 +6,7 @@ import type { AdminTranslations } from '@/infrastructure/i18n/admin-translations
 
 interface RegisterFormProps {
   isOAuthUser?: boolean
-  translations: AdminTranslations['auth']
+  translations: Omit<AdminTranslations['auth'], 'hello'>
 }
 
 export function RegisterForm({ isOAuthUser, translations: t }: RegisterFormProps) {
