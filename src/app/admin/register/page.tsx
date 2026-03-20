@@ -1,7 +1,9 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { RegisterForm } from './register-form'
 import { GoogleSignInButton } from '../_components/google-sign-in-button'
 import { createSupabaseServer } from '@/infrastructure/supabase/server'
+import { SupabaseTenantRepository } from '@/infrastructure/supabase/tenant-repository'
 import { detectLocaleFromHeaders } from '@/infrastructure/i18n/detect-locale'
 import { getAdminTranslations } from '@/infrastructure/i18n/admin-translations'
 
@@ -12,6 +14,14 @@ export default async function RegisterPage() {
 
   const supabase = await createSupabaseServer()
   const { data: { user } } = await supabase.auth.getUser()
+  if (user) {
+    const tenantRepo = new SupabaseTenantRepository(supabase)
+    const existingTenant = await tenantRepo.findByOwnerId(user.id)
+    if (existingTenant) {
+      redirect('/admin/dashboard')
+    }
+  }
+
   const isOAuthUser = !!user
   const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0]
 
