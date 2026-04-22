@@ -38,15 +38,24 @@ export function SlotPicker({
   const [error, setError] = useState('')
 
   useEffect(() => {
+    let ignore = false
     setLoading(true)
-    getAvailability(slug, date).then((result) => {
+    setError('')
+
+    void (async () => {
+      const result = await getAvailability(slug, date)
+      if (ignore) return
       if (result.error) {
         setError(result.error)
       } else {
         setSlots(result.slots)
       }
       setLoading(false)
-    })
+    })()
+
+    return () => {
+      ignore = true
+    }
   }, [slug, date])
 
   if (loading) {
