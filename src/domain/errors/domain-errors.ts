@@ -99,6 +99,12 @@ export class InvalidPhoneError extends DomainError {
   }
 }
 
+export class InvalidEmailError extends DomainError {
+  constructor(email: string) {
+    super(`Invalid email address: "${email}"`)
+  }
+}
+
 export class CustomerNotFoundError extends DomainError {
   constructor(identifier: string) {
     super(`Customer not found: "${identifier}"`)

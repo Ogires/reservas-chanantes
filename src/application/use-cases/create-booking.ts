@@ -15,6 +15,7 @@ import {
   addDaysToLocalDate,
 } from '@/domain/services/tenant-clock'
 import { BookingStatus, type DayOfWeek } from '@/domain/types'
+import { EmailAddress } from '@/domain/value-objects/email-address'
 import {
   TenantNotFoundError,
   ServiceNotFoundError,
@@ -98,12 +99,14 @@ export class CreateBookingUseCase {
       throw new InvalidPhoneError(input.customerPhone)
     }
 
-    let customer = await this.customerRepo.findByEmail(input.customerEmail)
+    const normalizedEmail = EmailAddress.create(input.customerEmail).value
+
+    let customer = await this.customerRepo.findByEmail(normalizedEmail)
     if (!customer) {
       customer = await this.customerRepo.save({
         id: crypto.randomUUID(),
         name: input.customerName,
-        email: input.customerEmail,
+        email: normalizedEmail,
         phone: input.customerPhone,
       })
     }

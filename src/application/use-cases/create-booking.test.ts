@@ -22,6 +22,7 @@ import {
   BookingInPastError,
   BookingTooFarAheadError,
   InvalidPhoneError,
+  InvalidEmailError,
 } from '@/domain/errors/domain-errors'
 import { createBookingPolicy } from '@/domain/value-objects/booking-policy'
 
@@ -256,6 +257,37 @@ describe('CreateBookingUseCase', () => {
     await expect(
       useCase.execute({ ...validInput, customerPhone: '123' })
     ).rejects.toThrow(InvalidPhoneError)
+  })
+
+  it('throws InvalidEmailError when email is malformed', async () => {
+    const repos = createMockRepos()
+    const useCase = new CreateBookingUseCase(
+      repos.tenantRepo,
+      repos.serviceRepo,
+      repos.scheduleRepo,
+      repos.bookingRepo,
+      repos.customerRepo
+    )
+
+    await expect(
+      useCase.execute({ ...validInput, customerEmail: 'not-an-email' })
+    ).rejects.toThrow(InvalidEmailError)
+  })
+
+  it('normalizes customer email to lowercase before lookup', async () => {
+    const repos = createMockRepos({ customer: null })
+    const findByEmailSpy = vi.spyOn(repos.customerRepo, 'findByEmail')
+    const useCase = new CreateBookingUseCase(
+      repos.tenantRepo,
+      repos.serviceRepo,
+      repos.scheduleRepo,
+      repos.bookingRepo,
+      repos.customerRepo
+    )
+
+    await useCase.execute({ ...validInput, customerEmail: 'Ana@Example.COM' })
+
+    expect(findByEmailSpy).toHaveBeenCalledWith('ana@example.com')
   })
 
   it('throws BookingTooSoonError when booking within min advance time', async () => {
