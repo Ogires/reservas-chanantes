@@ -7,7 +7,7 @@ import { GetAvailabilityUseCase } from '@/application/use-cases/get-availability
 import { CreateBookingUseCase } from '@/application/use-cases/create-booking'
 import { StripePaymentService } from '@/infrastructure/stripe/payment-service'
 import { getCommissionRateBps } from '@/domain/services/plan-limits'
-import { SlotTakenError } from '@/domain/errors/domain-errors'
+import { DomainError, SlotTakenError } from '@/domain/errors/domain-errors'
 import type { SlotDTO } from '@/application/use-cases/get-availability'
 
 export async function getAvailability(
@@ -28,10 +28,11 @@ export async function getAvailability(
     const result = await useCase.execute({ tenantSlug, date })
     return { slots: result.slots }
   } catch (e) {
-    return {
-      slots: [],
-      error: e instanceof Error ? e.message : 'Failed to get availability',
+    if (e instanceof DomainError) {
+      return { slots: [], error: e.message }
     }
+    console.error('[getAvailability] unexpected error:', e)
+    return { slots: [], error: 'No se ha podido cargar la disponibilidad' }
   }
 }
 
@@ -106,10 +107,13 @@ export async function createBooking(input: {
         slotTaken: true,
       }
     }
+    if (e instanceof DomainError) {
+      return { success: false, error: e.message }
+    }
     console.error('[createBooking] unexpected error:', e)
     return {
       success: false,
-      error: e instanceof Error ? e.message : 'Failed to create booking',
+      error: 'No se ha podido crear la reserva',
     }
   }
 }

@@ -6,6 +6,9 @@ import { SupabaseBookingRepository } from '@/infrastructure/supabase/booking-rep
 import { BookingStatus } from '@/domain/types'
 import { sendConfirmationEmails } from '@/infrastructure/resend/send-booking-emails'
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 export async function POST(request: Request) {
   const stripe = getStripe()
   const body = await request.text()

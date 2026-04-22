@@ -18,7 +18,8 @@ export async function customerLogin(
   })
 
   if (error) {
-    return { error: error.message }
+    console.error('[my/login] auth error:', error.message)
+    return { error: 'Credenciales inválidas' }
   }
 
   redirect('/my')
@@ -39,7 +40,8 @@ export async function customerRegister(
   })
 
   if (error) {
-    return { error: error.message }
+    console.error('[my/register] auth error:', error.message)
+    return { error: 'No se ha podido completar el registro' }
   }
 
   redirect('/my')
