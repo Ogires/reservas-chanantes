@@ -57,6 +57,12 @@ export class BookingConflictError extends DomainError {
   }
 }
 
+export class SlotTakenError extends DomainError {
+  constructor() {
+    super('This slot was just taken by another customer')
+  }
+}
+
 export class ServiceDoesNotFitError extends DomainError {
   constructor(serviceDuration: number, startTime: string) {
     super(

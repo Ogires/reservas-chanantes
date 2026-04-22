@@ -3,6 +3,7 @@ import type { Booking } from '@/domain/entities/booking'
 import type { BookingRepository } from '@/application/ports/booking-repository'
 import { TimeRange } from '@/domain/value-objects/time-range'
 import type { BookingStatus } from '@/domain/types'
+import { SlotTakenError } from '@/domain/errors/domain-errors'
 
 interface BookingRow {
   id: string
@@ -96,7 +97,15 @@ export class SupabaseBookingRepository implements BookingRepository {
       .select()
       .single()
 
-    if (error) throw new Error(`Failed to save booking: ${error.message}`)
+    if (error) {
+      // 23P01 = exclusion_violation (Postgres): the bookings_no_overlap
+      // constraint rejected this insert because another booking already
+      // occupies an overlapping time range for the same tenant+date.
+      if (error.code === '23P01') {
+        throw new SlotTakenError()
+      }
+      throw new Error(`Failed to save booking: ${error.message}`)
+    }
     return toDomain(data)
   }
 

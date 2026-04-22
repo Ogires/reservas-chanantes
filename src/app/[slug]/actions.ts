@@ -7,6 +7,7 @@ import { GetAvailabilityUseCase } from '@/application/use-cases/get-availability
 import { CreateBookingUseCase } from '@/application/use-cases/create-booking'
 import { StripePaymentService } from '@/infrastructure/stripe/payment-service'
 import { getCommissionRateBps } from '@/domain/services/plan-limits'
+import { SlotTakenError } from '@/domain/errors/domain-errors'
 import type { SlotDTO } from '@/application/use-cases/get-availability'
 
 export async function getAvailability(
@@ -42,7 +43,12 @@ export async function createBooking(input: {
   customerPhone: string
   date: string
   startTime: string
-}): Promise<{ success: boolean; checkoutUrl?: string; error?: string }> {
+}): Promise<{
+  success: boolean
+  checkoutUrl?: string
+  error?: string
+  slotTaken?: boolean
+}> {
   try {
     const supabase = await createSupabaseServer()
     const { tenantRepo, serviceRepo, scheduleRepo, bookingRepo, customerRepo } =
@@ -93,6 +99,14 @@ export async function createBooking(input: {
 
     return { success: true, checkoutUrl: checkout.checkoutUrl }
   } catch (e) {
+    if (e instanceof SlotTakenError) {
+      return {
+        success: false,
+        error: 'Ese hueco se acaba de ocupar. Elige otro.',
+        slotTaken: true,
+      }
+    }
+    console.error('[createBooking] unexpected error:', e)
     return {
       success: false,
       error: e instanceof Error ? e.message : 'Failed to create booking',
