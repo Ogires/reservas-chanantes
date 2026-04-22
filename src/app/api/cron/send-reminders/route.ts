@@ -27,7 +27,17 @@ export async function GET(request: Request) {
     await bookingRepo.findConfirmedForDateWithoutReminder(tomorrowStr)
 
   let sent = 0
+  let skipped = 0
+  let failed = 0
+
   for (const booking of bookings) {
+    const claimed = await bookingRepo.claimReminder(booking.id, new Date())
+    if (!claimed) {
+      // Another invocation already handled this booking.
+      skipped++
+      continue
+    }
+
     try {
       const [customer, service, tenant] = await Promise.all([
         customerRepo.findById(booking.customerId),
@@ -35,24 +45,38 @@ export async function GET(request: Request) {
         tenantRepo.findById(booking.tenantId),
       ])
 
-      if (customer && service && tenant) {
-        await notifications.sendBookingReminder({
-          booking,
-          customer,
-          service,
-          tenant,
-        })
-        sent++
+      if (!customer || !service || !tenant) {
+        // Stale references — release claim so a future run can retry once
+        // the referenced records exist, or be investigated manually.
+        await bookingRepo.releaseReminder(booking.id)
+        failed++
+        continue
       }
 
-      await bookingRepo.updateReminderSentAt(booking.id, new Date())
+      await notifications.sendBookingReminder({
+        booking,
+        customer,
+        service,
+        tenant,
+      })
+      sent++
     } catch (error) {
       console.error(
         `[send-reminders] Failed for booking ${booking.id}:`,
         error
       )
+      // Roll back the claim so the next run retries.
+      try {
+        await bookingRepo.releaseReminder(booking.id)
+      } catch (releaseErr) {
+        console.error(
+          `[send-reminders] Failed to release claim for ${booking.id}:`,
+          releaseErr
+        )
+      }
+      failed++
     }
   }
 
-  return NextResponse.json({ sent, total: bookings.length })
+  return NextResponse.json({ sent, skipped, failed, total: bookings.length })
 }

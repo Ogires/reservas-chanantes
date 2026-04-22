@@ -10,5 +10,15 @@ export interface BookingRepository {
   updateStripeSessionId(id: string, sessionId: string): Promise<void>
   findByCustomerId(customerId: string): Promise<Booking[]>
   findConfirmedForDateWithoutReminder(date: string): Promise<Booking[]>
-  updateReminderSentAt(id: string, sentAt: Date): Promise<void>
+  /**
+   * Atomically claim a booking for reminder sending. Returns true only if
+   * this call acquired the claim (reminder_sent_at was NULL and is now set).
+   * Returns false if another process already claimed it.
+   */
+  claimReminder(id: string, sentAt: Date): Promise<boolean>
+  /**
+   * Release a previously-claimed reminder so it can be retried on the next
+   * cron run. Called after a send failure.
+   */
+  releaseReminder(id: string): Promise<void>
 }

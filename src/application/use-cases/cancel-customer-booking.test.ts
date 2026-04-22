@@ -75,7 +75,8 @@ function createMockRepos(overrides?: {
     updateStatus: vi.fn(async () => {}),
     updateStripeSessionId: async () => {},
     findConfirmedForDateWithoutReminder: async () => [],
-    updateReminderSentAt: async () => {},
+    claimReminder: async () => true,
+    releaseReminder: async () => {},
   }
   const tenantRepo: TenantRepository = {
     findBySlug: async () => TENANT,

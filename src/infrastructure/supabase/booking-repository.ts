@@ -155,13 +155,28 @@ export class SupabaseBookingRepository implements BookingRepository {
     return (data ?? []).map(toDomain)
   }
 
-  async updateReminderSentAt(id: string, sentAt: Date): Promise<void> {
-    const { error } = await this.supabase
+  async claimReminder(id: string, sentAt: Date): Promise<boolean> {
+    const { data, error } = await this.supabase
       .from('bookings')
       .update({ reminder_sent_at: sentAt.toISOString() })
       .eq('id', id)
+      .is('reminder_sent_at', null)
+      .select('id')
 
-    if (error)
-      throw new Error(`Failed to update reminder_sent_at: ${error.message}`)
+    if (error) {
+      throw new Error(`Failed to claim reminder: ${error.message}`)
+    }
+    return (data ?? []).length > 0
+  }
+
+  async releaseReminder(id: string): Promise<void> {
+    const { error } = await this.supabase
+      .from('bookings')
+      .update({ reminder_sent_at: null })
+      .eq('id', id)
+
+    if (error) {
+      throw new Error(`Failed to release reminder: ${error.message}`)
+    }
   }
 }

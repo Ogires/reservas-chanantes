@@ -80,3 +80,53 @@ describe('SupabaseBookingRepository.save', () => {
     expect(result.status).toBe(BookingStatus.PENDING)
   })
 })
+
+function mockSupabaseForClaim(result: {
+  data: unknown[] | null
+  error: { message: string } | null
+}) {
+  const select = vi.fn().mockResolvedValue(result)
+  const is = vi.fn().mockReturnValue({ select })
+  const eq = vi.fn().mockReturnValue({ is })
+  const update = vi.fn().mockReturnValue({ eq })
+  const from = vi.fn().mockReturnValue({ update })
+  return { from } as never
+}
+
+describe('SupabaseBookingRepository.claimReminder', () => {
+  it('returns true when the row was updated (reminder was NULL)', async () => {
+    const supabase = mockSupabaseForClaim({
+      data: [{ id: 'bk-1' }],
+      error: null,
+    })
+    const repo = new SupabaseBookingRepository(supabase)
+
+    const result = await repo.claimReminder(
+      'bk-1',
+      new Date('2026-04-22T10:00:00Z')
+    )
+
+    expect(result).toBe(true)
+  })
+
+  it('returns false when no row was updated (already claimed)', async () => {
+    const supabase = mockSupabaseForClaim({ data: [], error: null })
+    const repo = new SupabaseBookingRepository(supabase)
+
+    const result = await repo.claimReminder('bk-1', new Date())
+
+    expect(result).toBe(false)
+  })
+
+  it('throws when Supabase returns an error', async () => {
+    const supabase = mockSupabaseForClaim({
+      data: null,
+      error: { message: 'boom' },
+    })
+    const repo = new SupabaseBookingRepository(supabase)
+
+    await expect(repo.claimReminder('bk-1', new Date())).rejects.toThrow(
+      /Failed to claim reminder/
+    )
+  })
+})
