@@ -37,8 +37,11 @@ La aplicación está **desplegada y accesible** en <https://reservas-chanantes.v
 
 1. **Crea un negocio** en [`/admin/register`](https://reservas-chanantes.vercel.app/admin/register) (correo y contraseña, o Google).
 2. Desde el panel, **añade uno o varios servicios** (nombre, duración, precio) y **define el horario semanal** de apertura.
-3. Anota el *slug* de tu negocio y visita su **página pública** `/[slug]`: verás el catálogo y la disponibilidad calculada en tiempo real.
-4. Como cliente, **elige un hueco y reserva**. El hueco queda bloqueado de inmediato para el resto.
+3. En **Ajustes**, **conecta una cuenta de cobro** (Stripe Connect). El cobro está en **modo Test**, así que puedes completar el alta de Stripe con datos de prueba.
+4. Anota el *slug* de tu negocio y visita su **página pública** `/[slug]`: verás el catálogo y la disponibilidad calculada en tiempo real.
+5. Como cliente, **elige un hueco y reserva**. El hueco queda bloqueado de inmediato para el resto y se abre el pago.
+
+> **Pago en modo Test:** el cobro usa **Stripe en modo de pruebas** (no se procesan pagos reales). Para completar una reserva, paga con la tarjeta de prueba **`4242 4242 4242 4242`**, cualquier fecha de caducidad futura y cualquier CVC. Una reserva solo puede completarse si el negocio tiene una cuenta de cobro de prueba conectada (paso 3).
 
 > **Nota sobre el despliegue:** el servicio está activo (no se ha apagado para ahorrar costes). La base de datos se aloja en el plan gratuito de Supabase, que puede suspenderse tras un periodo de inactividad; en ese caso, la primera petición tras un periodo sin uso puede tardar unos segundos en responder («arranque en frío»).
 
