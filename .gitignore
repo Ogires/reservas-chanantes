@@ -20,9 +20,10 @@
 # production
 /build
 
-# docs — la memoria académica (docs/memoria) SÍ se versiona; el resto de docs queda local
+# docs — la memoria académica y la presentación SÍ se versionan; el resto de docs queda local
 /docs/*
 !/docs/memoria/
+!/docs/presentacion/
 
 # misc
 .DS_Store

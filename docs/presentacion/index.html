@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reservas Chanantes · TFM · Presentación</title>
+<style>
+  :root{
+    --paper:#F4F1EA;
+    --paper-2:#ECE7DB;
+    --ink:#17171B;
+    --ink-soft:#3A3A40;
+    --muted:#6E6A60;
+    --line:#D8D2C4;
+    --accent:#D4502E;     /* terracota */
+    --accent-2:#0E7C66;   /* verde técnico */
+    --accent-3:#B9892B;   /* ámbar */
+    --font-serif:Georgia,"Times New Roman",serif;
+    --font-sans:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --font-mono:"Cascadia Code","Consolas",ui-monospace,"SFMono-Regular",monospace;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--font-sans);
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- progreso ---------- */
+  #progress{
+    position:fixed;top:0;left:0;height:3px;width:0;
+    background:var(--accent);z-index:50;transition:width .35s ease;
+  }
+
+  /* ---------- deck / slide ---------- */
+  .deck{height:100vh;width:100vw;position:relative;}
+  .slide{
+    position:absolute;inset:0;
+    display:none;
+    flex-direction:column;
+    justify-content:center;
+    padding:6vh 9vw;
+    background:
+      radial-gradient(var(--line) 1px, transparent 1px) 0 0 / 26px 26px,
+      var(--paper);
+    animation:fade .45s ease;
+  }
+  .slide.active{display:flex;}
+  @keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+  /* ---------- elementos comunes ---------- */
+  .kicker{
+    font-family:var(--font-mono);
+    font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--accent);margin-bottom:1.3rem;display:flex;align-items:center;gap:.7rem;
+  }
+  .kicker::before{content:"";width:34px;height:2px;background:var(--accent);display:inline-block;}
+  .kicker.k2{color:var(--accent-2);}
+  .kicker.k2::before{background:var(--accent-2);}
+
+  h1{font-family:var(--font-serif);font-weight:700;line-height:1.02;letter-spacing:-.01em;}
+  h2{font-family:var(--font-serif);font-size:clamp(2rem,4.6vw,3.4rem);font-weight:700;line-height:1.05;letter-spacing:-.01em;margin-bottom:1.4rem;}
+  p.lead{font-size:clamp(1.05rem,2vw,1.5rem);color:var(--ink-soft);line-height:1.5;max-width:50ch;}
+  .foot{
+    position:absolute;bottom:3.4vh;left:9vw;right:9vw;
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:var(--font-mono);font-size:.72rem;color:var(--muted);
+    border-top:1px solid var(--line);padding-top:.8rem;
+  }
+  .foot .brand{letter-spacing:.04em;}
+  .num{font-variant-numeric:tabular-nums;}
+
+  /* ---------- portada ---------- */
+  .cover{justify-content:center;}
+  .cover .tag{font-family:var(--font-mono);font-size:.82rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:2.2rem;}
+  .cover h1{font-size:clamp(3rem,9vw,7rem);}
+  .cover .accentword{color:var(--accent);font-style:italic;}
+  .cover .sub{font-size:clamp(1.1rem,2.4vw,1.7rem);color:var(--ink-soft);margin-top:1.4rem;max-width:34ch;line-height:1.35;}
+  .cover .thesis{margin-top:2.4rem;padding-left:1.2rem;border-left:3px solid var(--accent-2);font-size:clamp(.95rem,1.6vw,1.15rem);color:var(--muted);max-width:52ch;line-height:1.5;font-style:italic;}
+  .cover .live{margin-top:2.6rem;font-family:var(--font-mono);font-size:.85rem;color:var(--accent-2);}
+
+  /* ---------- statement ---------- */
+  .statement{justify-content:center;}
+  .statement .big{font-family:var(--font-serif);font-weight:700;font-size:clamp(2.2rem,6vw,4.6rem);line-height:1.04;letter-spacing:-.015em;max-width:18ch;}
+  .statement .big em{color:var(--accent);font-style:italic;}
+  .statement .qsub{margin-top:1.8rem;font-size:clamp(1rem,1.8vw,1.35rem);color:var(--ink-soft);max-width:48ch;line-height:1.5;}
+
+  /* ---------- listas / bullets ---------- */
+  ul.clean{list-style:none;margin-top:.6rem;max-width:62ch;}
+  ul.clean li{position:relative;padding-left:1.6rem;margin-bottom:1rem;font-size:clamp(1rem,1.7vw,1.28rem);line-height:1.45;color:var(--ink-soft);}
+  ul.clean li::before{content:"";position:absolute;left:0;top:.62em;width:9px;height:9px;background:var(--accent);transform:rotate(45deg);}
+  ul.clean li strong{color:var(--ink);}
+  ul.clean.green li::before{background:var(--accent-2);}
+
+  /* ---------- grid de tarjetas ---------- */
+  .cards{display:grid;gap:1.1rem;margin-top:.4rem;}
+  .cards.c3{grid-template-columns:repeat(3,1fr);}
+  .cards.c2{grid-template-columns:repeat(2,1fr);}
+  .card{
+    background:rgba(255,255,255,.55);
+    border:1px solid var(--line);border-radius:10px;padding:1.3rem 1.4rem;
+  }
+  .card h3{font-family:var(--font-mono);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:.6rem;}
+  .card.g h3{color:var(--accent-2);}
+  .card p{font-size:.98rem;color:var(--ink-soft);line-height:1.4;}
+  .card .path{font-family:var(--font-mono);font-size:.78rem;color:var(--muted);margin-top:.6rem;display:block;}
+
+  /* ---------- métricas ---------- */
+  .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1.4rem;margin-top:1.2rem;}
+  .metric .n{font-family:var(--font-serif);font-size:clamp(2.4rem,5vw,3.8rem);font-weight:700;color:var(--ink);line-height:1;}
+  .metric .n span{color:var(--accent);}
+  .metric .l{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:.5rem;line-height:1.3;}
+
+  /* ---------- pipeline / flujo ---------- */
+  .flow{display:flex;align-items:stretch;gap:.5rem;margin-top:1rem;flex-wrap:wrap;}
+  .flow .step{flex:1;min-width:130px;background:rgba(255,255,255,.55);border:1px solid var(--line);border-radius:9px;padding:1rem;}
+  .flow .step .s{font-family:var(--font-mono);font-size:.72rem;color:var(--accent);}
+  .flow .step .t{margin-top:.4rem;font-size:.98rem;color:var(--ink);font-weight:600;}
+  .flow .step .d{margin-top:.3rem;font-size:.82rem;color:var(--muted);line-height:1.35;}
+  .flow .arrow{align-self:center;color:var(--line);font-size:1.4rem;}
+
+  /* ---------- arquitectura ---------- */
+  .layers{display:flex;flex-direction:column;gap:.6rem;margin-top:1rem;max-width:46ch;}
+  .layer{display:flex;align-items:center;gap:1rem;padding:.95rem 1.2rem;border-radius:9px;border:1px solid var(--line);background:rgba(255,255,255,.5);}
+  .layer .lname{font-family:var(--font-mono);font-weight:600;color:var(--ink);min-width:8.5em;}
+  .layer .ldesc{font-size:.9rem;color:var(--muted);}
+  .layer.l1{border-left:4px solid var(--accent);}
+  .layer.l2{border-left:4px solid var(--accent-3);}
+  .layer.l3{border-left:4px solid var(--accent-2);}
+  .layer.l4{border-left:4px solid var(--ink-soft);}
+  .arch-note{margin-top:1.3rem;font-size:1rem;color:var(--ink-soft);max-width:50ch;line-height:1.5;}
+  .arch-note code{font-family:var(--font-mono);background:var(--paper-2);padding:.1em .35em;border-radius:4px;font-size:.85em;}
+
+  /* ---------- stack chips ---------- */
+  .chips{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1rem;max-width:64ch;}
+  .chip{font-family:var(--font-mono);font-size:.85rem;padding:.5rem .9rem;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.5);color:var(--ink-soft);}
+  .chip b{color:var(--accent);}
+
+  /* ---------- two col ---------- */
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:2.4rem;align-items:start;}
+  .two h4{font-family:var(--font-mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.9rem;}
+  .two .lim h4{color:var(--accent);}
+  .two .fut h4{color:var(--accent-2);}
+
+  /* links cierre */
+  .links{display:grid;gap:.8rem;margin-top:1.4rem;max-width:60ch;}
+  .links a,.links div.lk{display:flex;gap:1rem;align-items:baseline;font-family:var(--font-mono);font-size:1rem;color:var(--ink);text-decoration:none;padding:.7rem 0;border-bottom:1px solid var(--line);}
+  .links .lbl{color:var(--accent);min-width:8em;}
+
+  /* hint */
+  .hint{position:fixed;bottom:1.1vh;left:50%;transform:translateX(-50%);font-family:var(--font-mono);font-size:.66rem;color:var(--muted);opacity:.7;z-index:40;}
+
+  /* ---------- IMPRESIÓN / PDF ---------- */
+  @page{size:A4 landscape;margin:0;}
+  @media print{
+    html,body{height:auto;overflow:visible;background:#fff;}
+    #progress,.hint{display:none!important;}
+    .deck{height:auto;}
+    .slide{
+      display:flex!important;position:relative;inset:auto;
+      width:100%;height:100vh;min-height:100vh;
+      page-break-after:always;break-after:page;
+      animation:none;
+      -webkit-print-color-adjust:exact;print-color-adjust:exact;
+    }
+  }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="deck" id="deck">
+
+  <!-- 1 · PORTADA -->
+  <section class="slide cover active">
+    <div class="tag">Trabajo de Fin de Máster · Junio 2026</div>
+    <h1>Reservas <span class="accentword">Chanantes</span></h1>
+    <p class="sub">Plataforma SaaS <em>multi-tenant</em> de reserva de citas en línea para pequeños negocios de servicios.</p>
+    <p class="thesis">Más que un producto: un caso de estudio sobre la viabilidad del desarrollo de software guiado por Inteligencia Artificial cuando se prioriza la máxima calidad de ingeniería.</p>
+    <p class="live">▸ reservas-chanantes.vercel.app</p>
+    <div class="foot"><span class="brand">RESERVAS CHANANTES · TFM</span><span class="num">01</span></div>
+  </section>
+
+  <!-- 2 · PROBLEMA -->
+  <section class="slide">
+    <div class="kicker">02 · El problema</div>
+    <h2>Las microempresas gestionan<br>sus citas a mano.</h2>
+    <ul class="clean">
+      <li>Peluquerías, fisioterapeutas, centros de estética… reservan por <strong>teléfono y WhatsApp</strong>.</li>
+      <li>Sin un sistema que evite <strong>solapamientos</strong> ni calcule la disponibilidad de forma fiable.</li>
+      <li>Sin <strong>cobro integrado</strong>: el pago se gestiona aparte, o no se gestiona.</li>
+      <li>Las soluciones comerciales son <strong>caras o demasiado genéricas</strong> para este perfil.</li>
+    </ul>
+    <div class="foot"><span class="brand">RESERVAS CHANANTES · TFM</span><span class="num">02</span></div>
+  </section>
+
+  <!-- 3 · SOLUCIÓN -->
+  <section class="slide">
+    <div class="kicker">03 · La solución</div>
+    <h2>Cada negocio, su propia<br>página de reservas.</h2>
+    <p class="lead" style="margin-bottom:1.4rem">El negocio se registra como <em>tenant</em>, configura sus servicios y su horario, y publica una URL pública propia — <strong>/peluqueria-juan</strong> — desde la que sus clientes reservan en tiempo real.</p>
+    <div class="cards c3">
+      <div class="card"><h3>Panel admin</h3><p>Servicios, horario semanal, reservas, zona horaria y cobros.</p><span class="path">/admin</span></div>
+      <div class="card g"><h3>Página pública</h3><p>Disponibilidad en tiempo real, reserva y pago del cliente final.</p><span class="path">/[slug]</span></div>
+      <div class="card"><h3>Portal cliente</h3><p>Historial de reservas, autoservicio de cancelación y perfil.</p><span class="path">/my</span></div>
+    </div>
+    <div class="foot"><span class="brand">RESERVAS CHANANTES · TFM</span><span class="num">03</span></div>
+  </section>
+
+  <!-- 4 · CÓMO FUNCIONA -->
+  <section class="slide">
+    <div class="kicker k2">04 · Cómo funciona</div>
+    <h2>El recorrido del cliente.</h2>
+    <div class="flow">
+      <div class="step"><div class="s">01</div><div class="t">Elige servicio</div><div class="d">Ve el catálogo del negocio con duración y precio.</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="s">02</div><div class="t">Ve huecos reales</div><div class="d">Disponibilidad calculada al vuelo: horario − reservas.</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="s">03</div><div class="t">Reserva y paga</div><div class="d">El hueco se bloquea para los demás. Pago con Stripe.</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="s">04</div><div class="t">Confirmación</div><div class="d">Correo de confirmación y recordatorio automático.</div></div>
+    </div>
+    <p class="lead" style="margin-top:1.6rem;font-size:1.05rem">Un hueco reservado queda <strong>bloqueado de inmediato</strong> para el resto de clientes — sin dobles reservas.</p>
+    <div class="foot"><span class="brand">RESERVAS CHANANTES · TFM</span><span class="num">04</span></div>
+  </section>
+
+  <!-- 5 · MODELO B2B2C -->
+  <section class="slide">
+    <div class="kicker">05 · Modelo de negocio</div>
+    <h2>B2B2C con pagos divididos.</h2>
+    <div class="flow" style="margin-bottom:1.4rem">
+      <div class="step"><div class="s">Plataforma</div><div class="t">Reservas Chanantes</div><div class="d">Da servicio a los negocios y retiene una comisión.</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="s">B2B</div><div class="t">El negocio</div><div class="d">Cobra a sus clientes a través de la plataforma.</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="s">B2C</div><div class="t">Cliente final</div><div class="d">Paga su cita en línea de forma segura.</div></div>
+    </div>
+    <ul class="clean green">
+      <li><strong>Stripe Connect:</strong> cada negocio conecta su cuenta de cobro; el pago se confirma mediante <em>webhook</em> firmado.</li>
+      <li>Comisión por plan diseñada en el dominio (<code style="font-family:var(--font-mono)">plan-limits</code>) — su activación se documenta como línea futura.</li>
+    </ul>
+    <div class="foot"><span class="brand">RESERVAS CHANANTES · TFM</span><span class="num">05</span></div>
+  </section>
+
+  <!-- 6 · LA TESIS -->
+  <section class="slide statement">
+    <div class="kicker">06 · La verdadera tesis</div>
+    <div class="big">El producto es el vehículo.<br>La <em>tesis</em> es el método.</div>
+    <p class="qsub">¿Es viable desarrollar software guiado por IA <strong>sin renunciar a la máxima calidad de ingeniería</strong>? Para responderlo, el sistema se construye bajo una disciplina explícita: <strong>Clean Architecture · DDD · TDD · SOLID</strong>, con trazabilidad documentada en planes, revisiones y registro de desviaciones.</p>
+    <div class="foot"><span class="brand">RESERVAS CHANANTES · TFM</span><span class="num">06</span></div>
+  </section>
+
+  <!-- 7 · ARQUITECTURA -->
+  <section class="slide">
+    <div class="kicker k2">07 · Arquitectura</div>
+    <h2>Cuatro capas, una regla.</h2>
+    <div class="layers">
+      <div class="layer l1"><span class="lname">domain</span><span class="ldesc">Entidades, objetos de valor y servicios de dominio puros.</span></div>
+      <div class="layer l2"><span class="lname">application</span><span class="ldesc">Casos de uso y puertos (interfaces de repositorio).</span></div>
+      <div class="layer l3"><span class="lname">infrastructure</span><span class="ldesc">Adaptadores Supabase, Stripe, Resend.</span></div>
+      <div class="layer l4"><span class="lname">presentation</span><span class="ldesc">Next.js: páginas, <em>Server Actions</em>, componentes.</span></div>
+    </div>
+    <p class="arch-note">La regla que lo sostiene todo: <strong>el dominio no importa ninguna dependencia de <em>framework</em></strong>. No es declarativo — es verificable, y es lo que habilita una pirámide de pruebas de base ancha.</p>
+    <div class="foot"><span class="brand">RESERVAS CHANANTES · TFM</span><span class="num">07</span></div>
+  </section>
+
+  <!-- 8 · PROBLEMAS TÉCNICOS -->
+  <section class="slide">
+    <div class="kicker">08 · Complejidad esencial</div>
+    <h2>Los problemas que no<br>son triviales.</h2>
+    <div class="cards c2">
+      <div class="card"><h3>Disponibilidad</h3><p>Horario de apertura menos reservas ocupadas, modelando el tiempo como <em>aritmética entera de minutos</em>.</p></div>
+      <div class="card g"><h3>Concurrencia</h3><p>Prevención de solapamientos en la capa autoritativa: restricción <em>EXCLUDE / btree_gist</em> de PostgreSQL → <em>SlotTakenError</em>.</p></div>
+      <div class="card"><h3>Zona horaria</h3><p>Cálculo sensible a la zona horaria del negocio (<em>tenant-clock</em>), no del servidor.</p></div>
+      <div class="card g"><h3>Idempotencia</h3><p>Recordatorios sin duplicados ante reintentos del <em>cron</em>: patrón <em>claim-and-release</em>.</p></div>
+    </div>
+    <div class="foot"><span class="brand">RESERVAS CHANANTES · TFM</span><span class="num">08</span></div>
+  </section>
+
+  <!-- 9 · CALIDAD / MÉTRICAS -->
+  <section class="slide">
+    <div class="kicker k2">09 · La calidad como evidencia</div>
+    <h2>No se declara: se mide.</h2>
+    <div class="metrics">
+      <div class="metric"><div class="n"><span>189</span></div><div class="l">pruebas automáticas<br>en 21 ficheros</div></div>
+      <div class="metric"><div class="n">87<span>%</span></div><div class="l">cobertura en dominio<br>y aplicación</div></div>
+      <div class="metric"><div class="n">20</div><div class="l">requisitos funcionales<br>trazables al código</div></div>
+      <div class="metric"><div class="n">9</div><div class="l">migraciones SQL<br>versionadas</div></div>
+    </div>
+    <p class="lead" style="margin-top:1.8rem;font-size:1.05rem">Pirámide de base ancha — dominio y aplicación concentran las pruebas — habilitada por la arquitectura desacoplada.</p>
+    <div class="foot"><span class="brand">RESERVAS CHANANTES · TFM</span><span class="num">09</span></div>
+  </section>
+
+  <!-- 10 · LIMITACIONES + FUTURO -->
+  <section class="slide">
+    <div class="kicker">10 · Honestidad académica</div>
+    <h2>Documentar lo que falta<br>también es calidad.</h2>
+    <div class="two">
+      <div class="lim">
+        <h4>Limitaciones reconocidas</h4>
+        <ul class="clean">
+          <li>RLS permisiva en <strong>bookings</strong> y <strong>customers</strong>.</li>
+          <li>Monetización por plan <strong>no activada</strong>.</li>
+          <li>Clean Architecture <strong>parcial</strong> en la rama de administración.</li>
+          <li>Defecto conocido de <strong>zona horaria</strong> (getUTCDay).</li>
+          <li>Sin <strong>CI/CD</strong> ni E2E automatizado.</li>
+        </ul>
+      </div>
+      <div class="fut">
+        <h4>Líneas futuras priorizadas</h4>
+        <ul class="clean green">
+          <li>Endurecer seguridad → <strong>capítulo de modelado de amenazas</strong>.</li>
+          <li>CI/CD + E2E + <strong>umbral de cobertura</strong>.</li>
+          <li>Activar monetización y sanear coherencia arquitectónica.</li>
+          <li>Corregir zona horaria y mejorar observabilidad.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot"><span class="brand">RESERVAS CHANANTES · TFM</span><span class="num">10</span></div>
+  </section>
+
+  <!-- 11 · STACK -->
+  <section class="slide">
+    <div class="kicker k2">11 · Pila tecnológica</div>
+    <h2>Stack.</h2>
+    <div class="chips">
+      <span class="chip"><b>Next.js 16</b> · App Router</span>
+      <span class="chip"><b>React 19</b></span>
+      <span class="chip"><b>TypeScript</b> estricto</span>
+      <span class="chip"><b>Supabase</b> · PostgreSQL + Auth + RLS</span>
+      <span class="chip"><b>Stripe Connect</b></span>
+      <span class="chip"><b>Resend</b> · correo</span>
+      <span class="chip"><b>Tailwind CSS 4</b></span>
+      <span class="chip"><b>Vitest</b></span>
+      <span class="chip"><b>Vercel</b> · serverless</span>
+    </div>
+    <p class="lead" style="margin-top:1.8rem;font-size:1.05rem">Pila moderna, de bajo coste operativo, elegida con criterios razonados frente a sus alternativas (Cap. 2 de la memoria).</p>
+    <div class="foot"><span class="brand">RESERVAS CHANANTES · TFM</span><span class="num">11</span></div>
+  </section>
+
+  <!-- 12 · CIERRE -->
+  <section class="slide statement">
+    <div class="kicker">12 · Conclusión</div>
+    <div class="big" style="font-size:clamp(1.9rem,4.6vw,3.4rem);max-width:24ch">El desarrollo asistido por IA, bajo <em>disciplina de ingeniería explícita</em>, es una vía viable para construir software no trivial y de calidad de producción.</div>
+    <div class="links">
+      <div class="lk"><span class="lbl">Demo en vivo</span><span>reservas-chanantes.vercel.app</span></div>
+      <div class="lk"><span class="lbl">Código</span><span>github.com/Ogires/reservas-chanantes</span></div>
+      <div class="lk"><span class="lbl">Memoria</span><span>docs/memoria/ · 7 capítulos + anexos</span></div>
+    </div>
+    <div class="foot"><span class="brand">GRACIAS · RESERVAS CHANANTES</span><span class="num">12</span></div>
+  </section>
+
+</div>
+<div class="hint">← → navegar · F pantalla completa · Ctrl/Cmd+P → PDF</div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  const prog=document.getElementById('progress');
+  let i=slides.findIndex(s=>s.classList.contains('active'));
+  if(i<0)i=0;
+  function show(n){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+    prog.style.width=((i)/(slides.length-1)*100)+'%';
+    if(location.hash!=='#'+(i+1))history.replaceState(null,'','#'+(i+1));
+  }
+  function next(){show(i+1);}
+  function prev(){show(i-1);}
+  document.addEventListener('keydown',e=>{
+    if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();next();}
+    else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();prev();}
+    else if(e.key==='Home'){show(0);}
+    else if(e.key==='End'){show(slides.length-1);}
+    else if(e.key==='f'||e.key==='F'){if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}
+  });
+  document.getElementById('deck').addEventListener('click',e=>{
+    if(e.clientX < window.innerWidth*0.32) prev(); else next();
+  });
+  // swipe
+  let x0=null;
+  addEventListener('touchstart',e=>x0=e.touches[0].clientX,{passive:true});
+  addEventListener('touchend',e=>{if(x0===null)return;const dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>50){dx<0?next():prev();}x0=null;});
+  // deep link (carga inicial + cambios de hash)
+  function fromHash(){const h=parseInt(location.hash.replace('#',''));if(Number.isFinite(h)&&h>=1&&h-1!==i)show(h-1);}
+  addEventListener('hashchange',fromHash);
+  const h0=parseInt(location.hash.replace('#',''));
+  show(Number.isFinite(h0)&&h0>=1?h0-1:i);
+</script>
+</body>
+</html>
