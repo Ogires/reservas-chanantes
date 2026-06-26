@@ -5,7 +5,7 @@
 Cada negocio se registra como *tenant*, configura su catálogo de servicios y su horario de apertura, y publica una **URL pública propia** (p. ej. `/peluqueria-juan`) desde la que sus clientes consultan la disponibilidad en tiempo real, reservan una cita y, opcionalmente, pagan en línea. El modelo es **B2B2C**: la plataforma da servicio a los negocios y estos cobran a sus clientes finales mediante **Stripe Connect**.
 
 🔗 **Demo en vivo:** <https://reservas-chanantes.vercel.app/>
-📚 **Memoria académica (TFM):** [`docs/memoria/`](docs/memoria/) · **Presentación:** [`docs/presentacion/index.html`](docs/presentacion/index.html)
+📚 **Memoria académica (TFM):** [`docs/memoria/`](docs/memoria/) · **Presentación:** [HTML](docs/presentacion/index.html) · [PDF](docs/presentacion/Reservas-Chanantes-TFM-presentacion.pdf)
 
 > Este repositorio es el entregable de un **Trabajo de Fin de Máster**. Más allá del producto, el proyecto es un **caso de estudio** sobre la viabilidad del desarrollo de software guiado por IA priorizando la máxima calidad de ingeniería (Arquitectura Limpia, DDD, TDD). El análisis completo está en la [memoria](docs/memoria/).
 

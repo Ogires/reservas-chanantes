@@ -155,18 +155,23 @@
   .hint{position:fixed;bottom:1.1vh;left:50%;transform:translateX(-50%);font-family:var(--font-mono);font-size:.66rem;color:var(--muted);opacity:.7;z-index:40;}
 
   /* ---------- IMPRESIÓN / PDF ---------- */
-  @page{size:A4 landscape;margin:0;}
+  /* tamaño widescreen 16:9 (1280×720 @96dpi) = coincide 1:1 con el diseño en pantalla */
+  @page{size:13.333in 7.5in;margin:0;}
   @media print{
     html,body{height:auto;overflow:visible;background:#fff;}
     #progress,.hint{display:none!important;}
     .deck{height:auto;}
+    .deck{display:block;}
     .slide{
       display:flex!important;position:relative;inset:auto;
-      width:100%;height:100vh;min-height:100vh;
+      width:13.333in;height:7.5in;min-height:7.5in;max-height:7.5in;
+      overflow:hidden;
       page-break-after:always;break-after:page;
+      page-break-inside:avoid;break-inside:avoid;
       animation:none;
       -webkit-print-color-adjust:exact;print-color-adjust:exact;
     }
+    .slide:last-of-type{page-break-after:auto;break-after:auto;}
   }
 </style>
 </head>
@@ -354,11 +359,12 @@
   </section>
 
 </div>
-<div class="hint">← → navegar · F pantalla completa · Ctrl/Cmd+P → PDF</div>
+<div class="hint">← → navegar · F pantalla completa</div>
 
 <script>
   const slides=[...document.querySelectorAll('.slide')];
   const prog=document.getElementById('progress');
+  if(location.search.includes('nohint')){const h=document.querySelector('.hint');if(h)h.style.display='none';}
   let i=slides.findIndex(s=>s.classList.contains('active'));
   if(i<0)i=0;
   function show(n){
