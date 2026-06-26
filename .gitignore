@@ -20,8 +20,9 @@
 # production
 /build
 
-# docs
-/docs
+# docs — la memoria académica (docs/memoria) SÍ se versiona; el resto de docs queda local
+/docs/*
+!/docs/memoria/
 
 # misc
 .DS_Store
@@ -35,6 +36,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.local.example
 
 # vercel
 .vercel
@@ -42,3 +44,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local operational notes (not versioned)
+/DESPLIEGUE.local.md
+
+# datos de siembra/demo (correos sintéticos — no se publican)
+/scripts/demo-emails.*
+/scripts/generate-demo-emails.mjs
+
+# capturas locales sin uso en el repo
+/landing.png
