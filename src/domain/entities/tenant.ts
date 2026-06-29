@@ -14,6 +14,8 @@ export interface Tenant {
   readonly plan: TenantPlan
   readonly stripeAccountId?: string
   readonly stripeAccountEnabled: boolean
+  /** Si el negocio admite reservas con pago presencial en el centro. No excluyente con el pago online. */
+  readonly allowOnSitePayment: boolean
   readonly description?: string
   readonly category?: BusinessCategory
   readonly city?: string

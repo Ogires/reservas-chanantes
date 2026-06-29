@@ -15,6 +15,8 @@ interface BookingWidgetProps {
   services: ServiceInfo[]
   minDate: string
   maxDate: string
+  canPayOnline: boolean
+  canPayOnSite: boolean
 }
 
 const STEP_LABELS = ['Service', 'Date', 'Time'] as const
@@ -75,7 +77,7 @@ function formatReadableDate(dateStr: string): string {
   })
 }
 
-export function BookingWidget({ slug, services, minDate, maxDate }: BookingWidgetProps) {
+export function BookingWidget({ slug, services, minDate, maxDate, canPayOnline, canPayOnSite }: BookingWidgetProps) {
   const [selectedService, setSelectedService] = useState<ServiceInfo | null>(
     null
   )
@@ -174,6 +176,8 @@ export function BookingWidget({ slug, services, minDate, maxDate }: BookingWidge
         onCustomerNameChange={setCustomerName}
         onCustomerEmailChange={setCustomerEmail}
         onCustomerPhoneChange={setCustomerPhone}
+        canPayOnline={canPayOnline}
+        canPayOnSite={canPayOnSite}
       />
     </div>
   )

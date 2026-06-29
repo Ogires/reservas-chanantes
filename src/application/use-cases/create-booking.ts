@@ -14,7 +14,7 @@ import {
   getTenantLocalMinutes,
   addDaysToLocalDate,
 } from '@/domain/services/tenant-clock'
-import { BookingStatus, type DayOfWeek } from '@/domain/types'
+import { BookingStatus, PaymentMethod, type DayOfWeek } from '@/domain/types'
 import { EmailAddress } from '@/domain/value-objects/email-address'
 import {
   TenantNotFoundError,
@@ -25,6 +25,7 @@ import {
   BookingInPastError,
   BookingTooFarAheadError,
   InvalidPhoneError,
+  OnSitePaymentNotAllowedError,
 } from '@/domain/errors/domain-errors'
 
 export interface CreateBookingInput {
@@ -35,6 +36,8 @@ export interface CreateBookingInput {
   customerPhone: string
   date: string // YYYY-MM-DD
   startTime: string // HH:MM
+  /** Método de pago elegido. Por defecto ONLINE (flujo Stripe). */
+  paymentMethod?: PaymentMethod
   now?: Date
 }
 
@@ -49,8 +52,14 @@ export class CreateBookingUseCase {
 
   async execute(input: CreateBookingInput): Promise<Booking> {
     const now = input.now ?? new Date()
+    const paymentMethod = input.paymentMethod ?? PaymentMethod.ONLINE
     const tenant = await this.tenantRepo.findBySlug(input.tenantSlug)
     if (!tenant) throw new TenantNotFoundError(input.tenantSlug)
+
+    // El pago en el centro solo es válido si el negocio lo ha habilitado.
+    if (paymentMethod === PaymentMethod.ON_SITE && !tenant.allowOnSitePayment) {
+      throw new OnSitePaymentNotAllowedError()
+    }
 
     const { timezone, minAdvanceMinutes, maxAdvanceDays } =
       tenant.bookingPolicy
@@ -111,6 +120,14 @@ export class CreateBookingUseCase {
       })
     }
 
+    // El pago en el centro confirma la reserva de inmediato (la cita queda
+    // firme y se abona en persona). El pago online queda PENDING hasta que
+    // el webhook de Stripe confirme el cobro.
+    const status =
+      paymentMethod === PaymentMethod.ON_SITE
+        ? BookingStatus.CONFIRMED
+        : BookingStatus.PENDING
+
     const booking: Booking = {
       id: crypto.randomUUID(),
       tenantId: tenant.id,
@@ -121,7 +138,8 @@ export class CreateBookingUseCase {
         startMinute,
         startMinute + service.durationMinutes
       ),
-      status: BookingStatus.PENDING,
+      status,
+      paymentMethod,
       createdAt: new Date(),
     }
 

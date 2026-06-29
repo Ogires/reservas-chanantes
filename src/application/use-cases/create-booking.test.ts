@@ -12,7 +12,7 @@ import type { Booking } from '@/domain/entities/booking'
 import { WeeklySchedule } from '@/domain/entities/weekly-schedule'
 import { TimeRange } from '@/domain/value-objects/time-range'
 import { Money } from '@/domain/value-objects/money'
-import { DayOfWeek, BookingStatus } from '@/domain/types'
+import { DayOfWeek, BookingStatus, PaymentMethod } from '@/domain/types'
 import {
   TenantNotFoundError,
   ServiceNotFoundError,
@@ -23,6 +23,7 @@ import {
   BookingTooFarAheadError,
   InvalidPhoneError,
   InvalidEmailError,
+  OnSitePaymentNotAllowedError,
 } from '@/domain/errors/domain-errors'
 import { createBookingPolicy } from '@/domain/value-objects/booking-policy'
 
@@ -387,5 +388,60 @@ describe('CreateBookingUseCase', () => {
     })
 
     expect(booking.date).toBe('2026-03-02')
+  })
+
+  it('defaults to ONLINE payment with PENDING status', async () => {
+    const repos = createMockRepos()
+    const useCase = new CreateBookingUseCase(
+      repos.tenantRepo,
+      repos.serviceRepo,
+      repos.scheduleRepo,
+      repos.bookingRepo,
+      repos.customerRepo
+    )
+
+    const booking = await useCase.execute(validInput)
+
+    expect(booking.paymentMethod).toBe(PaymentMethod.ONLINE)
+    expect(booking.status).toBe(BookingStatus.PENDING)
+  })
+
+  it('confirms an on-site booking immediately when the tenant allows it', async () => {
+    const tenantAllowsOnSite = {
+      ...TENANT,
+      allowOnSitePayment: true,
+    } as Tenant
+    const repos = createMockRepos({ tenant: tenantAllowsOnSite })
+    const useCase = new CreateBookingUseCase(
+      repos.tenantRepo,
+      repos.serviceRepo,
+      repos.scheduleRepo,
+      repos.bookingRepo,
+      repos.customerRepo
+    )
+
+    const booking = await useCase.execute({
+      ...validInput,
+      paymentMethod: PaymentMethod.ON_SITE,
+    })
+
+    expect(booking.paymentMethod).toBe(PaymentMethod.ON_SITE)
+    expect(booking.status).toBe(BookingStatus.CONFIRMED)
+  })
+
+  it('throws OnSitePaymentNotAllowedError when the tenant disallows on-site payment', async () => {
+    // Default TENANT fixture does not allow on-site payment.
+    const repos = createMockRepos()
+    const useCase = new CreateBookingUseCase(
+      repos.tenantRepo,
+      repos.serviceRepo,
+      repos.scheduleRepo,
+      repos.bookingRepo,
+      repos.customerRepo
+    )
+
+    await expect(
+      useCase.execute({ ...validInput, paymentMethod: PaymentMethod.ON_SITE })
+    ).rejects.toThrow(OnSitePaymentNotAllowedError)
   })
 })

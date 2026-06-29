@@ -31,6 +31,7 @@ export async function saveSettings(
   const seoDescription = (formData.get('seoDescription') as string)?.trim() || undefined
   const rawLocale = formData.get('defaultLocale') as string
   const defaultLocale = rawLocale === 'en-US' ? 'en-US' : 'es-ES'
+  const allowOnSitePayment = formData.get('allowOnSitePayment') === 'on'
 
   if (!name) {
     return { error: 'Business name is required' }
@@ -51,6 +52,7 @@ export async function saveSettings(
       name,
       bookingPolicy,
       defaultLocale,
+      allowOnSitePayment,
       description,
       category: category as Tenant['category'],
       city,

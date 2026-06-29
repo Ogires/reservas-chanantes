@@ -18,6 +18,13 @@ export enum BookingStatus {
   CANCELLED = 'CANCELLED',
 }
 
+export enum PaymentMethod {
+  /** El cliente paga online mediante Stripe (confirmación vía webhook). */
+  ONLINE = 'ONLINE',
+  /** El cliente reserva ahora y paga en persona al acudir al centro. */
+  ON_SITE = 'ON_SITE',
+}
+
 export enum TenantPlan {
   FREE = 'FREE',
   PRO = 'PRO',

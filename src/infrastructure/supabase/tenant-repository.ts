@@ -20,6 +20,7 @@ interface TenantRow {
   plan?: string
   stripe_account_id: string | null
   stripe_account_enabled: boolean
+  allow_onsite_payment: boolean | null
   description: string | null
   category: string | null
   city: string | null
@@ -46,6 +47,7 @@ function toDomain(row: TenantRow): Tenant {
     plan: (row.plan as TenantPlan) ?? TenantPlan.FREE,
     stripeAccountId: row.stripe_account_id ?? undefined,
     stripeAccountEnabled: row.stripe_account_enabled ?? false,
+    allowOnSitePayment: row.allow_onsite_payment ?? false,
     description: row.description ?? undefined,
     category: (row.category as BusinessCategory) ?? undefined,
     city: row.city ?? undefined,
@@ -122,6 +124,7 @@ export class SupabaseTenantRepository implements TenantRepository {
         timezone: tenant.bookingPolicy.timezone,
         min_advance_minutes: tenant.bookingPolicy.minAdvanceMinutes,
         max_advance_days: tenant.bookingPolicy.maxAdvanceDays,
+        allow_onsite_payment: tenant.allowOnSitePayment,
         description: tenant.description ?? null,
         category: tenant.category ?? 'LocalBusiness',
         city: tenant.city ?? null,

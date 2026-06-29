@@ -144,6 +144,8 @@ export default async function TenantPage({
             services={services}
             minDate={today}
             maxDate={maxDate}
+            canPayOnline={!!tenant.stripeAccountId && tenant.stripeAccountEnabled}
+            canPayOnSite={tenant.allowOnSitePayment}
           />
         )}
       </div>

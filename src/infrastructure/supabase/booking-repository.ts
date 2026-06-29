@@ -2,7 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Booking } from '@/domain/entities/booking'
 import type { BookingRepository } from '@/application/ports/booking-repository'
 import { TimeRange } from '@/domain/value-objects/time-range'
-import type { BookingStatus } from '@/domain/types'
+import type { BookingStatus, PaymentMethod } from '@/domain/types'
 import { SlotTakenError } from '@/domain/errors/domain-errors'
 
 interface BookingRow {
@@ -14,6 +14,7 @@ interface BookingRow {
   start_minutes: number
   end_minutes: number
   status: string
+  payment_method: string | null
   stripe_checkout_session_id: string | null
   created_at: string
 }
@@ -27,6 +28,7 @@ function toDomain(row: BookingRow): Booking {
     date: row.date,
     timeRange: new TimeRange(row.start_minutes, row.end_minutes),
     status: row.status as BookingStatus,
+    paymentMethod: (row.payment_method as PaymentMethod | null) ?? undefined,
     stripeCheckoutSessionId: row.stripe_checkout_session_id ?? undefined,
     createdAt: new Date(row.created_at),
   }
@@ -93,6 +95,7 @@ export class SupabaseBookingRepository implements BookingRepository {
         start_minutes: booking.timeRange.start,
         end_minutes: booking.timeRange.end,
         status: booking.status,
+        payment_method: booking.paymentMethod ?? 'ONLINE',
       })
       .select()
       .single()

@@ -43,6 +43,7 @@ interface SettingsFormProps {
   seoTitle: string
   seoDescription: string
   defaultLocale: Locale
+  allowOnSitePayment: boolean
   translations: Pick<AdminTranslations, 'settings' | 'common'>
 }
 
@@ -59,6 +60,7 @@ export function SettingsForm({
   seoTitle,
   seoDescription,
   defaultLocale,
+  allowOnSitePayment,
   translations: { settings: t, common },
 }: SettingsFormProps) {
   const [state, formAction, isPending] = useActionState(saveSettings, null)
@@ -167,6 +169,24 @@ export function SettingsForm({
           <p className="mt-1 text-xs text-slate-500">
             {t.maxAdvanceHelp}
           </p>
+        </div>
+
+        {/* Payments */}
+        <div className="border-t border-slate-200 pt-4 mt-6">
+          <h2 className="text-sm font-semibold text-slate-800 mb-3">{t.onSitePayment}</h2>
+          <label htmlFor="allowOnSitePayment" className="flex items-start gap-3 cursor-pointer">
+            <input
+              id="allowOnSitePayment"
+              name="allowOnSitePayment"
+              type="checkbox"
+              defaultChecked={allowOnSitePayment}
+              className="mt-0.5 h-4 w-4 rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+            />
+            <span>
+              <span className="block text-sm font-medium text-slate-700">{t.onSitePaymentLabel}</span>
+              <span className="mt-0.5 block text-xs text-slate-500">{t.onSitePaymentHelp}</span>
+            </span>
+          </label>
         </div>
 
         {/* Business Profile */}

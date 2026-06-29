@@ -44,6 +44,7 @@ export default async function SettingsPage() {
         seoTitle={tenant.seoTitle ?? ''}
         seoDescription={tenant.seoDescription ?? ''}
         defaultLocale={tenant.defaultLocale}
+        allowOnSitePayment={tenant.allowOnSitePayment}
         translations={{ settings: t.settings, common: t.common }}
       />
     </div>

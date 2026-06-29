@@ -70,6 +70,7 @@ export async function register(
       createdAt: new Date(),
       plan: TenantPlan.FREE,
       stripeAccountEnabled: false,
+      allowOnSitePayment: false,
     })
   } catch (e) {
     return {

@@ -16,6 +16,8 @@ interface SlotPickerProps {
   onCustomerNameChange: (value: string) => void
   onCustomerEmailChange: (value: string) => void
   onCustomerPhoneChange: (value: string) => void
+  canPayOnline: boolean
+  canPayOnSite: boolean
 }
 
 export function SlotPicker({
@@ -30,12 +32,18 @@ export function SlotPicker({
   onCustomerNameChange,
   onCustomerEmailChange,
   onCustomerPhoneChange,
+  canPayOnline,
+  canPayOnSite,
 }: SlotPickerProps) {
   const [slots, setSlots] = useState<SlotDTO[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [confirmed, setConfirmed] = useState(false)
+  const [payMethod, setPayMethod] = useState<'online' | 'onsite'>(
+    canPayOnline ? 'online' : 'onsite'
+  )
 
   useEffect(() => {
     let ignore = false
@@ -144,15 +152,47 @@ export function SlotPicker({
       customerPhone,
       date,
       startTime: selectedSlot!,
+      paymentMethod: payMethod === 'onsite' ? 'ON_SITE' : 'ONLINE',
     })
 
     if (result.success && result.checkoutUrl) {
       window.location.href = result.checkoutUrl
       return
     }
+    if (result.success) {
+      // Pago en el centro: la reserva queda confirmada sin pasar por Stripe.
+      setConfirmed(true)
+      setSubmitting(false)
+      return
+    }
     setError(result.error || 'Booking failed')
     setSubmitting(false)
   }
+
+  if (confirmed) {
+    return (
+      <div className="rounded-xl border-2 border-emerald-200 bg-emerald-50 p-6 text-center">
+        <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-emerald-100">
+          <svg className="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+          </svg>
+        </div>
+        <h3 className="font-serif text-xl font-bold text-emerald-800 mb-1">Booking confirmed!</h3>
+        <p className="text-sm text-emerald-700 mb-1">
+          {serviceName} on {date} at {selectedSlot}
+        </p>
+        <p className="text-sm text-emerald-600">You will pay at the venue when you arrive.</p>
+        <a
+          href={`/${slug}`}
+          className="mt-5 inline-block rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 transition-colors"
+        >
+          Book another appointment
+        </a>
+      </div>
+    )
+  }
+
+  const showPayChoice = canPayOnline && canPayOnSite
 
   return (
     <div>
@@ -218,12 +258,50 @@ export function SlotPicker({
           />
         </div>
 
+        {showPayChoice && (
+          <fieldset className="space-y-2">
+            <legend className="block text-sm font-medium text-slate-700 mb-1.5">
+              How would you like to pay?
+            </legend>
+            <label className={`flex items-center gap-3 rounded-lg border-2 px-3 py-2.5 cursor-pointer transition-colors ${
+              payMethod === 'online' ? 'border-teal-500 bg-teal-50' : 'border-warm-border hover:border-teal-300'
+            }`}>
+              <input
+                type="radio"
+                name="payMethod"
+                checked={payMethod === 'online'}
+                onChange={() => setPayMethod('online')}
+                className="h-4 w-4 text-teal-600 focus:ring-teal-500"
+              />
+              <span className="text-sm text-slate-700">Pay now (online)</span>
+            </label>
+            <label className={`flex items-center gap-3 rounded-lg border-2 px-3 py-2.5 cursor-pointer transition-colors ${
+              payMethod === 'onsite' ? 'border-teal-500 bg-teal-50' : 'border-warm-border hover:border-teal-300'
+            }`}>
+              <input
+                type="radio"
+                name="payMethod"
+                checked={payMethod === 'onsite'}
+                onChange={() => setPayMethod('onsite')}
+                className="h-4 w-4 text-teal-600 focus:ring-teal-500"
+              />
+              <span className="text-sm text-slate-700">Pay at the venue</span>
+            </label>
+          </fieldset>
+        )}
+
         <button
           type="submit"
           disabled={submitting}
           className="w-full rounded-lg bg-coral px-4 py-2.5 font-medium text-white shadow-sm hover:bg-coral-dark disabled:opacity-50 transition-colors"
         >
-          {submitting ? 'Redirecting...' : 'Proceed to payment'}
+          {payMethod === 'onsite'
+            ? submitting
+              ? 'Confirming...'
+              : 'Confirm booking'
+            : submitting
+              ? 'Redirecting...'
+              : 'Proceed to payment'}
         </button>
       </form>
     </div>

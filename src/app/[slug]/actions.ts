@@ -8,6 +8,9 @@ import { CreateBookingUseCase } from '@/application/use-cases/create-booking'
 import { StripePaymentService } from '@/infrastructure/stripe/payment-service'
 import { getCommissionRateBps } from '@/domain/services/plan-limits'
 import { DomainError, SlotTakenError } from '@/domain/errors/domain-errors'
+import { PaymentMethod } from '@/domain/types'
+import { sendConfirmationEmails } from '@/infrastructure/resend/send-booking-emails'
+import { createSupabaseAdmin } from '@/infrastructure/supabase/admin-client'
 import type { SlotDTO } from '@/application/use-cases/get-availability'
 
 export async function getAvailability(
@@ -44,9 +47,11 @@ export async function createBooking(input: {
   customerPhone: string
   date: string
   startTime: string
+  paymentMethod?: 'ONLINE' | 'ON_SITE'
 }): Promise<{
   success: boolean
   checkoutUrl?: string
+  confirmed?: boolean
   error?: string
   slotTaken?: boolean
 }> {
@@ -54,6 +59,11 @@ export async function createBooking(input: {
     const supabase = await createSupabaseServer()
     const { tenantRepo, serviceRepo, scheduleRepo, bookingRepo, customerRepo } =
       createRepositories(supabase)
+
+    const method =
+      input.paymentMethod === 'ON_SITE'
+        ? PaymentMethod.ON_SITE
+        : PaymentMethod.ONLINE
 
     const useCase = new CreateBookingUseCase(
       tenantRepo,
@@ -63,7 +73,27 @@ export async function createBooking(input: {
       customerRepo
     )
 
-    const booking = await useCase.execute(input)
+    const booking = await useCase.execute({
+      tenantSlug: input.tenantSlug,
+      serviceId: input.serviceId,
+      customerEmail: input.customerEmail,
+      customerName: input.customerName,
+      customerPhone: input.customerPhone,
+      date: input.date,
+      startTime: input.startTime,
+      paymentMethod: method,
+    })
+
+    // Pago en el centro: la reserva ya queda CONFIRMED (sin Stripe).
+    // Enviamos el correo de confirmación de forma best-effort.
+    if (method === PaymentMethod.ON_SITE) {
+      try {
+        await sendConfirmationEmails(createSupabaseAdmin(), booking.id)
+      } catch (e) {
+        console.error('[createBooking] on-site confirmation email failed:', e)
+      }
+      return { success: true, confirmed: true }
+    }
 
     const [service, tenant] = await Promise.all([
       serviceRepo.findById(input.serviceId),

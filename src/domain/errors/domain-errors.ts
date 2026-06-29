@@ -148,3 +148,9 @@ export class StripeAccountNotConnectedError extends DomainError {
     super(`Tenant "${tenantId}" has not connected a Stripe account`)
   }
 }
+
+export class OnSitePaymentNotAllowedError extends DomainError {
+  constructor() {
+    super('This business does not allow paying at the venue')
+  }
+}

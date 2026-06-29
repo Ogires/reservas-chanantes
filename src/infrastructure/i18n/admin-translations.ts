@@ -138,6 +138,9 @@ export interface AdminTranslations {
     stripeConnected: string
     stripeReadyToAccept: string
     openStripeDashboard: string
+    onSitePayment: string
+    onSitePaymentLabel: string
+    onSitePaymentHelp: string
     language: string
     languageHelp: string
   }
@@ -281,6 +284,9 @@ const es: AdminTranslations = {
     stripeConnected: 'Conectado',
     stripeReadyToAccept: 'Tu cuenta de Stripe esta activa y lista para aceptar pagos.',
     openStripeDashboard: 'Abrir panel de Stripe',
+    onSitePayment: 'Pago en el centro',
+    onSitePaymentLabel: 'Permitir pago en el centro',
+    onSitePaymentHelp: 'Permite a los clientes reservar y pagar en persona al acudir. Es compatible con el pago online: si tienes ambos activos, el cliente elige al reservar.',
     language: 'Idioma del panel',
     languageHelp: 'Cambia el idioma de la interfaz de administracion.',
   },
@@ -424,6 +430,9 @@ const en: AdminTranslations = {
     stripeConnected: 'Connected',
     stripeReadyToAccept: 'Your Stripe account is active and ready to accept payments.',
     openStripeDashboard: 'Open Stripe Dashboard',
+    onSitePayment: 'Pay at the venue',
+    onSitePaymentLabel: 'Allow paying at the venue',
+    onSitePaymentHelp: 'Let customers book and pay in person when they arrive. Compatible with online payment: if both are enabled, the customer chooses at checkout.',
     language: 'Panel language',
     languageHelp: 'Changes the admin panel language.',
   },
