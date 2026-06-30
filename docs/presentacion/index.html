@@ -82,6 +82,12 @@
   .cover .sub{font-size:clamp(1.1rem,2.4vw,1.7rem);color:var(--ink-soft);margin-top:1.4rem;max-width:34ch;line-height:1.35;}
   .cover .thesis{margin-top:2.4rem;padding-left:1.2rem;border-left:3px solid var(--accent-2);font-size:clamp(.95rem,1.6vw,1.15rem);color:var(--muted);max-width:52ch;line-height:1.5;font-style:italic;}
   .cover .live{margin-top:2.6rem;font-family:var(--font-mono);font-size:.85rem;color:var(--accent-2);}
+  .cover-split{display:grid;grid-template-columns:1.04fr 0.96fr;gap:3rem;align-items:center;width:100%;}
+  .cover-split h1{font-size:clamp(2.6rem,6.4vw,5.2rem);}
+  .cover-split .tag{margin-bottom:1.6rem;}
+  .cover-split .thesis{margin-top:1.8rem;max-width:46ch;}
+  .cover-split .live{margin-top:2rem;}
+  .cover-shot{align-self:center;}
 
   /* ---------- statement ---------- */
   .statement{justify-content:center;}
@@ -155,6 +161,8 @@
   .shot{border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 28px rgba(0,0,0,.12);overflow:hidden;background:#fff;display:block;width:100%;margin:0;}
   .shot img{display:block;width:100%;height:auto;}
   .shots{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:.6rem;align-items:start;}
+  .shots.four{grid-template-columns:repeat(4,1fr);gap:.9rem;}
+  .shots.four .shotcap{font-size:.68rem;}
   .shotcap{font-family:var(--font-mono);font-size:.74rem;letter-spacing:.03em;color:var(--ink-soft);margin-top:.6rem;display:flex;gap:.55rem;align-items:baseline;}
   .shotcap b{color:var(--accent-2);}
   .split{display:grid;grid-template-columns:0.92fr 1.08fr;gap:2.2rem;align-items:center;margin-top:.2rem;}
@@ -195,11 +203,16 @@
 
   <!-- 1 · PORTADA -->
   <section class="slide cover active">
-    <div class="tag">Trabajo de Fin de Máster · Junio 2026</div>
-    <h1>Reservas <span class="accentword">Chanantes</span></h1>
-    <p class="sub">Plataforma SaaS <em>multi-tenant</em> de reserva de citas en línea para pequeños negocios de servicios.</p>
-    <p class="thesis">Más que un producto: un caso de estudio sobre la viabilidad del desarrollo de software guiado por Inteligencia Artificial cuando se prioriza la máxima calidad de ingeniería.</p>
-    <p class="live">▸ reservas-chanantes.vercel.app</p>
+    <div class="cover-split">
+      <div class="cover-text">
+        <div class="tag">Trabajo de Fin de Máster · Junio 2026</div>
+        <h1>Reservas <span class="accentword">Chanantes</span></h1>
+        <p class="sub">Plataforma SaaS <em>multi-tenant</em> de reserva de citas en línea para pequeños negocios de servicios.</p>
+        <p class="thesis">Más que un producto: un caso de estudio sobre la viabilidad del desarrollo de software guiado por Inteligencia Artificial cuando se prioriza la máxima calidad de ingeniería.</p>
+        <p class="live">▸ reservas-chanantes.vercel.app</p>
+      </div>
+      <figure class="shot cover-shot"><img src="img/demo-01-landing.png" alt="Página de inicio de Reservas Chanantes"></figure>
+    </div>
     <div class="foot"><span class="brand">RESERVAS CHANANTES · TFM</span><span class="num">01</span></div>
   </section>
 
@@ -251,12 +264,13 @@
   <section class="slide">
     <div class="kicker k2">04 · Cómo funciona</div>
     <h2>El recorrido del cliente.</h2>
-    <div class="shots">
+    <div class="shots four">
       <div><figure class="shot"><img src="img/demo-08-public-page.png" alt="Elegir servicio en la página pública"></figure><div class="shotcap"><b>01</b> Elige servicio</div></div>
       <div><figure class="shot"><img src="img/demo-09-slots.png" alt="Huecos disponibles en tiempo real"></figure><div class="shotcap"><b>02</b> Ve huecos reales</div></div>
       <div><figure class="shot"><img src="img/demo-11-booking-confirmed.png" alt="Reserva confirmada"></figure><div class="shotcap"><b>03</b> Reserva confirmada</div></div>
+      <div><figure class="shot"><img src="img/demo-12-admin-bookings.png" alt="La reserva, confirmada en el panel del negocio"></figure><div class="shotcap"><b>04</b> Confirmada en el panel</div></div>
     </div>
-    <p class="lead" style="margin-top:1.1rem;font-size:1.02rem;max-width:64ch">La disponibilidad se calcula al vuelo (horario − reservas), el hueco se <strong>bloquea de inmediato</strong> —sin dobles reservas— y el cliente paga <strong>online o en el centro</strong>.</p>
+    <p class="lead" style="margin-top:1.1rem;font-size:1.02rem;max-width:70ch">La disponibilidad se calcula al vuelo (horario − reservas), el hueco se <strong>bloquea de inmediato</strong> —sin dobles reservas—, el cliente paga <strong>online o en el centro</strong> y la cita aparece al instante <strong>confirmada en el panel del negocio</strong>.</p>
     <div class="foot"><span class="brand">RESERVAS CHANANTES · TFM</span><span class="num">04</span></div>
   </section>
 
