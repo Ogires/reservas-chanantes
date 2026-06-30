@@ -151,6 +151,20 @@
   .links a,.links div.lk{display:flex;gap:1rem;align-items:baseline;font-family:var(--font-mono);font-size:1rem;color:var(--ink);text-decoration:none;padding:.7rem 0;border-bottom:1px solid var(--line);}
   .links .lbl{color:var(--accent);min-width:8em;}
 
+  /* ---------- capturas de pantalla ---------- */
+  .shot{border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 28px rgba(0,0,0,.12);overflow:hidden;background:#fff;display:block;width:100%;margin:0;}
+  .shot img{display:block;width:100%;height:auto;}
+  .shots{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:.6rem;align-items:start;}
+  .shotcap{font-family:var(--font-mono);font-size:.74rem;letter-spacing:.03em;color:var(--ink-soft);margin-top:.6rem;display:flex;gap:.55rem;align-items:baseline;}
+  .shotcap b{color:var(--accent-2);}
+  .split{display:grid;grid-template-columns:0.92fr 1.08fr;gap:2.2rem;align-items:center;margin-top:.2rem;}
+  .split .lead{font-size:1.08rem;}
+  .surfaces{list-style:none;margin-top:1.1rem;max-width:42ch;}
+  .surfaces li{margin-bottom:.7rem;font-size:1rem;color:var(--ink-soft);padding-left:1.1rem;position:relative;}
+  .surfaces li::before{content:"";position:absolute;left:0;top:.5em;width:7px;height:7px;background:var(--accent-2);transform:rotate(45deg);}
+  .surfaces strong{color:var(--ink);}
+  .surfaces code{font-family:var(--font-mono);font-size:.82em;color:var(--accent);background:var(--paper-2);padding:.05em .3em;border-radius:4px;}
+
   /* hint */
   .hint{position:fixed;bottom:1.1vh;left:50%;transform:translateX(-50%);font-family:var(--font-mono);font-size:.66rem;color:var(--muted);opacity:.7;z-index:40;}
 
@@ -205,12 +219,17 @@
   <!-- 3 · SOLUCIÓN -->
   <section class="slide">
     <div class="kicker">03 · La solución</div>
-    <h2>Cada negocio, su propia<br>página de reservas.</h2>
-    <p class="lead" style="margin-bottom:1.4rem">El negocio se registra como <em>tenant</em>, configura sus servicios y su horario, y publica una URL pública propia — <strong>/peluqueria-juan</strong> — desde la que sus clientes reservan en tiempo real.</p>
-    <div class="cards c3">
-      <div class="card"><h3>Panel admin</h3><p>Servicios, horario semanal, reservas, zona horaria y cobros.</p><span class="path">/admin</span></div>
-      <div class="card g"><h3>Página pública</h3><p>Disponibilidad en tiempo real, reserva y pago del cliente final.</p><span class="path">/[slug]</span></div>
-      <div class="card"><h3>Portal cliente</h3><p>Historial de reservas, autoservicio de cancelación y perfil.</p><span class="path">/my</span></div>
+    <h2>Cada negocio, su propio panel.</h2>
+    <div class="split">
+      <div>
+        <p class="lead">El negocio se registra como <em>tenant</em>, configura sus servicios y su horario, y publica una URL propia — <strong>/peluqueria-aurora</strong> — desde la que sus clientes reservan en tiempo real.</p>
+        <ul class="surfaces">
+          <li><strong>Panel</strong> <code>/admin</code> — servicios, horario, reservas y cobros</li>
+          <li><strong>Página pública</strong> <code>/[slug]</code> — disponibilidad y reserva</li>
+          <li><strong>Portal del cliente</strong> <code>/my</code> — historial y autoservicio</li>
+        </ul>
+      </div>
+      <figure class="shot"><img src="img/demo-03-dashboard-fixed.png" alt="Panel de administración del negocio"></figure>
     </div>
     <div class="foot"><span class="brand">RESERVAS CHANANTES · TFM</span><span class="num">03</span></div>
   </section>
@@ -219,16 +238,12 @@
   <section class="slide">
     <div class="kicker k2">04 · Cómo funciona</div>
     <h2>El recorrido del cliente.</h2>
-    <div class="flow">
-      <div class="step"><div class="s">01</div><div class="t">Elige servicio</div><div class="d">Ve el catálogo del negocio con duración y precio.</div></div>
-      <div class="arrow">→</div>
-      <div class="step"><div class="s">02</div><div class="t">Ve huecos reales</div><div class="d">Disponibilidad calculada al vuelo: horario − reservas.</div></div>
-      <div class="arrow">→</div>
-      <div class="step"><div class="s">03</div><div class="t">Reserva y paga</div><div class="d">El hueco se bloquea para los demás. Pago con Stripe.</div></div>
-      <div class="arrow">→</div>
-      <div class="step"><div class="s">04</div><div class="t">Confirmación</div><div class="d">Correo de confirmación y recordatorio automático.</div></div>
+    <div class="shots">
+      <div><figure class="shot"><img src="img/demo-08-public-page.png" alt="Elegir servicio en la página pública"></figure><div class="shotcap"><b>01</b> Elige servicio</div></div>
+      <div><figure class="shot"><img src="img/demo-09-slots.png" alt="Huecos disponibles en tiempo real"></figure><div class="shotcap"><b>02</b> Ve huecos reales</div></div>
+      <div><figure class="shot"><img src="img/demo-11-booking-confirmed.png" alt="Reserva confirmada"></figure><div class="shotcap"><b>03</b> Reserva confirmada</div></div>
     </div>
-    <p class="lead" style="margin-top:1.6rem;font-size:1.05rem">Un hueco reservado queda <strong>bloqueado de inmediato</strong> para el resto de clientes — sin dobles reservas.</p>
+    <p class="lead" style="margin-top:1.1rem;font-size:1.02rem;max-width:64ch">La disponibilidad se calcula al vuelo (horario − reservas), el hueco se <strong>bloquea de inmediato</strong> —sin dobles reservas— y el cliente paga <strong>online o en el centro</strong>.</p>
     <div class="foot"><span class="brand">RESERVAS CHANANTES · TFM</span><span class="num">04</span></div>
   </section>
 
