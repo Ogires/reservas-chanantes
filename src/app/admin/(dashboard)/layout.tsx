@@ -31,7 +31,7 @@ export default async function DashboardLayout({
       <Sidebar
         tenant={tenant}
         setupStatus={setupStatus}
-        translations={{ nav: t.nav, auth: t.auth }}
+        translations={{ nav: t.nav, auth: { signOut: t.auth.signOut } }}
       />
       <main className="flex-1 overflow-y-auto bg-warm-bg p-8">{children}</main>
     </div>

@@ -14,7 +14,13 @@ interface SetupStatus {
 interface SidebarProps {
   tenant: Tenant
   setupStatus: SetupStatus
-  translations: Pick<AdminTranslations, 'nav' | 'auth'>
+  // Solo los campos serializables que usa el Sidebar. NO recibir el objeto
+  // `auth` completo: contiene `hello` (función), que no cruza la frontera
+  // servidor→cliente y rompería el render (RSC serialization).
+  translations: {
+    nav: AdminTranslations['nav']
+    auth: Pick<AdminTranslations['auth'], 'signOut'>
+  }
 }
 
 export function Sidebar({ tenant, setupStatus, translations }: SidebarProps) {
