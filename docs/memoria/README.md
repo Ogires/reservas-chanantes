@@ -59,7 +59,7 @@ This Master's Thesis addresses the design, implementation and deployment of **Re
 | **Producto** | Reservas Chanantes — SaaS *multi-tenant* de reserva de citas |
 | **Código fuente** | [`booking-saas/`](../../) (Next.js 16 · React 19 · TypeScript estricto) |
 | **Despliegue** | <https://reservas-chanantes.vercel.app/> (Vercel, *serverless*) |
-| **Persistencia** | PostgreSQL gestionado por Supabase · 5 tablas · 9 migraciones |
+| **Persistencia** | PostgreSQL gestionado por Supabase · 5 tablas · 10 migraciones |
 | **Pagos** | Stripe Connect Standard (modelo B2B2C) |
 | **Pruebas** | 197 casos en 22 ficheros (Vitest); 85 % en dominio y aplicación |
 | **Arquitectura** | Clean Architecture: `domain` → `application` → `infrastructure` → `presentation` |

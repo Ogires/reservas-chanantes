@@ -126,7 +126,7 @@ src/
     api/                   auth/callback · cron/send-reminders · stripe/* · webhooks/*
   proxy.ts                 Refresco de sesión y protección de rutas
 supabase/
-  migrations/              9 migraciones SQL (fuente de verdad del esquema)
+  migrations/              10 migraciones SQL (fuente de verdad del esquema)
 docs/
   memoria/                 Memoria académica del TFM (7 capítulos + anexos)
   presentacion/            Diapositivas de la presentación (HTML)

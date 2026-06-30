@@ -4,7 +4,7 @@ Los anexos recogen el detalle estructural del sistema, complementando los capít
 
 ## Anexo A. Diccionario de datos
 
-Esquema relacional completo tras aplicar las nueve migraciones. Tipos y restricciones en notación PostgreSQL.
+Esquema relacional completo tras aplicar las diez migraciones. Tipos y restricciones en notación PostgreSQL.
 
 ### Tabla `tenants`
 
@@ -144,6 +144,7 @@ La seguridad a nivel de fila está **habilitada en las cinco tablas**. La siguie
 | 7 | `20260305_add_stripe_connect.sql` | `stripe_account_id` / `stripe_account_enabled` en `tenants` + índice único parcial |
 | 8 | `20260306_add_tenant_profile.sql` | Perfil de negocio y SEO en `tenants` (7 columnas) |
 | 9 | `20260422_prevent_booking_overlap.sql` | Extensión `btree_gist` + restricción de exclusión `bookings_no_overlap` |
+| 10 | `20260629_add_onsite_payment.sql` | `allow_onsite_payment` en `tenants`; `payment_method` en `bookings` (`CHECK ONLINE`/`ON_SITE`) — habilita el pago presencial |
 
 > Obsérvese que **ninguna migración añade una columna `plan`**: el modelo de planes (FREE/PRO) está diseñado en el dominio pero no persistido, por lo que todo negocio resuelve a `FREE` (véase [Capítulo 5 §5.5](05-implementacion.md)).
 
