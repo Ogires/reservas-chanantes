@@ -65,6 +65,21 @@ export async function createBooking(input: {
         ? PaymentMethod.ON_SITE
         : PaymentMethod.ONLINE
 
+    // Para el pago online verificamos que el negocio puede cobrar ANTES de
+    // crear la reserva: así un negocio sin Stripe no deja una reserva PENDING
+    // huérfana que bloquearía el hueco (la restricción de solapamiento solo
+    // excluye las canceladas).
+    const [tenant, service] = await Promise.all([
+      tenantRepo.findBySlug(input.tenantSlug),
+      serviceRepo.findById(input.serviceId),
+    ])
+    if (
+      method === PaymentMethod.ONLINE &&
+      (!tenant?.stripeAccountId || !tenant.stripeAccountEnabled)
+    ) {
+      return { success: false, error: 'Payment not configured for this business' }
+    }
+
     const useCase = new CreateBookingUseCase(
       tenantRepo,
       serviceRepo,
@@ -95,14 +110,9 @@ export async function createBooking(input: {
       return { success: true, confirmed: true }
     }
 
-    const [service, tenant] = await Promise.all([
-      serviceRepo.findById(input.serviceId),
-      tenantRepo.findBySlug(input.tenantSlug),
-    ])
-    if (!service) {
-      return { success: false, error: 'Service not found' }
-    }
-    if (!tenant?.stripeAccountId || !tenant.stripeAccountEnabled) {
+    // Flujo online: negocio y Stripe ya validados arriba (el servicio lo
+    // garantiza el caso de uso). El guard satisface el estrechamiento de tipos.
+    if (!service || !tenant?.stripeAccountId) {
       return { success: false, error: 'Payment not configured for this business' }
     }
 

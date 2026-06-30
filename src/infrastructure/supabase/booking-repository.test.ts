@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import { SupabaseBookingRepository } from './booking-repository'
 import { SlotTakenError } from '@/domain/errors/domain-errors'
 import { TimeRange } from '@/domain/value-objects/time-range'
-import { BookingStatus } from '@/domain/types'
+import { BookingStatus, PaymentMethod } from '@/domain/types'
 import type { Booking } from '@/domain/entities/booking'
 
 function makeBooking(): Booking {
@@ -78,6 +78,63 @@ describe('SupabaseBookingRepository.save', () => {
 
     expect(result.id).toBe('bk-1')
     expect(result.status).toBe(BookingStatus.PENDING)
+  })
+
+  it('maps payment_method from the row to the domain paymentMethod', async () => {
+    const supabase = mockSupabaseForSave({
+      data: {
+        id: 'bk-1',
+        tenant_id: 't-1',
+        service_id: 's-1',
+        customer_id: 'c-1',
+        date: '2026-05-01',
+        start_minutes: 540,
+        end_minutes: 570,
+        status: 'CONFIRMED',
+        payment_method: 'ON_SITE',
+        stripe_checkout_session_id: null,
+        created_at: '2026-04-22T10:00:00Z',
+      },
+      error: null,
+    })
+    const repo = new SupabaseBookingRepository(supabase)
+
+    const result = await repo.save({
+      ...makeBooking(),
+      status: BookingStatus.CONFIRMED,
+      paymentMethod: PaymentMethod.ON_SITE,
+    })
+
+    expect(result.paymentMethod).toBe(PaymentMethod.ON_SITE)
+  })
+
+  it('writes payment_method on insert, defaulting to ONLINE when absent', async () => {
+    const single = vi.fn().mockResolvedValue({
+      data: {
+        id: 'bk-1',
+        tenant_id: 't-1',
+        service_id: 's-1',
+        customer_id: 'c-1',
+        date: '2026-05-01',
+        start_minutes: 540,
+        end_minutes: 570,
+        status: 'PENDING',
+        payment_method: 'ONLINE',
+        stripe_checkout_session_id: null,
+        created_at: '2026-04-22T10:00:00Z',
+      },
+      error: null,
+    })
+    const insert = vi.fn().mockReturnValue({ select: () => ({ single }) })
+    const supabase = { from: () => ({ insert }) } as never
+    const repo = new SupabaseBookingRepository(supabase)
+
+    // makeBooking() no trae paymentMethod → debe persistir 'ONLINE'.
+    await repo.save(makeBooking())
+
+    expect(insert).toHaveBeenCalledWith(
+      expect.objectContaining({ payment_method: 'ONLINE' })
+    )
   })
 })
 

@@ -54,11 +54,12 @@ La aplicación está **desplegada y accesible** en <https://reservas-chanantes.v
 - Consulta y **cancelación de reservas** con verificación de propiedad.
 - Configuración del negocio: **zona horaria**, política de antelación y perfil público.
 - **Conexión de una cuenta de cobro** (Stripe Connect) para recibir pagos.
+- **Método de cobro flexible**: pago en línea (Stripe), **pago presencial en el centro**, o ambos a la vez (no excluyentes).
 
 **Para el cliente final (página pública `/[slug]` y portal `/my`)**
 - Consulta de **disponibilidad en tiempo real** (horario menos reservas ocupadas).
 - **Reserva** de una cita sobre un hueco disponible, con bloqueo inmediato del hueco.
-- **Pago en línea** del servicio (Stripe), confirmado mediante *webhook*.
+- **Pago del servicio**: en línea (Stripe, confirmado mediante *webhook*) o **en el centro** al acudir, según lo que admita el negocio. Si admite ambos, el cliente elige.
 - Registro/inicio de sesión como cliente y **vinculación de su historial** de reservas.
 - **Portal de autoservicio**: historial, cancelación de sus propias reservas y edición de perfil.
 
@@ -102,7 +103,7 @@ Decisiones técnicas no triviales documentadas en la memoria: cálculo de dispon
 | Pagos | **Stripe Connect** (modelo B2B2C) |
 | Correo transaccional | **Resend** |
 | Estilos | **Tailwind CSS 4** |
-| Pruebas | **Vitest** (189 casos en 21 ficheros) |
+| Pruebas | **Vitest** (197 casos en 22 ficheros) |
 | Despliegue | **Vercel** (*serverless*) + *cron* programado |
 
 ## Estructura del proyecto
@@ -203,7 +204,7 @@ La aplicación está desplegada en **Vercel**. Para reproducir el despliegue:
 
 ## Pruebas
 
-El proyecto se desarrolla con **TDD** en las capas de dominio y aplicación. La suite ejecuta **189 pruebas** (21 ficheros) con Vitest:
+El proyecto se desarrolla con **TDD** en las capas de dominio y aplicación. La suite ejecuta **197 pruebas** (22 ficheros) con Vitest:
 
 ```bash
 npm test               # ejecuta toda la suite una vez

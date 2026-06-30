@@ -70,6 +70,12 @@ export default async function TenantPage({
     priceFormatted: s.price.format(),
   }))
 
+  // Métodos de pago disponibles. Si el negocio no admite ninguno, no se puede
+  // reservar: lo indicamos por adelantado en vez de dejar al cliente chocar al final.
+  const canPayOnline = !!tenant.stripeAccountId && tenant.stripeAccountEnabled
+  const canPayOnSite = tenant.allowOnSitePayment
+  const canBook = activeServices.length > 0 && (canPayOnline || canPayOnSite)
+
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://reservas-chanantes.vercel.app'
 
   const jsonLd = {
@@ -132,10 +138,12 @@ export default async function TenantPage({
           )}
         </div>
 
-        {activeServices.length === 0 ? (
+        {!canBook ? (
           <div className="rounded-xl border border-warm-border bg-white p-8 text-center shadow-sm">
             <p className="text-slate-500">
-              No services available at the moment. Please check back later.
+              {activeServices.length === 0
+                ? 'No services available at the moment. Please check back later.'
+                : 'Online booking is not available right now. Please contact the business directly.'}
             </p>
           </div>
         ) : (
@@ -144,8 +152,8 @@ export default async function TenantPage({
             services={services}
             minDate={today}
             maxDate={maxDate}
-            canPayOnline={!!tenant.stripeAccountId && tenant.stripeAccountEnabled}
-            canPayOnSite={tenant.allowOnSitePayment}
+            canPayOnline={canPayOnline}
+            canPayOnSite={canPayOnSite}
           />
         )}
       </div>
