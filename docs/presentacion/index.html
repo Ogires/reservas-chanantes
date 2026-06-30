@@ -234,6 +234,19 @@
     <div class="foot"><span class="brand">RESERVAS CHANANTES · TFM</span><span class="num">03</span></div>
   </section>
 
+  <!-- · EL NEGOCIO CONFIGURA (numeración automática) -->
+  <section class="slide">
+    <div class="kicker">00 · El negocio configura</div>
+    <h2>En marcha en minutos.</h2>
+    <div class="shots">
+      <div><figure class="shot"><img src="img/demo-05-services-list.png" alt="Gestión de servicios y precios"></figure><div class="shotcap"><b>·</b> Servicios y precios</div></div>
+      <div><figure class="shot"><img src="img/demo-06-schedule.png" alt="Editor de horario semanal"></figure><div class="shotcap"><b>·</b> Horario semanal</div></div>
+      <div><figure class="shot"><img src="img/demo-07-settings-onsite.png" alt="Ajuste de pago en el centro"></figure><div class="shotcap"><b>·</b> Pago: online o en el centro</div></div>
+    </div>
+    <p class="lead" style="margin-top:1.1rem;font-size:1.02rem;max-width:64ch">El propietario define su catálogo, su horario de apertura y cómo cobra — <strong>pago online con Stripe, presencial en el centro, o ambos a la vez</strong>.</p>
+    <div class="foot"><span class="brand">RESERVAS CHANANTES · TFM</span><span class="num">00</span></div>
+  </section>
+
   <!-- 4 · CÓMO FUNCIONA -->
   <section class="slide">
     <div class="kicker k2">04 · Cómo funciona</div>
@@ -380,6 +393,12 @@
   const slides=[...document.querySelectorAll('.slide')];
   const prog=document.getElementById('progress');
   if(location.search.includes('nohint')){const h=document.querySelector('.hint');if(h)h.style.display='none';}
+  // Numeración automática (pie + kicker) según el orden — insertar slides no obliga a renumerar a mano.
+  slides.forEach((s,idx)=>{
+    const n=String(idx+1).padStart(2,'0');
+    const f=s.querySelector('.num'); if(f) f.textContent=n;
+    const k=s.querySelector('.kicker'); if(k) k.textContent=k.textContent.replace(/^\s*\d+\s*·/, n+' ·');
+  });
   let i=slides.findIndex(s=>s.classList.contains('active'));
   if(i<0)i=0;
   function show(n){
