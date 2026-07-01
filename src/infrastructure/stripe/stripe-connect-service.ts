@@ -30,4 +30,11 @@ export class StripeConnectServiceImpl implements StripeConnectService {
     const link = await getStripe().accounts.createLoginLink(stripeAccountId)
     return link.url
   }
+
+  async isChargesEnabled(stripeAccountId: string): Promise<boolean> {
+    // Documentado por Stripe como alternativa válida al webhook account.updated:
+    // recuperar la cuenta conectada y comprobar `charges_enabled`.
+    const account = await getStripe().accounts.retrieve(stripeAccountId)
+    return account.charges_enabled ?? false
+  }
 }
