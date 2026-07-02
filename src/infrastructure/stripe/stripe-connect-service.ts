@@ -1,29 +1,30 @@
-import type {
-  StripeConnectService,
-  OAuthExchangeResult,
-} from '@/application/ports/stripe-connect-service'
+import type { StripeConnectService } from '@/application/ports/stripe-connect-service'
 import { getStripe } from './client'
 
 export class StripeConnectServiceImpl implements StripeConnectService {
-  async exchangeOAuthCode(code: string): Promise<OAuthExchangeResult> {
-    const response = await getStripe().oauth.token({
-      code,
-      grant_type: 'authorization_code',
+  async createExpressAccount(): Promise<string> {
+    const account = await getStripe().accounts.create({
+      type: 'express',
+      capabilities: {
+        card_payments: { requested: true },
+        transfers: { requested: true },
+      },
     })
-    if (!response.stripe_user_id) {
-      throw new Error('Stripe OAuth did not return a user ID')
-    }
-    return { stripeUserId: response.stripe_user_id }
+    return account.id
   }
 
-  createOAuthLink(tenantId: string, redirectUri: string): string {
-    return getStripe().oauth.authorizeUrl({
-      response_type: 'code',
-      client_id: process.env.STRIPE_CONNECT_CLIENT_ID!,
-      scope: 'read_write',
-      state: tenantId,
-      redirect_uri: redirectUri,
+  async createOnboardingLink(
+    stripeAccountId: string,
+    returnUrl: string,
+    refreshUrl: string
+  ): Promise<string> {
+    const link = await getStripe().accountLinks.create({
+      account: stripeAccountId,
+      return_url: returnUrl,
+      refresh_url: refreshUrl,
+      type: 'account_onboarding',
     })
+    return link.url
   }
 
   async createLoginLink(stripeAccountId: string): Promise<string> {
@@ -32,8 +33,6 @@ export class StripeConnectServiceImpl implements StripeConnectService {
   }
 
   async isChargesEnabled(stripeAccountId: string): Promise<boolean> {
-    // Documentado por Stripe como alternativa válida al webhook account.updated:
-    // recuperar la cuenta conectada y comprobar `charges_enabled`.
     const account = await getStripe().accounts.retrieve(stripeAccountId)
     return account.charges_enabled ?? false
   }

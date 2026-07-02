@@ -1,11 +1,14 @@
-export interface OAuthExchangeResult {
-  stripeUserId: string
-}
-
 export interface StripeConnectService {
-  exchangeOAuthCode(code: string): Promise<OAuthExchangeResult>
-  createOAuthLink(tenantId: string, redirectUri: string): string
+  /** Crea una cuenta conectada Express y devuelve su id (`acct_…`). */
+  createExpressAccount(): Promise<string>
+  /** Genera un enlace de onboarding alojado por Stripe (un solo uso). */
+  createOnboardingLink(
+    stripeAccountId: string,
+    returnUrl: string,
+    refreshUrl: string
+  ): Promise<string>
+  /** Enlace al panel Express de la cuenta conectada. */
   createLoginLink(stripeAccountId: string): Promise<string>
-  /** Si la cuenta conectada ya puede aceptar cobros (charges_enabled). */
+  /** Si la cuenta conectada ya puede aceptar cobros (`charges_enabled`). */
   isChargesEnabled(stripeAccountId: string): Promise<boolean>
 }

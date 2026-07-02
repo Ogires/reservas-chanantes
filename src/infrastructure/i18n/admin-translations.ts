@@ -135,6 +135,7 @@ export interface AdminTranslations {
     stripeConnectPrompt: string
     connectWithStripe: string
     stripePendingVerification: string
+    stripeContinueOnboarding: string
     stripeConnected: string
     stripeReadyToAccept: string
     openStripeDashboard: string
@@ -280,7 +281,8 @@ const es: AdminTranslations = {
     stripePayments: 'Pagos con Stripe',
     stripeConnectPrompt: 'Conecta tu cuenta de Stripe para recibir pagos de clientes directamente.',
     connectWithStripe: 'Conectar con Stripe',
-    stripePendingVerification: 'Tu cuenta de Stripe esta conectada pero pendiente de verificacion. Stripe te enviara un email cuando tu cuenta este lista para aceptar pagos.',
+    stripePendingVerification: 'Tu cuenta de Stripe esta conectada pero pendiente de verificacion. Completa los datos para empezar a aceptar pagos.',
+    stripeContinueOnboarding: 'Completar verificacion',
     stripeConnected: 'Conectado',
     stripeReadyToAccept: 'Tu cuenta de Stripe esta activa y lista para aceptar pagos.',
     openStripeDashboard: 'Abrir panel de Stripe',
@@ -426,7 +428,8 @@ const en: AdminTranslations = {
     stripePayments: 'Stripe payments',
     stripeConnectPrompt: 'Connect your Stripe account to receive payments from customers directly.',
     connectWithStripe: 'Connect with Stripe',
-    stripePendingVerification: 'Your Stripe account is connected but pending verification. Stripe will email you when your account is ready to accept payments.',
+    stripePendingVerification: 'Your Stripe account is connected but pending verification. Complete your details to start accepting payments.',
+    stripeContinueOnboarding: 'Complete verification',
     stripeConnected: 'Connected',
     stripeReadyToAccept: 'Your Stripe account is active and ready to accept payments.',
     openStripeDashboard: 'Open Stripe Dashboard',

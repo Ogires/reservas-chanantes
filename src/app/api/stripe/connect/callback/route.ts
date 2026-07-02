@@ -2,19 +2,12 @@ import { NextResponse } from 'next/server'
 import { createSupabaseServer } from '@/infrastructure/supabase/server'
 import { SupabaseTenantRepository } from '@/infrastructure/supabase/tenant-repository'
 import { StripeConnectServiceImpl } from '@/infrastructure/stripe/stripe-connect-service'
-import { ConnectStripeAccountUseCase } from '@/application/use-cases/connect-stripe-account'
+import { StripeOnboardingUseCase } from '@/application/use-cases/stripe-onboarding'
 
+// return_url del onboarding Express: no hay `code` que intercambiar; solo
+// sincronizamos si la cuenta ya puede cobrar (charges_enabled).
 export async function GET(request: Request) {
   const url = new URL(request.url)
-  const code = url.searchParams.get('code')
-  const error = url.searchParams.get('error')
-
-  if (error || !code) {
-    return NextResponse.redirect(
-      `${url.origin}/admin/settings?stripe_error=${error ?? 'missing_code'}`
-    )
-  }
-
   const supabase = await createSupabaseServer()
   const {
     data: { user },
@@ -32,10 +25,11 @@ export async function GET(request: Request) {
   }
 
   try {
-    const connectService = new StripeConnectServiceImpl()
-    const useCase = new ConnectStripeAccountUseCase(tenantRepo, connectService)
-    await useCase.execute({ tenantId: tenant.id, code })
-
+    const useCase = new StripeOnboardingUseCase(
+      tenantRepo,
+      new StripeConnectServiceImpl()
+    )
+    await useCase.refreshStatus(tenant)
     return NextResponse.redirect(
       `${url.origin}/admin/settings?stripe_connected=true`
     )

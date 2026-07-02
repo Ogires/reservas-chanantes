@@ -40,9 +40,15 @@ export function StripeConnectSection({
         <h2 className="text-lg font-semibold text-slate-900 mb-2">
           {t.stripePayments}
         </h2>
-        <p className="text-sm text-amber-700">
+        <p className="text-sm text-amber-700 mb-4">
           {t.stripePendingVerification}
         </p>
+        <a
+          href="/api/stripe/connect"
+          className="inline-flex items-center gap-2 rounded-lg bg-[#635bff] px-4 py-2.5 font-medium text-white shadow-sm hover:bg-[#5046e4] transition-colors"
+        >
+          {t.stripeContinueOnboarding}
+        </a>
       </div>
     )
   }
