@@ -24,20 +24,24 @@ export default async function BookingSuccessPage({
 
   if (!session_id) notFound()
 
+  const supabase = await createSupabaseServer()
+  const tenantRepo = new SupabaseTenantRepository(supabase)
+  const tenant = await tenantRepo.findBySlug(slug)
+  // La sesion de Checkout vive en la cuenta conectada (cargo directo), asi que
+  // hay que recuperarla con el contexto de esa cuenta, no a nivel de plataforma.
+  if (!tenant?.stripeAccountId) notFound()
+
   let session: Stripe.Checkout.Session
   try {
-    session = await getStripe().checkout.sessions.retrieve(session_id)
+    session = await getStripe().checkout.sessions.retrieve(session_id, {
+      stripeAccount: tenant.stripeAccountId,
+    })
   } catch {
     notFound()
   }
 
   const bookingId = session.metadata?.bookingId
   if (!bookingId) notFound()
-
-  const supabase = await createSupabaseServer()
-  const tenantRepo = new SupabaseTenantRepository(supabase)
-  const tenant = await tenantRepo.findBySlug(slug)
-  if (!tenant) notFound()
 
   const bookingRepo = new SupabaseBookingRepository(supabase)
   const booking = await bookingRepo.findById(bookingId)
