@@ -157,8 +157,7 @@ Variables de configuración requeridas por el sistema (verificadas en el código
 | `NEXT_PUBLIC_SUPABASE_URL` | Público | URL del proyecto Supabase |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Público | Clave anónima de Supabase (sujeta a RLS) |
 | `SUPABASE_SERVICE_ROLE_KEY` | Secreto | Clave de servicio privilegiada (*webhooks*, *cron*) |
-| `STRIPE_SECRET_KEY` | Secreto | Clave secreta de la API de Stripe |
-| `STRIPE_CONNECT_CLIENT_ID` | Secreto | Identificador OAuth de Stripe Connect (alta de cuentas conectadas) |
+| `STRIPE_SECRET_KEY` | Secreto | Clave secreta de la API de Stripe (crea cuentas Express, enlaces de *onboarding* y sesiones de pago) |
 | `STRIPE_WEBHOOK_SECRET` | Secreto | Firma del *webhook* de plataforma (`account.updated`) |
 | `STRIPE_CONNECT_WEBHOOK_SECRET` | Secreto | Firma del *webhook* de Connect (`checkout.session.completed`) |
 | `RESEND_API_KEY` | Secreto | Clave de API de Resend |
@@ -173,20 +172,20 @@ Autoevaluación del sistema frente al estándar **OWASP Top 10:2021** [17], veri
 
 | Categoría | Estado | Valoración (evidencia y brecha) |
 |-----------|:------:|----------------------------------|
-| **A01 · Broken Access Control** | 🟡 | ✅ Rutas privadas protegidas validando la sesión en servidor (`src/proxy.ts:28-51`, `auth.getUser()`); verificación de propiedad en cancelaciones (`admin/(dashboard)/bookings/actions.ts:15`; `application/use-cases/cancel-customer-booking.ts:37`). 🔴 Políticas **RLS permisivas** en `bookings`/`customers` (`supabase/migrations/20260220221052_initial_schema.sql:78-84`): el aislamiento entre *tenants* lo impone la aplicación, no la base de datos. 🟡 El flujo OAuth de Stripe Connect envía `state = tenantId` (`infrastructure/stripe/stripe-connect-service.ts:24`) pero el *callback* (`api/stripe/connect/callback/route.ts`) **no lo valida** —deriva el *tenant* de la sesión autenticada—, por lo que conviene verificar `state` como defensa en profundidad. |
+| **A01 · Broken Access Control** | 🟡 | ✅ Rutas privadas protegidas validando la sesión en servidor (`src/proxy.ts:28-51`, `auth.getUser()`); verificación de propiedad en cancelaciones (`admin/(dashboard)/bookings/actions.ts:15`; `application/use-cases/cancel-customer-booking.ts:37`). 🔴 Políticas **RLS permisivas** en `bookings`/`customers` (`supabase/migrations/20260220221052_initial_schema.sql:78-84`): el aislamiento entre *tenants* lo impone la aplicación, no la base de datos. 🟢 El *onboarding* de cuentas conectadas usa **Connect Express** (enlaces alojados por Stripe), por lo que no hay redireccionamiento OAuth con parámetro `state` que la plataforma deba validar. |
 | **A02 · Cryptographic Failures** | ✅ | HTTPS gestionado por Vercel; *hashing* de contraseñas y emisión de JWT delegados a Supabase Auth; secretos fuera del código (variables de entorno); firmas de *webhook* verificadas. (La política de contraseñas se evalúa en A07.) |
 | **A03 · Injection** | 🟡 | ✅ Acceso a datos parametrizado mediante el cliente de Supabase (`.eq`, `.insert`), sin concatenación de SQL. 🔴 **Inyección HTML en correos**: se interpolan datos del formulario público —`customer.name/email/phone`— sin escapar (`infrastructure/resend/email-templates.ts:42-44`; también `tenantName`/`service.name` en `:12,:30`). |
 | **A04 · Insecure Design** | 🟡 | ✅ Diseño defensivo notable: invariantes de dominio y restricción `EXCLUDE`/`btree_gist` contra solapamientos (Cap. 5 §5.3). 🔴 Sin *rate limiting* en los puntos de entrada de la aplicación; sin modelo de amenazas formal. |
 | **A05 · Security Misconfiguration** | 🟡 | 🔴 RLS mal configurada (véase A01). 🟡 No constan cabeceras de seguridad ni CSP (pendiente de verificación/adición en la configuración del *framework*). |
 | **A06 · Vulnerable & Outdated Components** | 🟡 | ✅ Dependencias en versiones actuales (Next.js 16.1.6, React 19.2.3, etc.). 🔴 Sin análisis automatizado de dependencias (`npm audit` / Dependabot), al no existir integración continua. |
-| **A07 · Identification & Authentication Failures** | 🟡 | ✅ Autenticación por Supabase Auth y Google OAuth, sesión validada en servidor, recuperación de contraseña. 🟡 `state` de OAuth Connect sin validar (defensa en profundidad, ver A01); 🟡 política de contraseñas débil (mínimo 6, sin requisitos de complejidad; `supabase/config.toml:175,178`); MFA deshabilitado. |
+| **A07 · Identification & Authentication Failures** | 🟡 | ✅ Autenticación por Supabase Auth y Google OAuth, sesión validada en servidor, recuperación de contraseña. 🟡 política de contraseñas débil (mínimo 6, sin requisitos de complejidad; `supabase/config.toml:175,178`); MFA deshabilitado. |
 | **A08 · Software & Data Integrity Failures** | ✅ | ✅ Verificación de firma en **ambos** *webhooks* (`api/webhooks/stripe-connect/route.ts:23`; `api/webhooks/stripe/route.ts:21`) y guarda de idempotencia (`status === PENDING`). 🟡 Sin *idempotency keys* de Stripe en las llamadas salientes. |
 | **A09 · Security Logging & Monitoring Failures** | 🔴 | Registro limitado a `console.error`; sin trazas estructuradas, alertas ni auditoría. |
 | **A10 · Server-Side Request Forgery (SSRF)** | ✅ | Sin peticiones de servidor a URLs controladas por el usuario; las salidas se dirigen a proveedores fijos (Stripe, Supabase, Resend). Exposición baja. |
 
 ### E.1. Síntesis y prioridades
 
-El sistema es **sólido** en A02, A08 y A10, y **parcial** —con brechas concretas y localizadas— en A01, A03, A04, A05, A06, A07 y A09. Las cuatro intervenciones de mayor retorno, ya recogidas como trabajo futuro en el [Capítulo 7 §7.4.1](07-conclusiones.md), son: (1) endurecer las políticas **RLS** (A01/A05); (2) **escapar el HTML** de los correos (A03); (3) **validar el `state`** del OAuth de Connect como defensa en profundidad (A01/A07); y (4) incorporar **logging estructurado** (A09). Su resolución elevaría la mayoría de categorías a ✅ y sustentaría un capítulo de modelado de amenazas.
+El sistema es **sólido** en A02, A08 y A10, y **parcial** —con brechas concretas y localizadas— en A01, A03, A04, A05, A06, A07 y A09. Las tres intervenciones de mayor retorno, ya recogidas como trabajo futuro en el [Capítulo 7 §7.4.1](07-conclusiones.md), son: (1) endurecer las políticas **RLS** (A01/A05); (2) **escapar el HTML** de los correos (A03); y (3) incorporar **logging estructurado** (A09). Su resolución elevaría la mayoría de categorías a ✅ y sustentaría un capítulo de modelado de amenazas.
 
 ## Anexo F. Estrategia de pruebas y política de cobertura
 

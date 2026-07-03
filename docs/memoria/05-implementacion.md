@@ -130,6 +130,8 @@ Se documenta, en aras del rigor, una **limitación conocida**: la derivación de
 
 La naturaleza *marketplace* del producto se materializa en el flujo de pago. Cuando un cliente abona un servicio, el dinero debe llegar a la cuenta del **negocio**, no a la de la plataforma, reteniendo esta una **comisión**. Esto se implementa con **Stripe Connect** y dos mecanismos concretos de su API: la **cuenta de destino** (`stripeAccount`) y la **comisión de aplicación** (`application_fee_amount`).
 
+El **alta de la cuenta conectada** del negocio se resuelve con **Stripe Connect Express**: la plataforma crea la cuenta por API (`accounts.create` con `type: 'express'`) y redirige al comercio a un **onboarding alojado por Stripe** (`accountLinks.create`, un enlace de un solo uso) donde este aporta y verifica su identidad y sus datos bancarios; al regresar, el sistema consulta `charges_enabled` para habilitar el cobro. El caso de uso `StripeOnboardingUseCase` orquesta ambas fases —iniciar el *onboarding* y sincronizar el estado—. Este modelo minimiza la fricción del comercio y evita que la plataforma gestione el redireccionamiento OAuth y sus credenciales.
+
 ```typescript
 const feeAmount = Math.round(
   (request.price.amountCents * request.commissionRateBps) / 10000
