@@ -48,6 +48,7 @@ next-env.d.ts
 
 # local operational notes (not versioned)
 /DESPLIEGUE.local.md
+/ENTREGABLES-TFM.local.md
 
 # datos de siembra/demo (correos sintéticos — no se publican)
 /scripts/demo-emails.*
