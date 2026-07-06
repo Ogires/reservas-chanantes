@@ -1,0 +1,84 @@
+import { NextRequest, NextResponse } from 'next/server'
+import type { EmailOtpType } from '@supabase/supabase-js'
+import { createSupabaseServer } from '@/infrastructure/supabase/server'
+import { provisionTenant } from '@/infrastructure/supabase/provision-tenant'
+
+/**
+ * Destino de los enlaces de confirmación de email (token_hash + verifyOtp).
+ * A diferencia del callback OAuth (que intercambia un `code` con PKCE), este
+ * verifica el OTP directamente, por lo que funciona aunque el enlace se abra en
+ * otro navegador. Al confirmar: crea el negocio (flujo admin) o vincula el
+ * cliente (flujo /my), y redirige a `next`.
+ */
+export async function GET(request: NextRequest) {
+  const { searchParams, origin } = request.nextUrl
+  const tokenHash = searchParams.get('token_hash')
+  const type = searchParams.get('type') as EmailOtpType | null
+  const nextParam = searchParams.get('next') ?? '/admin/dashboard'
+
+  // `next` puede llegar como ruta o como URL absoluta (emailRedirectTo).
+  let nextPath = '/admin/dashboard'
+  try {
+    nextPath = nextParam.startsWith('/')
+      ? nextParam
+      : new URL(nextParam).pathname
+  } catch {
+    nextPath = '/admin/dashboard'
+  }
+  const isCustomerFlow = nextPath.startsWith('/my')
+  const loginUrl = isCustomerFlow
+    ? '/my/login?error=auth'
+    : '/admin/login?error=auth'
+
+  if (!tokenHash || !type) {
+    return NextResponse.redirect(new URL(loginUrl, origin))
+  }
+
+  const supabase = await createSupabaseServer()
+  const { error, data } = await supabase.auth.verifyOtp({
+    type,
+    token_hash: tokenHash,
+  })
+
+  if (error || !data.user) {
+    return NextResponse.redirect(new URL(loginUrl, origin))
+  }
+
+  const user = data.user
+
+  if (isCustomerFlow) {
+    if (user.email) {
+      const { data: existingCustomer } = await supabase
+        .from('customers')
+        .select('id, auth_user_id')
+        .eq('email', user.email)
+        .single()
+
+      if (existingCustomer && !existingCustomer.auth_user_id) {
+        await supabase
+          .from('customers')
+          .update({ auth_user_id: user.id })
+          .eq('id', existingCustomer.id)
+      }
+    }
+    return NextResponse.redirect(new URL(nextPath, origin))
+  }
+
+  // Flujo de negocio: crear el tenant (si no existe) desde el business_name
+  // guardado en los metadatos durante el registro.
+  const businessName = (
+    user.user_metadata?.business_name as string | undefined
+  )?.trim()
+
+  if (businessName) {
+    try {
+      await provisionTenant(supabase, user.id, businessName)
+    } catch {
+      return NextResponse.redirect(
+        new URL('/admin/register?error=provision', origin)
+      )
+    }
+  }
+
+  return NextResponse.redirect(new URL(nextPath, origin))
+}

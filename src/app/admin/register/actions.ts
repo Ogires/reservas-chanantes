@@ -2,28 +2,36 @@
 
 import { redirect } from 'next/navigation'
 import { createSupabaseServer } from '@/infrastructure/supabase/server'
-import { SupabaseTenantRepository } from '@/infrastructure/supabase/tenant-repository'
-import { Slug } from '@/domain/value-objects/slug'
-import { createBookingPolicy } from '@/domain/value-objects/booking-policy'
-import { TenantPlan } from '@/domain/types'
+import { provisionTenant } from '@/infrastructure/supabase/provision-tenant'
+
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://reservas-chanantes.vercel.app'
+
+export type RegisterState =
+  | { error: string }
+  | { needsConfirmation: true; email: string }
+  | null
 
 export async function register(
-  _prevState: { error: string } | null,
+  _prevState: RegisterState,
   formData: FormData
-) {
+): Promise<RegisterState> {
   const businessName = formData.get('businessName')
   if (typeof businessName !== 'string' || businessName.trim() === '') {
     return { error: 'Business name is required.' }
   }
+  const name = businessName.trim()
 
   const isOAuthUser = formData.get('isOAuthUser') === 'true'
-
   const supabase = await createSupabaseServer()
 
   let userId: string
 
   if (isOAuthUser) {
-    const { data: { user }, error } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser()
     if (error || !user) {
       return { error: 'Session expired. Please sign in again.' }
     }
@@ -42,36 +50,31 @@ export async function register(
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: `${SITE_URL}/admin/dashboard`,
+        data: { business_name: name },
+      },
     })
 
     if (authError) {
       return { error: authError.message }
     }
-
     if (!authData.user) {
       return { error: 'Registration failed. Please try again.' }
+    }
+
+    // Con la confirmación de email activada, signUp no devuelve sesión: el
+    // negocio se crea al confirmar la cuenta (en /api/auth/confirm) usando el
+    // business_name guardado en los metadatos del usuario.
+    if (!authData.session) {
+      return { needsConfirmation: true, email: email.trim() }
     }
 
     userId = authData.user.id
   }
 
   try {
-    const slug = Slug.fromName(businessName)
-    const tenantRepo = new SupabaseTenantRepository(supabase)
-
-    await tenantRepo.save({
-      id: crypto.randomUUID(),
-      ownerId: userId,
-      name: businessName,
-      slug: slug.value,
-      currency: 'EUR',
-      defaultLocale: 'es-ES',
-      bookingPolicy: createBookingPolicy(),
-      createdAt: new Date(),
-      plan: TenantPlan.FREE,
-      stripeAccountEnabled: false,
-      allowOnSitePayment: false,
-    })
+    await provisionTenant(supabase, userId, name)
   } catch (e) {
     return {
       error: e instanceof Error ? e.message : 'Failed to create business',

@@ -23,6 +23,9 @@ export interface AdminTranslations {
     signOut: string
     createAccount: string
     creatingAccount: string
+    emailSentTitle: string
+    emailSentBody: string
+    emailSentHint: string
     email: string
     password: string
     businessName: string
@@ -170,6 +173,9 @@ const es: AdminTranslations = {
     signOut: 'Cerrar sesion',
     createAccount: 'Crear cuenta',
     creatingAccount: 'Creando cuenta...',
+    emailSentTitle: 'Revisa tu correo',
+    emailSentBody: 'Hemos enviado un enlace de confirmacion a',
+    emailSentHint: 'Abrelo para activar tu cuenta y acceder al panel.',
     email: 'Correo electronico',
     password: 'Contrasena',
     businessName: 'Nombre del negocio',
@@ -317,6 +323,9 @@ const en: AdminTranslations = {
     signOut: 'Sign out',
     createAccount: 'Create account',
     creatingAccount: 'Creating account...',
+    emailSentTitle: 'Check your email',
+    emailSentBody: 'We sent a confirmation link to',
+    emailSentHint: 'Open it to activate your account and access the dashboard.',
     email: 'Email',
     password: 'Password',
     businessName: 'Business name',

@@ -12,9 +12,22 @@ export function CustomerLoginForm() {
   const action = isRegister ? registerAction : loginAction
   const isPending = isRegister ? isRegistering : isLoggingIn
 
+  if (isRegister && registerState && 'needsConfirmation' in registerState) {
+    return (
+      <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-4 text-sm text-emerald-800 space-y-1">
+        <p className="font-semibold">Revisa tu correo</p>
+        <p>
+          Hemos enviado un enlace de confirmación a{' '}
+          <strong>{registerState.email}</strong>.
+        </p>
+        <p className="text-emerald-700">Ábrelo para activar tu cuenta.</p>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-4">
-      {state?.error && (
+      {state && 'error' in state && state.error && (
         <div className="rounded-lg bg-rose-50 border border-rose-200 p-3 text-sm text-rose-600">
           {state.error}
         </div>
