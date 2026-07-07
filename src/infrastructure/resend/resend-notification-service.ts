@@ -17,7 +17,7 @@ export class ResendNotificationService implements NotificationService {
   private async send(to: string, subject: string, html: string): Promise<void> {
     try {
       await getResend().emails.send({
-        from: `notifications@${process.env.RESEND_FROM_DOMAIN ?? 'resend.dev'}`,
+        from: `Reservas Chanantes <reservas@${process.env.RESEND_FROM_DOMAIN ?? 'resend.dev'}>`,
         to,
         subject,
         html,
