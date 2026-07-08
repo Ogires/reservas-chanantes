@@ -83,7 +83,19 @@ export async function POST(request: NextRequest) {
   const { subject, html } = renderAuthEmail(action, locale, opts)
 
   try {
-    await getResend().emails.send({ from: FROM, to: user.email, subject, html })
+    // Resend NO lanza en errores de API (rate limit, dominio, etc.): los
+    // devuelve en `error`. Hay que comprobarlo o Supabase creería que el
+    // correo se envió (200) cuando no fue así.
+    const { error: sendError } = await getResend().emails.send({
+      from: FROM,
+      to: user.email,
+      subject,
+      html,
+    })
+    if (sendError) {
+      console.error('[auth/send-email] error de Resend', sendError)
+      return NextResponse.json({ error: 'send failed' }, { status: 500 })
+    }
   } catch (err) {
     console.error('[auth/send-email] envío fallido', err)
     return NextResponse.json({ error: 'send failed' }, { status: 500 })
