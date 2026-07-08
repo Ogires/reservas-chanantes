@@ -46,37 +46,41 @@ export async function GET(request: NextRequest) {
 
   const user = data.user
 
-  if (isCustomerFlow) {
-    if (user.email) {
-      const { data: existingCustomer } = await supabase
-        .from('customers')
-        .select('id, auth_user_id')
-        .eq('email', user.email)
-        .single()
-
-      if (existingCustomer && !existingCustomer.auth_user_id) {
-        await supabase
+  // Solo el registro (signup) crea/vincula el recurso del usuario. Para
+  // recovery, email_change, magiclink, etc. basta con verificar la sesión y
+  // redirigir a `next` (p. ej. la página de reset de contraseña).
+  if (type === 'signup') {
+    if (isCustomerFlow) {
+      if (user.email) {
+        const { data: existingCustomer } = await supabase
           .from('customers')
-          .update({ auth_user_id: user.id })
-          .eq('id', existingCustomer.id)
+          .select('id, auth_user_id')
+          .eq('email', user.email)
+          .single()
+
+        if (existingCustomer && !existingCustomer.auth_user_id) {
+          await supabase
+            .from('customers')
+            .update({ auth_user_id: user.id })
+            .eq('id', existingCustomer.id)
+        }
       }
-    }
-    return NextResponse.redirect(new URL(nextPath, origin))
-  }
+    } else {
+      // Flujo de negocio: crear el tenant (si no existe) desde el business_name
+      // guardado en los metadatos durante el registro.
+      const businessName = (
+        user.user_metadata?.business_name as string | undefined
+      )?.trim()
 
-  // Flujo de negocio: crear el tenant (si no existe) desde el business_name
-  // guardado en los metadatos durante el registro.
-  const businessName = (
-    user.user_metadata?.business_name as string | undefined
-  )?.trim()
-
-  if (businessName) {
-    try {
-      await provisionTenant(supabase, user.id, businessName)
-    } catch {
-      return NextResponse.redirect(
-        new URL('/admin/register?error=provision', origin)
-      )
+      if (businessName) {
+        try {
+          await provisionTenant(supabase, user.id, businessName)
+        } catch {
+          return NextResponse.redirect(
+            new URL('/admin/register?error=provision', origin)
+          )
+        }
+      }
     }
   }
 

@@ -31,6 +31,13 @@ export interface AdminTranslations {
     businessName: string
     businessNamePlaceholder: string
     forgotPassword: string
+    resetPasswordTitle: string
+    newPassword: string
+    confirmPassword: string
+    updatePassword: string
+    updatingPassword: string
+    passwordMismatch: string
+    resetLinkInvalid: string
     sendResetLink: string
     sending: string
     goBack: string
@@ -181,6 +188,13 @@ const es: AdminTranslations = {
     businessName: 'Nombre del negocio',
     businessNamePlaceholder: 'Ej: Peluqueria Juan',
     forgotPassword: '¿Olvidaste tu contrasena?',
+    resetPasswordTitle: 'Nueva contrasena',
+    newPassword: 'Nueva contrasena',
+    confirmPassword: 'Confirmar contrasena',
+    updatePassword: 'Guardar contrasena',
+    updatingPassword: 'Guardando...',
+    passwordMismatch: 'Las contrasenas no coinciden.',
+    resetLinkInvalid: 'El enlace no es valido o ha caducado. Solicita uno nuevo.',
     sendResetLink: 'Enviar enlace',
     sending: 'Enviando...',
     goBack: 'Volver',
@@ -331,6 +345,13 @@ const en: AdminTranslations = {
     businessName: 'Business name',
     businessNamePlaceholder: 'e.g. John\'s Barbershop',
     forgotPassword: 'Forgot your password?',
+    resetPasswordTitle: 'New password',
+    newPassword: 'New password',
+    confirmPassword: 'Confirm password',
+    updatePassword: 'Save password',
+    updatingPassword: 'Saving...',
+    passwordMismatch: 'Passwords do not match.',
+    resetLinkInvalid: 'The link is invalid or expired. Request a new one.',
     sendResetLink: 'Send link',
     sending: 'Sending...',
     goBack: 'Back',

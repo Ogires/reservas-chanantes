@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation'
 import { createSupabaseServer } from '@/infrastructure/supabase/server'
 import { provisionTenant } from '@/infrastructure/supabase/provision-tenant'
+import { detectLocaleFromHeaders } from '@/infrastructure/i18n/detect-locale'
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://reservas-chanantes.vercel.app'
@@ -47,12 +48,13 @@ export async function register(
       return { error: 'Password must be at least 6 characters.' }
     }
 
+    const locale = await detectLocaleFromHeaders()
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: `${SITE_URL}/admin/dashboard`,
-        data: { business_name: name },
+        data: { business_name: name, locale },
       },
     })
 

@@ -2,6 +2,7 @@
 
 import { redirect } from 'next/navigation'
 import { createSupabaseServer } from '@/infrastructure/supabase/server'
+import { detectLocaleFromHeaders } from '@/infrastructure/i18n/detect-locale'
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://reservas-chanantes.vercel.app'
@@ -42,10 +43,11 @@ export async function customerRegister(
 
   const supabase = await createSupabaseServer()
 
+  const locale = await detectLocaleFromHeaders()
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { emailRedirectTo: `${SITE_URL}/my` },
+    options: { emailRedirectTo: `${SITE_URL}/my`, data: { locale } },
   })
 
   if (error) {
