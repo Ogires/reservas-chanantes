@@ -5,6 +5,10 @@ import { renderAuthEmail, authOtpType } from '@/infrastructure/resend/auth-email
 import type { Locale } from '@/domain/types'
 
 const FROM = `Reservas Chanantes <reservas@${process.env.RESEND_FROM_DOMAIN ?? 'resend.dev'}>`
+// Los enlaces de confirmación apuntan a NUESTRA app, no a la URL de Supabase
+// (email_data.site_url es la URL de GoTrue, `…supabase.co/auth/v1`).
+const APP_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://reservas-chanantes.vercel.app'
 
 interface HookPayload {
   user: { email: string; user_metadata?: { locale?: string } }
@@ -69,9 +73,8 @@ export async function POST(request: NextRequest) {
         ? email_data.token_hash_new ?? email_data.token_hash
         : email_data.token_hash
     const type = authOtpType(action)
-    const next =
-      email_data.redirect_to || `${email_data.site_url}/admin/dashboard`
-    const url = `${email_data.site_url}/api/auth/confirm?token_hash=${encodeURIComponent(
+    const next = email_data.redirect_to || `${APP_URL}/admin/dashboard`
+    const url = `${APP_URL}/api/auth/confirm?token_hash=${encodeURIComponent(
       tokenHash
     )}&type=${type}&next=${encodeURIComponent(next)}`
     opts = { url }
