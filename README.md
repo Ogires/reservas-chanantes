@@ -35,7 +35,7 @@ Las microempresas de servicios con cita previa —peluquerías, fisioterapia, es
 
 La aplicación está **desplegada y accesible** en <https://reservas-chanantes.vercel.app/>. Para una prueba de extremo a extremo:
 
-1. **Crea un negocio** en [`/admin/register`](https://reservas-chanantes.vercel.app/admin/register) (correo y contraseña, o Google).
+1. **Crea un negocio** en [`/admin/register`](https://reservas-chanantes.vercel.app/admin/register) (correo y contraseña, o Google). Con correo, **confirma el email** que recibes para activar la cuenta.
 2. Desde el panel, **añade uno o varios servicios** (nombre, duración, precio) y **define el horario semanal** de apertura.
 3. En **Ajustes**, **conecta una cuenta de cobro** (Stripe Connect). El cobro está en **modo Test**, así que puedes completar el alta de Stripe con datos de prueba.
 4. Anota el *slug* de tu negocio y visita su **página pública** `/[slug]`: verás el catálogo y la disponibilidad calculada en tiempo real.
@@ -48,7 +48,7 @@ La aplicación está **desplegada y accesible** en <https://reservas-chanantes.v
 ## Funcionalidades
 
 **Para el propietario del negocio (panel `/admin`)**
-- Registro y autenticación por correo/contraseña o **Google OAuth**; recuperación de contraseña.
+- Registro y autenticación por correo/contraseña o **Google OAuth**, con **confirmación de email** obligatoria (correos multiidioma) y recuperación de contraseña.
 - Gestión de **servicios** (alta, edición, borrado: nombre, duración, precio, estado).
 - Definición del **horario semanal** de apertura con varios rangos por día.
 - Consulta y **cancelación de reservas** con verificación de propiedad.
@@ -103,7 +103,7 @@ Decisiones técnicas no triviales documentadas en la memoria: cálculo de dispon
 | Pagos | **Stripe Connect** (modelo B2B2C) |
 | Correo transaccional | **Resend** |
 | Estilos | **Tailwind CSS 4** |
-| Pruebas | **Vitest** (202 casos en 23 ficheros) |
+| Pruebas | **Vitest** (209 casos en 25 ficheros) |
 | Despliegue | **Vercel** (*serverless*) + *cron* programado |
 
 ## Estructura del proyecto
@@ -164,9 +164,9 @@ cp .env.local.example .env.local
 | `STRIPE_SECRET_KEY` | Pagos | Clave secreta de Stripe (`sk_…`) |
 | `STRIPE_WEBHOOK_SECRET` | Pagos | Firma del *webhook* `account.updated` |
 | `STRIPE_CONNECT_WEBHOOK_SECRET` | Pagos | Firma del *webhook* `checkout.session.completed` |
-| `STRIPE_CONNECT_CLIENT_ID` | Pagos | *Client ID* de Connect (`ca_…`) |
 | `RESEND_API_KEY` | Correos | Clave de API de Resend |
-| `RESEND_FROM_DOMAIN` | Correos | Dominio remitente verificado |
+| `RESEND_FROM_DOMAIN` | Correos | Dominio remitente verificado (`reservas@…`) |
+| `SUPABASE_AUTH_HOOK_SECRET` | Auth | Firma del *Send Email Hook* (correos de auth i18n) |
 | `CRON_SECRET` | Recordatorios | Cadena aleatoria que protege el *endpoint* del *cron* |
 | `NEXT_PUBLIC_SITE_URL` | URLs | URL pública del sitio (en local, `http://localhost:3000`) |
 | `NEXT_PUBLIC_APP_URL` | Correos | URL base usada en las plantillas de correo |
@@ -204,7 +204,7 @@ La aplicación está desplegada en **Vercel**. Para reproducir el despliegue:
 
 ## Pruebas
 
-El proyecto se desarrolla con **TDD** en las capas de dominio y aplicación. La suite ejecuta **202 pruebas** (23 ficheros) con Vitest:
+El proyecto se desarrolla con **TDD** en las capas de dominio y aplicación. La suite ejecuta **209 pruebas** (25 ficheros) con Vitest:
 
 ```bash
 npm test               # ejecuta toda la suite una vez

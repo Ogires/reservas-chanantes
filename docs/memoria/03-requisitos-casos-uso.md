@@ -26,8 +26,8 @@ Los requisitos funcionales se agrupan por actor. La columna *Implementación* ap
 | ID | Requisito | Implementación |
 |----|-----------|----------------|
 | RF-A1 | Registrar un negocio y crear su cuenta de propietario | `admin/register/actions.ts` (`register`) |
-| RF-A2 | Autenticarse mediante correo/contraseña o Google OAuth | `admin/login/actions.ts` (`login`); `admin/_components/google-sign-in-button.tsx` y `my/login/google-sign-in-button.tsx` (`signInWithOAuth`); `api/auth/callback` |
-| RF-A3 | Recuperar la contraseña olvidada | `admin/login/actions.ts` (`resetPassword`) |
+| RF-A2 | Autenticarse mediante correo/contraseña o Google OAuth; el registro por correo exige **confirmación de email** | `admin/login/actions.ts` (`login`); `signInWithOAuth`; `api/auth/callback` (OAuth) y `api/auth/confirm` (confirmación por enlace) |
+| RF-A3 | Recuperar la contraseña olvidada | `admin/login/actions.ts` (`resetPassword`) y página `admin/reset-password/` (`updatePassword`) |
 | RF-A4 | Crear, editar y eliminar servicios (nombre, duración, precio, estado) | `admin/(dashboard)/services/actions.ts` (`saveService`, `deleteService`) |
 | RF-A5 | Definir el horario semanal de apertura (varios rangos por día) | `admin/(dashboard)/schedule/actions.ts` (`saveSchedule`) |
 | RF-A6 | Consultar y cancelar reservas, con verificación de propiedad | `admin/(dashboard)/bookings/actions.ts` (`cancelBooking`) |

@@ -13,25 +13,25 @@ El marco de pruebas es **Vitest 4** (`vitest run` para la ejecución única; `vi
 
 ## 6.3. Distribución de la batería de pruebas
 
-La suite comprende **202 casos de prueba distribuidos en 23 ficheros**. Su reparto por capas evidencia la pirámide descrita:
+La suite comprende **209 casos de prueba distribuidos en 25 ficheros**. Su reparto por capas evidencia la pirámide descrita:
 
 | Capa | Ficheros de prueba | Casos | Peso |
 |------|--------------------|-------|------|
-| **Dominio** | 9 | 115 | 57 % |
-| **Aplicación** (casos de uso) | 7 | 57 | 28 % |
-| **Infraestructura** | 7 | 30 | 15 % |
-| **Total** | **23** | **202** | **100 %** |
+| **Dominio** | 9 | 115 | 55 % |
+| **Aplicación** (casos de uso) | 7 | 57 | 27 % |
+| **Infraestructura** | 9 | 37 | 18 % |
+| **Total** | **25** | **209** | **100 %** |
 
 > *Tabla 6.1. Distribución de la batería de pruebas por capa arquitectónica.*
 
-El dato relevante no es solo el volumen, sino su **forma**: el 85 % de las pruebas se concentra en las capas de dominio y aplicación —las que albergan las reglas de negocio—, lo que constituye una evidencia objetiva de que la arquitectura ha cumplido su propósito de hacer la lógica crítica verificable de forma aislada y barata.
+El dato relevante no es solo el volumen, sino su **forma**: el 82 % de las pruebas se concentra en las capas de dominio y aplicación —las que albergan las reglas de negocio—, lo que constituye una evidencia objetiva de que la arquitectura ha cumplido su propósito de hacer la lógica crítica verificable de forma aislada y barata.
 
 ```mermaid
 flowchart TB
-    subgraph Pyramid["Pirámide de pruebas (202 casos)"]
-        I["Infraestructura — 30 casos (15%)<br/>adaptadores: Supabase, Stripe, Resend"]
-        A["Aplicación — 57 casos (28%)<br/>casos de uso con dobles de prueba"]
-        D["Dominio — 115 casos (57%)<br/>objetos de valor y servicios puros"]
+    subgraph Pyramid["Pirámide de pruebas (209 casos)"]
+        I["Infraestructura — 37 casos (18%)<br/>adaptadores: Supabase, Stripe, Resend, Auth"]
+        A["Aplicación — 57 casos (27%)<br/>casos de uso con dobles de prueba"]
+        D["Dominio — 115 casos (55%)<br/>objetos de valor y servicios puros"]
     end
     I --- A --- D
 ```
@@ -74,7 +74,7 @@ Estas tres limitaciones son, no por casualidad, las de mayor retorno académico 
 
 ## 6.8. Síntesis
 
-La estrategia de pruebas no es un añadido posterior, sino el reflejo directo de la arquitectura: una pirámide de 202 casos cuya base ancha (85 % en dominio y aplicación) solo es posible porque la lógica de negocio se diseñó desacoplada y comprobable. El análisis estático estricto complementa la verificación dinámica. El capítulo ha expuesto con franqueza las tres carencias del marco de calidad —sin CI, sin E2E automatizado y sin umbral de cobertura—, cuya subsanación se aborda a continuación.
+La estrategia de pruebas no es un añadido posterior, sino el reflejo directo de la arquitectura: una pirámide de 209 casos cuya base ancha (82 % en dominio y aplicación) solo es posible porque la lógica de negocio se diseñó desacoplada y comprobable. El análisis estático estricto complementa la verificación dinámica. El capítulo ha expuesto con franqueza las tres carencias del marco de calidad —sin CI, sin E2E automatizado y sin umbral de cobertura—, cuya subsanación se aborda a continuación.
 
 ---
 

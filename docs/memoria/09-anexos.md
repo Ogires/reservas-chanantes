@@ -161,7 +161,8 @@ Variables de configuración requeridas por el sistema (verificadas en el código
 | `STRIPE_WEBHOOK_SECRET` | Secreto | Firma del *webhook* de plataforma (`account.updated`) |
 | `STRIPE_CONNECT_WEBHOOK_SECRET` | Secreto | Firma del *webhook* de Connect (`checkout.session.completed`) |
 | `RESEND_API_KEY` | Secreto | Clave de API de Resend |
-| `RESEND_FROM_DOMAIN` | Secreto | Dominio remitente de los correos transaccionales |
+| `RESEND_FROM_DOMAIN` | Secreto | Dominio remitente verificado de los correos (`reservas@…`) |
+| `SUPABASE_AUTH_HOOK_SECRET` | Secreto | Firma del *Send Email Hook* de Supabase Auth (correos de autenticación i18n) |
 | `CRON_SECRET` | Secreto | Autorización de la tarea programada de recordatorios |
 | `NEXT_PUBLIC_SITE_URL` | Público | URL pública del sitio (SEO, *sitemap*, *robots*) |
 | `NEXT_PUBLIC_APP_URL` | Público | URL base usada en las plantillas de correo |
@@ -178,7 +179,7 @@ Autoevaluación del sistema frente al estándar **OWASP Top 10:2021** [17], veri
 | **A04 · Insecure Design** | 🟡 | ✅ Diseño defensivo notable: invariantes de dominio y restricción `EXCLUDE`/`btree_gist` contra solapamientos (Cap. 5 §5.3). 🔴 Sin *rate limiting* en los puntos de entrada de la aplicación; sin modelo de amenazas formal. |
 | **A05 · Security Misconfiguration** | 🟡 | 🔴 RLS mal configurada (véase A01). 🟡 No constan cabeceras de seguridad ni CSP (pendiente de verificación/adición en la configuración del *framework*). |
 | **A06 · Vulnerable & Outdated Components** | 🟡 | ✅ Dependencias en versiones actuales (Next.js 16.1.6, React 19.2.3, etc.). 🔴 Sin análisis automatizado de dependencias (`npm audit` / Dependabot), al no existir integración continua. |
-| **A07 · Identification & Authentication Failures** | 🟡 | ✅ Autenticación por Supabase Auth y Google OAuth, sesión validada en servidor, recuperación de contraseña. 🟡 política de contraseñas débil (mínimo 6, sin requisitos de complejidad; `supabase/config.toml:175,178`); MFA deshabilitado. |
+| **A07 · Identification & Authentication Failures** | 🟡 | ✅ Autenticación por Supabase Auth y Google OAuth, **verificación de email obligatoria en el registro** (confirmación por enlace, `api/auth/confirm`), sesión validada en servidor, recuperación de contraseña funcional (`admin/reset-password`). 🟡 política de contraseñas débil (mínimo 6, sin requisitos de complejidad; `supabase/config.toml:175,178`); MFA deshabilitado. |
 | **A08 · Software & Data Integrity Failures** | ✅ | ✅ Verificación de firma en **ambos** *webhooks* (`api/webhooks/stripe-connect/route.ts:23`; `api/webhooks/stripe/route.ts:21`) y guarda de idempotencia (`status === PENDING`). 🟡 Sin *idempotency keys* de Stripe en las llamadas salientes. |
 | **A09 · Security Logging & Monitoring Failures** | 🔴 | Registro limitado a `console.error`; sin trazas estructuradas, alertas ni auditoría. |
 | **A10 · Server-Side Request Forgery (SSRF)** | ✅ | Sin peticiones de servidor a URLs controladas por el usuario; las salidas se dirigen a proveedores fijos (Stripe, Supabase, Resend). Exposición baja. |
@@ -195,9 +196,9 @@ Complementa el [Capítulo 6](06-pruebas-calidad.md) detallando la **naturaleza d
 
 | Tipo | Naturaleza | Casos | ¿En cobertura? | Objetivo recomendado |
 |------|-----------|:-----:|:--------------:|:--------------------:|
-| **Unitarias de dominio** (objetos de valor y servicios puros) | Aisladas, deterministas, sin E/S | 115 (61 %) | Sí | ~100 % líneas / ~95 % ramas |
-| **De casos de uso** (aplicación, con *test doubles* en memoria) | "Sociables": verifican la orquestación con dobles, no la implementación | 49 (26 %) | Sí | ~90 % líneas / ~85 % ramas |
-| **De adaptador** (infraestructura, con *mocks* de los SDK) | Verifican el *mapeo* (p. ej. `23P01 → SlotTakenError`, cálculo de comisión), no la dependencia real | 25 (13 %) | No (excluida) | validar vía integración, no por líneas |
+| **Unitarias de dominio** (objetos de valor y servicios puros) | Aisladas, deterministas, sin E/S | 115 (55 %) | Sí | ~100 % líneas / ~95 % ramas |
+| **De casos de uso** (aplicación, con *test doubles* en memoria) | "Sociables": verifican la orquestación con dobles, no la implementación | 57 (27 %) | Sí | ~90 % líneas / ~85 % ramas |
+| **De adaptador** (infraestructura, con *mocks* de los SDK) | Verifican el *mapeo* (p. ej. `23P01 → SlotTakenError`, cálculo de comisión), no la dependencia real | 37 (18 %) | No (excluida) | validar vía integración, no por líneas |
 | **Integración real** (contra PostgreSQL efímero) | Ejercitaría la restricción `EXCLUDE` y las políticas RLS de extremo a extremo | 0 | — | flujos críticos |
 | **E2E** (Playwright automatizado) | Recorrido completo del usuario | 0 (solo *smoke* manual) | — | flujo reservar → pagar → confirmar |
 
