@@ -47,10 +47,10 @@ export function SlotPicker({
 
   useEffect(() => {
     let ignore = false
-    setLoading(true)
-    setError('')
 
     void (async () => {
+      setLoading(true)
+      setError('')
       const result = await getAvailability(slug, date)
       if (ignore) return
       if (result.error) {

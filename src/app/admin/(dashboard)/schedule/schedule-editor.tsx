@@ -19,7 +19,7 @@ interface ScheduleEditorProps {
   commonTranslations: AdminTranslations['common']
 }
 
-export function ScheduleEditor({ initialSchedule, timezone, timezoneLabel, translations: t, commonTranslations: common }: ScheduleEditorProps) {
+export function ScheduleEditor({ initialSchedule, timezoneLabel, translations: t, commonTranslations: common }: ScheduleEditorProps) {
   const [days, setDays] = useState<DayState[]>(initialSchedule)
   const [state, formAction, isPending] = useActionState(saveSchedule, null)
 

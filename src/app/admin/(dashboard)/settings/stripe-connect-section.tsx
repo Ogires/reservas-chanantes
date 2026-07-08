@@ -24,6 +24,7 @@ export function StripeConnectSection({
         <p className="text-sm text-slate-600 mb-4">
           {t.stripeConnectPrompt}
         </p>
+        {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- /api/stripe/connect es una ruta API que redirige, no una página; <Link> no aplica */}
         <a
           href="/api/stripe/connect"
           className="inline-flex items-center gap-2 rounded-lg bg-[#635bff] px-4 py-2.5 font-medium text-white shadow-sm hover:bg-[#5046e4] transition-colors"
@@ -43,6 +44,7 @@ export function StripeConnectSection({
         <p className="text-sm text-amber-700 mb-4">
           {t.stripePendingVerification}
         </p>
+        {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- /api/stripe/connect es una ruta API que redirige, no una página; <Link> no aplica */}
         <a
           href="/api/stripe/connect"
           className="inline-flex items-center gap-2 rounded-lg bg-[#635bff] px-4 py-2.5 font-medium text-white shadow-sm hover:bg-[#5046e4] transition-colors"

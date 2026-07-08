@@ -6,7 +6,6 @@ import {
   getTenantLocalDate,
   getTenantLocalMinutes,
 } from '@/domain/services/tenant-clock'
-import { TimeRange } from '@/domain/value-objects/time-range'
 import {
   CustomerNotFoundError,
   BookingNotFoundError,
