@@ -1,0 +1,22 @@
+name: Keep-alive
+
+# Ping diario al endpoint de estado para evitar que el proyecto Supabase del
+# plan gratuito se pause por inactividad (~7 días). Es independiente del cron de
+# Vercel (send-reminders), de modo que hay dos mecanismos de keep-alive.
+on:
+  schedule:
+    - cron: '17 6 * * *' # ~06:17 UTC a diario (desfasado del cron de Vercel)
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping /api/health
+        run: |
+          url="${KEEPALIVE_URL:-https://reservas-chanantes.vercel.app/api/health}"
+          code=$(curl -s -o /dev/null -w "%{http_code}" "$url")
+          echo "GET $url -> $code"
+          test "$code" = "200"
+        env:
+          KEEPALIVE_URL: ${{ vars.KEEPALIVE_URL }}
