@@ -151,6 +151,10 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="border-t border-warm-border py-8 text-center text-sm text-slate-500">
+        <Link href="/ayuda" className="transition-colors hover:text-slate-900">
+          Help &middot; Ayuda
+        </Link>
+        <span className="mx-2 text-slate-300">|</span>
         &copy; {new Date().getFullYear()} Reservas Chanantes
       </footer>
     </div>
