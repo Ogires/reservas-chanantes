@@ -36,11 +36,13 @@ export default defineConfig({
         'src/infrastructure/resend/send-booking-emails.ts',
       ],
       // Umbral que actúa de puerta de calidad (falla el build si no se alcanza).
+      // Ramas al 80 % (objetivo del material del Máster); el resto al 90 %,
+      // acorde a la cobertura real (~96 % stmts / ~97 % líneas / ~96 % funcs).
       thresholds: {
-        statements: 85,
-        functions: 85,
-        lines: 85,
-        branches: 75,
+        statements: 90,
+        functions: 90,
+        lines: 90,
+        branches: 80,
       },
     },
   },
