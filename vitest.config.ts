@@ -7,7 +7,10 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    include: ['src/**/*.test.ts'],
+    setupFiles: ['./vitest.setup.ts'],
+    // Los tests de componente (`.test.tsx`) declaran su entorno con la pragma
+    // `// @vitest-environment happy-dom`; el resto corre en `node`.
+    include: ['src/**/*.test.{ts,tsx}'],
     coverage: {
       provider: 'v8',
       // Se mide la lógica: dominio, aplicación e infraestructura (adaptadores).
@@ -19,7 +22,7 @@ export default defineConfig({
         'src/infrastructure/**',
       ],
       exclude: [
-        '**/*.test.ts',
+        '**/*.test.{ts,tsx}',
         // Solo tipos/interfaces (sin código ejecutable)
         'src/domain/types.ts',
         'src/domain/entities/**',
