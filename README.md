@@ -103,7 +103,7 @@ Decisiones técnicas no triviales documentadas en la memoria: cálculo de dispon
 | Pagos | **Stripe Connect** (modelo B2B2C) |
 | Correo transaccional | **Resend** |
 | Estilos | **Tailwind CSS 4** |
-| Pruebas | **Vitest** (240 casos en 32 ficheros) |
+| Pruebas | **Vitest** (268 casos en 37 ficheros) |
 | Despliegue | **Vercel** (*serverless*) + *cron* programado |
 
 ## Estructura del proyecto
@@ -204,7 +204,7 @@ La aplicación está desplegada en **Vercel**. Para reproducir el despliegue:
 
 ## Pruebas
 
-El proyecto se desarrolla con **TDD** en las capas de dominio y aplicación. La suite ejecuta **240 pruebas** (32 ficheros) con Vitest, con **umbral de cobertura** que hace de puerta de calidad, más pruebas **E2E automatizadas con Playwright** del flujo de reserva:
+El proyecto se desarrolla con **TDD** en las capas de dominio y aplicación. La suite ejecuta **268 pruebas** (37 ficheros) con Vitest, con **umbral de cobertura** que hace de puerta de calidad, pruebas de **componente con Testing Library** y pruebas **E2E cross-browser con Playwright** (Chromium/Firefox/WebKit) del flujo de reserva:
 
 ```bash
 npm test               # ejecuta toda la suite una vez

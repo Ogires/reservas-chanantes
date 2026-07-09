@@ -13,27 +13,29 @@ El marco de pruebas es **Vitest 4** (`vitest run` para la ejecución única; `vi
 
 ## 6.3. Distribución de la batería de pruebas
 
-La suite comprende **240 casos de prueba distribuidos en 32 ficheros**. Su reparto por capas evidencia la pirámide descrita:
+La suite comprende **268 casos de prueba distribuidos en 37 ficheros**. Su reparto por capas evidencia la pirámide descrita:
 
 | Capa | Ficheros de prueba | Casos | Peso |
 |------|--------------------|-------|------|
-| **Dominio** | 11 | 123 | 51 % |
-| **Aplicación** (casos de uso) | 7 | 57 | 24 % |
-| **Infraestructura** | 14 | 60 | 25 % |
-| **Total** | **32** | **240** | **100 %** |
+| **Dominio** | 11 | 123 | 46 % |
+| **Aplicación** (casos de uso) | 7 | 57 | 21 % |
+| **Infraestructura** | 16 | 82 | 31 % |
+| **Presentación** (componentes, Testing Library) | 3 | 6 | 2 % |
+| **Total** | **37** | **268** | **100 %** |
 
 > *Tabla 6.1. Distribución de la batería de pruebas por capa arquitectónica.*
 
-El dato relevante no es solo el volumen, sino su **forma**: el 75 % de las pruebas se concentra en las capas de dominio y aplicación —las que albergan las reglas de negocio—, y el dominio por sí solo es la capa más ejercitada (51 %), lo que constituye una evidencia objetiva de que la arquitectura ha cumplido su propósito de hacer la lógica crítica verificable de forma aislada y barata.
+El dato relevante no es solo el volumen, sino su **forma**: el 67 % de las pruebas se concentra en las capas de dominio y aplicación —las que albergan las reglas de negocio—, y el dominio por sí solo sigue siendo la capa más ejercitada (46 %), lo que constituye una evidencia objetiva de que la arquitectura ha cumplido su propósito de hacer la lógica crítica verificable de forma aislada y barata.
 
 ```mermaid
 flowchart TB
-    subgraph Pyramid["Pirámide de pruebas (240 casos)"]
-        I["Infraestructura — 60 casos (25%)<br/>adaptadores: Supabase, Stripe, Resend, Auth, i18n"]
-        A["Aplicación — 57 casos (24%)<br/>casos de uso con dobles de prueba"]
-        D["Dominio — 123 casos (51%)<br/>objetos de valor y servicios puros"]
+    subgraph Pyramid["Batería de pruebas (268 casos + E2E)"]
+        E["Presentación — componentes (Testing Library) + E2E cross-browser<br/>lo que ve el usuario"]
+        I["Infraestructura — 82 casos (31%)<br/>adaptadores: Supabase, Stripe, Resend, Auth, i18n"]
+        A["Aplicación — 57 casos (21%)<br/>casos de uso con dobles de prueba"]
+        D["Dominio — 123 casos (46%)<br/>objetos de valor y servicios puros"]
     end
-    I --- A --- D
+    E --- I --- A --- D
 ```
 
 > *Figura 6.1. La batería de pruebas adopta la forma de pirámide: base ancha en el dominio puro.*
@@ -64,13 +66,13 @@ En la infraestructura, las pruebas verifican la **correcta traducción entre el 
 
 Más allá de las pruebas dinámicas, el control de calidad se apoya en **dos líneas de análisis estático**: el **compilador de TypeScript en modo estricto** (`tsc`), que erradica clases enteras de errores en tiempo de compilación, y **ESLint** con la configuración de Next.js (`eslint-config-next`), ambos sin errores.
 
-Estas comprobaciones no son solo locales: un flujo de **integración continua** (GitHub Actions, `.github/workflows/ci.yml`) las institucionaliza como **puerta de calidad**, ejecutando en cada *push* y *pull request* la secuencia `lint → tsc --noEmit → vitest --coverage → build`. La **cobertura actúa como puerta**: el umbral configurado (85 % de sentencias, funciones y líneas; 75 % de ramas) hace **fallar la construcción** si no se alcanza, medido sobre las capas de dominio, aplicación e infraestructura.
+Estas comprobaciones no son solo locales: un flujo de **integración continua** (GitHub Actions, `.github/workflows/ci.yml`) las institucionaliza como **puerta de calidad**, ejecutando en cada *push* y *pull request* la secuencia `lint → tsc --noEmit → vitest --coverage → build`. La **cobertura actúa como puerta**: el umbral configurado (90 % de sentencias, funciones y líneas; 80 % de ramas —este último, el objetivo que fija el material del Máster) hace **fallar la construcción** si no se alcanza, medido sobre dominio, aplicación e infraestructura (cobertura real ≈ 96 % de sentencias, 97 % de líneas y 89 % de ramas).
 
-La capa de **presentación** (rutas, *Server Actions* y componentes), cuya cobertura por líneas sería engañosa al medir dobles del *framework* más que lógica propia, se valida mediante **pruebas *end-to-end* automatizadas con Playwright** (`e2e/`, script `test:e2e`), que recorren el flujo real de reserva contra el despliegue. Con ello, la calidad **practicada** se convierte en calidad **medida y forzada por la herramienta**.
+La capa de **presentación** (rutas, *Server Actions* y componentes), cuya cobertura por líneas sería engañosa al medir dobles del *framework* más que lógica propia, se valida por dos vías **orientadas al usuario**: **pruebas de componente con Testing Library** (`@testing-library/react` + happy-dom), que comprueban lo que el usuario ve mediante **roles y etiquetas accesibles**, y **pruebas *end-to-end* con Playwright** (`e2e/`, script `test:e2e`) del flujo real de reserva contra el despliegue, ejecutadas **cross-browser** en Chromium, Firefox y WebKit. Con ello, la calidad **practicada** se convierte en calidad **medida y forzada por la herramienta**.
 
 ## 6.8. Síntesis
 
-La estrategia de pruebas no es un añadido posterior, sino el reflejo directo de la arquitectura: una pirámide de 240 casos cuya base ancha (75 % en dominio y aplicación) solo es posible porque la lógica de negocio se diseñó desacoplada y comprobable. El análisis estático estricto, la cobertura acotada por **umbral**, las pruebas **E2E automatizadas** y su ejecución en **integración continua** completan un marco de calidad no solo *practicado*, sino *medido y forzado por la herramienta*.
+La estrategia de pruebas no es un añadido posterior, sino el reflejo directo de la arquitectura: una pirámide de 268 casos cuya base ancha (67 % en dominio y aplicación) solo es posible porque la lógica de negocio se diseñó desacoplada y comprobable. El análisis estático estricto, la cobertura acotada por **umbral**, las pruebas de **componente (Testing Library)** y **E2E cross-browser**, y su ejecución en **integración continua**, completan un marco de calidad no solo *practicado*, sino *medido y forzado por la herramienta*.
 
 ---
 

@@ -196,11 +196,12 @@ Complementa el [Capítulo 6](06-pruebas-calidad.md) detallando la **naturaleza d
 
 | Tipo | Naturaleza | Casos | ¿En cobertura? | Objetivo recomendado |
 |------|-----------|:-----:|:--------------:|:--------------------:|
-| **Unitarias de dominio** (objetos de valor y servicios puros) | Aisladas, deterministas, sin E/S | 123 (51 %) | Sí | ~100 % líneas / ~95 % ramas |
-| **De casos de uso** (aplicación, con *test doubles* en memoria) | "Sociables": verifican la orquestación con dobles, no la implementación | 57 (24 %) | Sí | ~90 % líneas / ~85 % ramas |
-| **De adaptador** (infraestructura, con *mocks* de los SDK) | Verifican el *mapeo* (p. ej. `23P01 → SlotTakenError`, cálculo de comisión), no la dependencia real | 60 (25 %) | Sí | ~85 % líneas / ~75 % ramas |
+| **Unitarias de dominio** (objetos de valor y servicios puros) | Aisladas, deterministas, sin E/S | 123 (46 %) | Sí | ~100 % líneas / ~95 % ramas |
+| **De casos de uso** (aplicación, con *test doubles* en memoria) | "Sociables": verifican la orquestación con dobles, no la implementación | 57 (21 %) | Sí | ~90 % líneas / ~85 % ramas |
+| **De adaptador** (infraestructura, con *mocks* de los SDK) | Verifican el *mapeo* (p. ej. `23P01 → SlotTakenError`, cálculo de comisión), no la dependencia real | 82 (31 %) | Sí | ~90 % líneas / ~80 % ramas |
+| **De componente** (Testing Library + happy-dom) | Validan lo que el usuario ve mediante roles y etiquetas accesibles (incluye interacción con `user-event`) | 6 (2 %) | No (valida presentación) | render e interacción |
 | **Integración real** (contra PostgreSQL efímero) | Ejercitaría la restricción `EXCLUDE` y las políticas RLS de extremo a extremo | 0 | — | flujos críticos (línea futura) |
-| **E2E** (Playwright automatizado) | Recorrido completo del usuario contra el despliegue | 2 (automatizadas) | No (valida presentación) | flujo reservar → confirmar |
+| **E2E** (Playwright, cross-browser) | Recorrido completo del usuario contra el despliegue en Chromium, Firefox y WebKit | 6 (automatizadas) | No (valida presentación) | flujo reservar → confirmar |
 
 ### F.2. Configuración actual
 
@@ -211,11 +212,11 @@ coverage: {
   provider: 'v8',
   include: ['src/domain/**', 'src/application/**', 'src/infrastructure/**'],
   exclude: [/* tipos e interfaces, clientes de SDK y glue de sesión */],
-  thresholds: { statements: 85, functions: 85, lines: 85, branches: 75 },
+  thresholds: { statements: 90, functions: 90, lines: 90, branches: 80 },
 }
 ```
 
-Se **excluye** el *glue* sin lógica (clientes de SDK, `server.ts`, helpers de sesión) y la **capa de presentación** (`src/app`), cuya validación por líneas sería engañosa —esta se cubre con las **pruebas E2E de Playwright**—. La medición se ejecuta en **integración continua** (`.github/workflows/ci.yml`), que **falla el *build*** por debajo del umbral. La única categoría aún pendiente es la de **integración real** contra un PostgreSQL efímero.
+Se **excluye** el *glue* sin lógica (clientes de SDK, `server.ts`, helpers de sesión) y la **capa de presentación** (`src/app`), cuya validación por líneas sería engañosa —esta se cubre con **pruebas de componente (Testing Library)** y **E2E cross-browser de Playwright**—. La medición se ejecuta en **integración continua** (`.github/workflows/ci.yml`), que **falla el *build*** por debajo del umbral. La cobertura real (≈ 96 % sentencias / 97 % líneas / 89 % ramas) supera holgadamente el umbral; la única categoría aún pendiente es la de **integración real** contra un PostgreSQL efímero.
 
 ### F.3. Política propuesta
 
