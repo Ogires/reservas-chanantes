@@ -39,6 +39,6 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
-      - name: E2E contra el despliegue
+      - run: npx playwright install --with-deps chromium firefox webkit
+      - name: E2E cross-browser contra el despliegue
         run: npm run test:e2e

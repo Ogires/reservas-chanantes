@@ -25,8 +25,9 @@ test.describe('Flujo de reserva (extremo a extremo)', () => {
       .fill(nextOpenWeekday())
 
     // 3) Elegir el primer hueco disponible
+    // El primer hueco DISPONIBLE (los ya reservados salen deshabilitados)
     await page
-      .getByRole('button', { name: /^\d{2}:\d{2}$/ })
+      .getByRole('button', { name: /^\d{2}:\d{2}$/, disabled: false })
       .first()
       .click()
 
