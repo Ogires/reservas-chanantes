@@ -44,6 +44,12 @@ export const AYUDA_STEPS: AyudaStep[] = [
   {
     slug: 'registro',
     number: 1,
+    screenshot: {
+      src: '/img/ayuda/1-registro.png',
+      alt: 'Formulario de registro de un negocio',
+      width: 1280,
+      height: 900,
+    },
     es: {
       title: 'Crea tu cuenta',
       summary: 'Registra tu negocio en un minuto.',
@@ -74,6 +80,12 @@ export const AYUDA_STEPS: AyudaStep[] = [
   {
     slug: 'confirmar-email',
     number: 2,
+    screenshot: {
+      src: '/img/ayuda/2-panel.png',
+      alt: 'Panel de administración al que se llega tras confirmar el correo',
+      width: 1600,
+      height: 900,
+    },
     es: {
       title: 'Confirma tu correo',
       summary: 'Verifica tu email para activar la cuenta.',
@@ -104,6 +116,12 @@ export const AYUDA_STEPS: AyudaStep[] = [
   {
     slug: 'servicios',
     number: 3,
+    screenshot: {
+      src: '/img/ayuda/3-servicios.png',
+      alt: 'Formulario para crear un nuevo servicio',
+      width: 1600,
+      height: 900,
+    },
     es: {
       title: 'Añade tus servicios',
       summary: 'Define qué pueden reservar tus clientes.',
@@ -136,6 +154,12 @@ export const AYUDA_STEPS: AyudaStep[] = [
   {
     slug: 'horario',
     number: 4,
+    screenshot: {
+      src: '/img/ayuda/4-horario.png',
+      alt: 'Editor de horario semanal con días activos y tramos horarios',
+      width: 1600,
+      height: 900,
+    },
     es: {
       title: 'Define tu horario',
       summary: 'Marca los días y las horas en que atiendes.',
@@ -166,6 +190,12 @@ export const AYUDA_STEPS: AyudaStep[] = [
   {
     slug: 'cobros',
     number: 5,
+    screenshot: {
+      src: '/img/ayuda/5-cobros.png',
+      alt: 'Sección de Ajustes para conectar la cuenta de Stripe',
+      width: 1297,
+      height: 166,
+    },
     es: {
       title: 'Configura los cobros',
       summary: 'Cobro online con tarjeta y/o pago en el centro.',
@@ -196,6 +226,12 @@ export const AYUDA_STEPS: AyudaStep[] = [
   {
     slug: 'perfil',
     number: 6,
+    screenshot: {
+      src: '/img/ayuda/6-perfil.png',
+      alt: 'Sección de perfil del negocio: categoría, descripción, ciudad y teléfono',
+      width: 448,
+      height: 479,
+    },
     es: {
       title: 'Completa el perfil',
       summary: 'Categoría, ciudad, descripción y SEO.',
@@ -226,6 +262,12 @@ export const AYUDA_STEPS: AyudaStep[] = [
   {
     slug: 'compartir',
     number: 7,
+    screenshot: {
+      src: '/img/ayuda/7-compartir.png',
+      alt: 'Página pública de reservas de un negocio, lista para compartir',
+      width: 1600,
+      height: 900,
+    },
     es: {
       title: 'Comparte tu página',
       summary: 'Tu enlace público, listo para recibir reservas.',

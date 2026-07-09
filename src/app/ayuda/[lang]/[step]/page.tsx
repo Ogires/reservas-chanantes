@@ -70,7 +70,8 @@ export default async function AyudaStepPage({
             alt={s.screenshot.alt}
             width={s.screenshot.width ?? 1280}
             height={s.screenshot.height ?? 800}
-            className="h-auto w-full rounded-xl border border-warm-border shadow-sm"
+            style={{ maxWidth: s.screenshot.width }}
+            className="mx-auto h-auto w-full rounded-xl border border-warm-border shadow-sm"
           />
           {s.screenshot.caption && (
             <figcaption className="mt-2 text-center text-sm text-slate-500">
