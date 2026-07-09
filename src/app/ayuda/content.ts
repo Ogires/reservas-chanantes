@@ -35,9 +35,18 @@ export interface StepCopy {
 export interface AyudaStep {
   slug: string
   number: number
+  /** Captura por defecto (UI en español). */
   screenshot?: Screenshot
+  /** Captura para la guía en inglés (UI en inglés); si falta, se usa `screenshot`. */
+  screenshotEn?: Screenshot
   es: StepCopy
   en: StepCopy
+}
+
+/** Devuelve la captura adecuada al idioma de la guía. */
+export function screenshotFor(step: AyudaStep, lang: AyudaLang): Screenshot | undefined {
+  if (lang === 'en' && step.screenshotEn) return step.screenshotEn
+  return step.screenshot
 }
 
 export const AYUDA_STEPS: AyudaStep[] = [
@@ -47,6 +56,12 @@ export const AYUDA_STEPS: AyudaStep[] = [
     screenshot: {
       src: '/img/ayuda/1-registro.png',
       alt: 'Formulario de registro de un negocio',
+      width: 1280,
+      height: 900,
+    },
+    screenshotEn: {
+      src: '/img/ayuda/1-registro-en.png',
+      alt: 'Business sign-up form',
       width: 1280,
       height: 900,
     },
@@ -86,6 +101,12 @@ export const AYUDA_STEPS: AyudaStep[] = [
       width: 1600,
       height: 900,
     },
+    screenshotEn: {
+      src: '/img/ayuda/2-panel-en.png',
+      alt: 'The admin panel you reach after confirming your email',
+      width: 1600,
+      height: 900,
+    },
     es: {
       title: 'Confirma tu correo',
       summary: 'Verifica tu email para activar la cuenta.',
@@ -119,6 +140,12 @@ export const AYUDA_STEPS: AyudaStep[] = [
     screenshot: {
       src: '/img/ayuda/3-servicios.png',
       alt: 'Formulario para crear un nuevo servicio',
+      width: 1600,
+      height: 900,
+    },
+    screenshotEn: {
+      src: '/img/ayuda/3-servicios-en.png',
+      alt: 'Form to create a new service',
       width: 1600,
       height: 900,
     },
@@ -160,6 +187,12 @@ export const AYUDA_STEPS: AyudaStep[] = [
       width: 1600,
       height: 900,
     },
+    screenshotEn: {
+      src: '/img/ayuda/4-horario-en.png',
+      alt: 'Weekly schedule editor with active days and time ranges',
+      width: 1600,
+      height: 900,
+    },
     es: {
       title: 'Define tu horario',
       summary: 'Marca los días y las horas en que atiendes.',
@@ -193,6 +226,12 @@ export const AYUDA_STEPS: AyudaStep[] = [
     screenshot: {
       src: '/img/ayuda/5-cobros.png',
       alt: 'Sección de Ajustes para conectar la cuenta de Stripe',
+      width: 1297,
+      height: 166,
+    },
+    screenshotEn: {
+      src: '/img/ayuda/5-cobros-en.png',
+      alt: 'Settings section to connect the Stripe account',
       width: 1297,
       height: 166,
     },
@@ -231,6 +270,12 @@ export const AYUDA_STEPS: AyudaStep[] = [
       alt: 'Sección de perfil del negocio: categoría, descripción, ciudad y teléfono',
       width: 448,
       height: 479,
+    },
+    screenshotEn: {
+      src: '/img/ayuda/6-perfil-en.png',
+      alt: 'Business profile section: category, description, city and phone',
+      width: 448,
+      height: 463,
     },
     es: {
       title: 'Completa el perfil',

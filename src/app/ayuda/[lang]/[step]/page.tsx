@@ -7,6 +7,7 @@ import {
   AYUDA_UI,
   getAyudaStep,
   isAyudaLang,
+  screenshotFor,
 } from '../../content'
 
 export function generateStaticParams() {
@@ -38,6 +39,7 @@ export default async function AyudaStepPage({
 
   const ui = AYUDA_UI[lang]
   const copy = s[lang]
+  const shot = screenshotFor(s, lang)
   const idx = AYUDA_STEPS.findIndex((x) => x.slug === s.slug)
   const prev = idx > 0 ? AYUDA_STEPS[idx - 1] : null
   const next = idx < AYUDA_STEPS.length - 1 ? AYUDA_STEPS[idx + 1] : null
@@ -63,19 +65,19 @@ export default async function AyudaStepPage({
         ))}
       </ol>
 
-      {s.screenshot && (
+      {shot && (
         <figure className="mt-8">
           <Image
-            src={s.screenshot.src}
-            alt={s.screenshot.alt}
-            width={s.screenshot.width ?? 1280}
-            height={s.screenshot.height ?? 800}
-            style={{ maxWidth: s.screenshot.width }}
+            src={shot.src}
+            alt={shot.alt}
+            width={shot.width ?? 1280}
+            height={shot.height ?? 800}
+            style={{ maxWidth: shot.width }}
             className="mx-auto h-auto w-full rounded-xl border border-warm-border shadow-sm"
           />
-          {s.screenshot.caption && (
+          {shot.caption && (
             <figcaption className="mt-2 text-center text-sm text-slate-500">
-              {s.screenshot.caption}
+              {shot.caption}
             </figcaption>
           )}
         </figure>
