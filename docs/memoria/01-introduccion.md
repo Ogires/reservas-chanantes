@@ -74,7 +74,7 @@ Se identifican los siguientes objetivos específicos, todos ellos verificables s
 
 ## 1.4. Alcance
 
-El alcance del Trabajo de Fin de Máster comprende el **producto mínimo viable funcional** del sistema: registro y autenticación de negocios, gestión de servicios y horarios, página pública de reservas con cálculo de disponibilidad, flujo de pago con Stripe, portal del cliente final y sistema de notificaciones por correo. Quedan **explícitamente fuera del alcance** de la presente entrega, y se abordan como líneas futuras (Capítulo 7), la automatización de la integración continua (CI/CD), las pruebas *end-to-end* automatizadas y el endurecimiento de determinadas políticas de seguridad, según se detalla en el análisis de brechas del proyecto.
+El alcance del Trabajo de Fin de Máster comprende el **producto mínimo viable funcional** del sistema: registro y autenticación de negocios, gestión de servicios y horarios, página pública de reservas con cálculo de disponibilidad, flujo de pago con Stripe, portal del cliente final y sistema de notificaciones por correo. Quedan **explícitamente fuera del alcance** de la presente entrega, y se abordan como líneas futuras (Capítulo 7), el endurecimiento de determinadas políticas de seguridad y las pruebas de integración contra una base de datos real, según se detalla en el análisis de brechas del proyecto.
 
 ## 1.5. Estructura del documento
 

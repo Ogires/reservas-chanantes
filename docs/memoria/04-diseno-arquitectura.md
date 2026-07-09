@@ -77,30 +77,21 @@ La capa de aplicación (`src/application`) orquesta los casos de uso y define lo
 La **inyección de dependencias** se realiza por **constructor**: un caso de uso recibe sus colaboradores como interfaces, sin conocer su implementación concreta. Así, `CreateBookingUseCase` recibe cinco repositorios (`tenant`, `service`, `schedule`, `booking` y `customer`) y permanece comprobable de forma aislada mediante dobles de prueba.
 
 ```mermaid
-classDiagram
-    class CreateBookingUseCase {
-        +execute(input) Booking
-    }
-    class TenantRepository {
-        <<interface>>
-    }
-    class ServiceRepository {
-        <<interface>>
-    }
-    class ScheduleRepository {
-        <<interface>>
-    }
-    class BookingRepository {
-        <<interface>>
-    }
-    class CustomerRepository {
-        <<interface>>
-    }
-    CreateBookingUseCase ..> TenantRepository
-    CreateBookingUseCase ..> ServiceRepository
-    CreateBookingUseCase ..> ScheduleRepository
-    CreateBookingUseCase ..> BookingRepository
-    CreateBookingUseCase ..> CustomerRepository
+flowchart TB
+    UC["CreateBookingUseCase<br/>+execute(input): Booking"]
+    subgraph Ports["Puertos (interfaces)"]
+        direction LR
+        TR["«interface»<br/>TenantRepository"]
+        SR["«interface»<br/>ServiceRepository"]
+        SCR["«interface»<br/>ScheduleRepository"]
+        BR["«interface»<br/>BookingRepository"]
+        CR["«interface»<br/>CustomerRepository"]
+    end
+    UC -.-> TR
+    UC -.-> SR
+    UC -.-> SCR
+    UC -.-> BR
+    UC -.-> CR
 ```
 
 > *Figura 4.2. El caso de uso depende de los cinco puertos (interfaces), no de implementaciones (inversión de dependencias).*
