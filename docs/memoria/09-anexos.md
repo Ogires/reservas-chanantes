@@ -196,24 +196,26 @@ Complementa el [Capítulo 6](06-pruebas-calidad.md) detallando la **naturaleza d
 
 | Tipo | Naturaleza | Casos | ¿En cobertura? | Objetivo recomendado |
 |------|-----------|:-----:|:--------------:|:--------------------:|
-| **Unitarias de dominio** (objetos de valor y servicios puros) | Aisladas, deterministas, sin E/S | 115 (55 %) | Sí | ~100 % líneas / ~95 % ramas |
-| **De casos de uso** (aplicación, con *test doubles* en memoria) | "Sociables": verifican la orquestación con dobles, no la implementación | 57 (27 %) | Sí | ~90 % líneas / ~85 % ramas |
-| **De adaptador** (infraestructura, con *mocks* de los SDK) | Verifican el *mapeo* (p. ej. `23P01 → SlotTakenError`, cálculo de comisión), no la dependencia real | 37 (18 %) | No (excluida) | validar vía integración, no por líneas |
-| **Integración real** (contra PostgreSQL efímero) | Ejercitaría la restricción `EXCLUDE` y las políticas RLS de extremo a extremo | 0 | — | flujos críticos |
-| **E2E** (Playwright automatizado) | Recorrido completo del usuario | 0 (solo *smoke* manual) | — | flujo reservar → pagar → confirmar |
+| **Unitarias de dominio** (objetos de valor y servicios puros) | Aisladas, deterministas, sin E/S | 123 (51 %) | Sí | ~100 % líneas / ~95 % ramas |
+| **De casos de uso** (aplicación, con *test doubles* en memoria) | "Sociables": verifican la orquestación con dobles, no la implementación | 57 (24 %) | Sí | ~90 % líneas / ~85 % ramas |
+| **De adaptador** (infraestructura, con *mocks* de los SDK) | Verifican el *mapeo* (p. ej. `23P01 → SlotTakenError`, cálculo de comisión), no la dependencia real | 60 (25 %) | Sí | ~85 % líneas / ~75 % ramas |
+| **Integración real** (contra PostgreSQL efímero) | Ejercitaría la restricción `EXCLUDE` y las políticas RLS de extremo a extremo | 0 | — | flujos críticos (línea futura) |
+| **E2E** (Playwright automatizado) | Recorrido completo del usuario contra el despliegue | 2 (automatizadas) | No (valida presentación) | flujo reservar → confirmar |
 
 ### F.2. Configuración actual
 
-La cobertura está deliberadamente acotada a las capas donde la métrica de líneas aporta valor (`vitest.config.ts:11-14`):
+La cobertura se mide sobre las capas con lógica —dominio, aplicación e infraestructura— y define un **umbral** que actúa de puerta de calidad (`vitest.config.ts`):
 
 ```typescript
 coverage: {
   provider: 'v8',
-  include: ['src/domain/**', 'src/application/**'],
+  include: ['src/domain/**', 'src/application/**', 'src/infrastructure/**'],
+  exclude: [/* tipos e interfaces, clientes de SDK y glue de sesión */],
+  thresholds: { statements: 85, functions: 85, lines: 85, branches: 75 },
 }
 ```
 
-El **alcance es correcto** —excluye la infraestructura, cuyos adaptadores se validan mejor mediante integración que contando líneas con *mocks*—, pero **no se definen umbrales** (`thresholds`) que actúen como puerta de calidad, y, al no existir integración continua, la medición no se ejecuta de forma automatizada (limitación señalada en el Capítulo 6 §6.7).
+Se **excluye** el *glue* sin lógica (clientes de SDK, `server.ts`, helpers de sesión) y la **capa de presentación** (`src/app`), cuya validación por líneas sería engañosa —esta se cubre con las **pruebas E2E de Playwright**—. La medición se ejecuta en **integración continua** (`.github/workflows/ci.yml`), que **falla el *build*** por debajo del umbral. La única categoría aún pendiente es la de **integración real** contra un PostgreSQL efímero.
 
 ### F.3. Política propuesta
 

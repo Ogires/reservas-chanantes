@@ -9,29 +9,29 @@ La calidad del software es, según se argumentó en el Capítulo 1, el eje verte
 
 ## 6.2. Marco y configuración
 
-El marco de pruebas es **Vitest 4** (`vitest run` para la ejecución única; `vitest` en modo vigilancia). La configuración integra `vite-tsconfig-paths` —que resuelve el alias de módulos `@/*` también en las pruebas— y `@vitejs/plugin-react`. La elección frente a Jest se justificó en el Capítulo 2 por su compatibilidad nativa con ESM y TypeScript. El proyecto define además un script de cobertura (`test:coverage`), si bien, como se discute en la sección 6.7, no se ha fijado un umbral que opere como puerta de calidad automatizada.
+El marco de pruebas es **Vitest 4** (`vitest run` para la ejecución única; `vitest` en modo vigilancia). La configuración integra `vite-tsconfig-paths` —que resuelve el alias de módulos `@/*` también en las pruebas— y `@vitejs/plugin-react`. La elección frente a Jest se justificó en el Capítulo 2 por su compatibilidad nativa con ESM y TypeScript. El proyecto define además un script de cobertura (`test:coverage`) con un **umbral que opera como puerta de calidad automatizada** (§6.7).
 
 ## 6.3. Distribución de la batería de pruebas
 
-La suite comprende **209 casos de prueba distribuidos en 25 ficheros**. Su reparto por capas evidencia la pirámide descrita:
+La suite comprende **240 casos de prueba distribuidos en 32 ficheros**. Su reparto por capas evidencia la pirámide descrita:
 
 | Capa | Ficheros de prueba | Casos | Peso |
 |------|--------------------|-------|------|
-| **Dominio** | 9 | 115 | 55 % |
-| **Aplicación** (casos de uso) | 7 | 57 | 27 % |
-| **Infraestructura** | 9 | 37 | 18 % |
-| **Total** | **25** | **209** | **100 %** |
+| **Dominio** | 11 | 123 | 51 % |
+| **Aplicación** (casos de uso) | 7 | 57 | 24 % |
+| **Infraestructura** | 14 | 60 | 25 % |
+| **Total** | **32** | **240** | **100 %** |
 
 > *Tabla 6.1. Distribución de la batería de pruebas por capa arquitectónica.*
 
-El dato relevante no es solo el volumen, sino su **forma**: el 82 % de las pruebas se concentra en las capas de dominio y aplicación —las que albergan las reglas de negocio—, lo que constituye una evidencia objetiva de que la arquitectura ha cumplido su propósito de hacer la lógica crítica verificable de forma aislada y barata.
+El dato relevante no es solo el volumen, sino su **forma**: el 75 % de las pruebas se concentra en las capas de dominio y aplicación —las que albergan las reglas de negocio—, y el dominio por sí solo es la capa más ejercitada (51 %), lo que constituye una evidencia objetiva de que la arquitectura ha cumplido su propósito de hacer la lógica crítica verificable de forma aislada y barata.
 
 ```mermaid
 flowchart TB
-    subgraph Pyramid["Pirámide de pruebas (209 casos)"]
-        I["Infraestructura — 37 casos (18%)<br/>adaptadores: Supabase, Stripe, Resend, Auth"]
-        A["Aplicación — 57 casos (27%)<br/>casos de uso con dobles de prueba"]
-        D["Dominio — 115 casos (55%)<br/>objetos de valor y servicios puros"]
+    subgraph Pyramid["Pirámide de pruebas (240 casos)"]
+        I["Infraestructura — 60 casos (25%)<br/>adaptadores: Supabase, Stripe, Resend, Auth, i18n"]
+        A["Aplicación — 57 casos (24%)<br/>casos de uso con dobles de prueba"]
+        D["Dominio — 123 casos (51%)<br/>objetos de valor y servicios puros"]
     end
     I --- A --- D
 ```
@@ -60,21 +60,17 @@ En la infraestructura, las pruebas verifican la **correcta traducción entre el 
 - En `payment-service.test.ts`, se comprueba que el **cálculo de la comisión** en puntos básicos (`amountCents * bps / 10000`) es correcto y que la sesión de pago se construye con los parámetros esperados de Stripe Connect.
 - En `booking-repository.test.ts`, se verifica que el código de error `23P01` de PostgreSQL se traduce efectivamente a `SlotTakenError`, garantizando que la frontera de integridad descrita en el Capítulo 5 se comporta como se espera.
 
-## 6.7. Análisis estático y limitaciones del control de calidad
+## 6.7. Análisis estático, integración continua y cobertura
 
-Más allá de las pruebas dinámicas, el control de calidad se apoya en **dos líneas de análisis estático**: el **compilador de TypeScript en modo estricto** (`tsc`), que erradica clases enteras de errores en tiempo de compilación, y **ESLint** con la configuración de Next.js (`eslint-config-next`).
+Más allá de las pruebas dinámicas, el control de calidad se apoya en **dos líneas de análisis estático**: el **compilador de TypeScript en modo estricto** (`tsc`), que erradica clases enteras de errores en tiempo de compilación, y **ESLint** con la configuración de Next.js (`eslint-config-next`), ambos sin errores.
 
-En coherencia con el rigor que guía esta memoria, deben reconocerse las **limitaciones actuales** del aparato de calidad, que el propio análisis de brechas del proyecto identifica:
+Estas comprobaciones no son solo locales: un flujo de **integración continua** (GitHub Actions, `.github/workflows/ci.yml`) las institucionaliza como **puerta de calidad**, ejecutando en cada *push* y *pull request* la secuencia `lint → tsc --noEmit → vitest --coverage → build`. La **cobertura actúa como puerta**: el umbral configurado (85 % de sentencias, funciones y líneas; 75 % de ramas) hace **fallar la construcción** si no se alcanza, medido sobre las capas de dominio, aplicación e infraestructura.
 
-1. **Ausencia de integración continua (CI/CD)**: no existe un flujo automatizado (`.github/` está ausente) que ejecute `lint`, `tsc` y la batería de pruebas en cada cambio. La verificación es, por tanto, **local y disciplinada**, pero no está institucionalizada en una puerta de calidad.
-2. **Ausencia de pruebas *end-to-end* automatizadas**: la suite es de naturaleza unitaria e integración de componentes; las pruebas de extremo a extremo del flujo de reserva se realizaron de forma **manual** (con Playwright como herramienta de inspección), no automatizada, pese a haberse contemplado en el diseño original.
-3. **Cobertura no acotada por umbral**: aunque se dispone del script `test:coverage`, no se ha establecido un mínimo de cobertura que falle la construcción si no se alcanza. En el [Anexo F](09-anexos.md) se propone una política de cobertura diferenciada por capa.
-
-Estas tres limitaciones son, no por casualidad, las de mayor retorno académico entre las líneas futuras del Capítulo 7: convertir la calidad **practicada** en calidad **medida y forzada por la herramienta** es el paso natural de evolución del proyecto.
+La capa de **presentación** (rutas, *Server Actions* y componentes), cuya cobertura por líneas sería engañosa al medir dobles del *framework* más que lógica propia, se valida mediante **pruebas *end-to-end* automatizadas con Playwright** (`e2e/`, script `test:e2e`), que recorren el flujo real de reserva contra el despliegue. Con ello, la calidad **practicada** se convierte en calidad **medida y forzada por la herramienta**.
 
 ## 6.8. Síntesis
 
-La estrategia de pruebas no es un añadido posterior, sino el reflejo directo de la arquitectura: una pirámide de 209 casos cuya base ancha (82 % en dominio y aplicación) solo es posible porque la lógica de negocio se diseñó desacoplada y comprobable. El análisis estático estricto complementa la verificación dinámica. El capítulo ha expuesto con franqueza las tres carencias del marco de calidad —sin CI, sin E2E automatizado y sin umbral de cobertura—, cuya subsanación se aborda a continuación.
+La estrategia de pruebas no es un añadido posterior, sino el reflejo directo de la arquitectura: una pirámide de 240 casos cuya base ancha (75 % en dominio y aplicación) solo es posible porque la lógica de negocio se diseñó desacoplada y comprobable. El análisis estático estricto, la cobertura acotada por **umbral**, las pruebas **E2E automatizadas** y su ejecución en **integración continua** completan un marco de calidad no solo *practicado*, sino *medido y forzado por la herramienta*.
 
 ---
 

@@ -103,7 +103,7 @@ Decisiones técnicas no triviales documentadas en la memoria: cálculo de dispon
 | Pagos | **Stripe Connect** (modelo B2B2C) |
 | Correo transaccional | **Resend** |
 | Estilos | **Tailwind CSS 4** |
-| Pruebas | **Vitest** (209 casos en 25 ficheros) |
+| Pruebas | **Vitest** (240 casos en 32 ficheros) |
 | Despliegue | **Vercel** (*serverless*) + *cron* programado |
 
 ## Estructura del proyecto
@@ -204,17 +204,20 @@ La aplicación está desplegada en **Vercel**. Para reproducir el despliegue:
 
 ## Pruebas
 
-El proyecto se desarrolla con **TDD** en las capas de dominio y aplicación. La suite ejecuta **209 pruebas** (25 ficheros) con Vitest:
+El proyecto se desarrolla con **TDD** en las capas de dominio y aplicación. La suite ejecuta **240 pruebas** (32 ficheros) con Vitest, con **umbral de cobertura** que hace de puerta de calidad, más pruebas **E2E automatizadas con Playwright** del flujo de reserva:
 
 ```bash
 npm test               # ejecuta toda la suite una vez
 npm run test:watch     # modo interactivo
-npm run test:coverage  # con informe de cobertura
+npm run test:coverage  # cobertura (falla por debajo del umbral)
+npm run test:e2e       # E2E de Playwright (contra el despliegue)
 ```
+
+Un flujo de **integración continua** (GitHub Actions, [`.github/workflows/ci.yml`](.github/workflows/ci.yml)) ejecuta `lint → tsc → tests+cobertura → build` en cada *push*.
 
 ## Estado y limitaciones
 
-Este es el **MVP funcional** del sistema, desplegado y operativo. La memoria documenta con transparencia las limitaciones conocidas y las líneas futuras (ver [`docs/memoria/07-conclusiones.md`](docs/memoria/07-conclusiones.md)). En resumen: políticas RLS aún permisivas en algunas tablas, monetización por plan diseñada pero no activada, una desviación arquitectónica acotada en la rama de administración, y ausencia de CI/CD y pruebas E2E automatizadas. Estas brechas no comprometen el funcionamiento del producto en su alcance de MVP y se reconocen explícitamente como parte del objetivo metodológico del trabajo.
+Este es el **MVP funcional** del sistema, desplegado y operativo. La memoria documenta con transparencia las limitaciones conocidas y las líneas futuras (ver [`docs/memoria/07-conclusiones.md`](docs/memoria/07-conclusiones.md)). En resumen: políticas RLS aún permisivas en algunas tablas, monetización por plan diseñada pero no activada, una desviación arquitectónica acotada en la rama de administración, y la ausencia de pruebas de integración contra una base de datos real (la CI, la cobertura con umbral y las pruebas E2E ya están operativas). Estas brechas no comprometen el funcionamiento del producto en su alcance de MVP y se reconocen explícitamente como parte del objetivo metodológico del trabajo.
 
 ## Licencia
 
