@@ -6,6 +6,7 @@ import { SupabaseBookingRepository } from '@/infrastructure/supabase/booking-rep
 import { BookingStatus } from '@/domain/types'
 import { createSupabaseAdmin } from '@/infrastructure/supabase/admin-client'
 import { sendCancellationEmails } from '@/infrastructure/resend/send-booking-emails'
+import { logSecurityEvent } from '@/infrastructure/observability/security-logger'
 
 export async function cancelBooking(id: string): Promise<{ error?: string }> {
   try {
@@ -16,6 +17,7 @@ export async function cancelBooking(id: string): Promise<{ error?: string }> {
       return { error: 'Booking not found.' }
     }
     await bookingRepo.updateStatus(id, BookingStatus.CANCELLED)
+    logSecurityEvent({ type: 'booking_cancelled', userId: tenant.id })
     const adminClient = createSupabaseAdmin()
     await sendCancellationEmails(adminClient, id)
     revalidatePath('/admin/bookings')

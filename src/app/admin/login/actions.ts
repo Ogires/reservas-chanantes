@@ -4,6 +4,7 @@ import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createSupabaseServer } from '@/infrastructure/supabase/server'
 import { authLimiter } from '@/infrastructure/security/rate-limiter'
+import { logSecurityEvent } from '@/infrastructure/observability/security-logger'
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://reservas-chanantes.vercel.app'
@@ -15,6 +16,7 @@ export async function login(
   const ip =
     (await headers()).get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
   if (!authLimiter.check(`login:${ip}`)) {
+    logSecurityEvent({ type: 'rate_limited', ip, path: '/admin/login' })
     return { error: 'Demasiados intentos. Inténtalo de nuevo en un minuto.' }
   }
 
@@ -30,9 +32,11 @@ export async function login(
 
   if (error) {
     console.error('[admin/login] auth error:', error.message)
+    logSecurityEvent({ type: 'login_failure', ip, email })
     return { error: 'Credenciales inválidas' }
   }
 
+  logSecurityEvent({ type: 'login_success', ip, email })
   redirect('/admin/dashboard')
 }
 
@@ -49,6 +53,7 @@ export async function resetPassword(
   }
 
   const email = formData.get('email') as string
+  logSecurityEvent({ type: 'password_reset_requested', ip, email })
 
   const supabase = await createSupabaseServer()
 
