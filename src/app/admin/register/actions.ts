@@ -4,6 +4,8 @@ import { redirect } from 'next/navigation'
 import { createSupabaseServer } from '@/infrastructure/supabase/server'
 import { provisionTenant } from '@/infrastructure/supabase/provision-tenant'
 import { detectLocaleFromHeaders } from '@/infrastructure/i18n/detect-locale'
+import { Password } from '@/domain/value-objects/password'
+import { WeakPasswordError } from '@/domain/errors/domain-errors'
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://reservas-chanantes.vercel.app'
@@ -44,8 +46,14 @@ export async function register(
     if (typeof email !== 'string' || email.trim() === '') {
       return { error: 'Email is required.' }
     }
-    if (typeof password !== 'string' || password.length < 6) {
-      return { error: 'Password must be at least 6 characters.' }
+    if (typeof password !== 'string') {
+      return { error: 'Password is required.' }
+    }
+    try {
+      Password.create(password)
+    } catch (e) {
+      if (e instanceof WeakPasswordError) return { error: e.message }
+      throw e
     }
 
     const locale = await detectLocaleFromHeaders()

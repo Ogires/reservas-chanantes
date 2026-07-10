@@ -154,3 +154,11 @@ export class OnSitePaymentNotAllowedError extends DomainError {
     super('This business does not allow paying at the venue')
   }
 }
+
+export class WeakPasswordError extends DomainError {
+  constructor() {
+    super(
+      'La contraseña debe tener al menos 12 caracteres e incluir mayúscula, minúscula, número y carácter especial.'
+    )
+  }
+}

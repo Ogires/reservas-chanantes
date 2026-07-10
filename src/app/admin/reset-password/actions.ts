@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { createSupabaseServer } from '@/infrastructure/supabase/server'
 import { detectLocaleFromHeaders } from '@/infrastructure/i18n/detect-locale'
 import { getAdminTranslations } from '@/infrastructure/i18n/admin-translations'
+import { Password } from '@/domain/value-objects/password'
 
 export type ResetPasswordState = { error: string } | null
 
@@ -26,6 +27,10 @@ export async function updatePassword(
     password !== confirm
   ) {
     return { error: t.passwordMismatch }
+  }
+
+  if (Password.validate(password).length > 0) {
+    return { error: t.passwordWeak }
   }
 
   const supabase = await createSupabaseServer()

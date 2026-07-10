@@ -24,6 +24,7 @@ export default async function ResetPasswordPage() {
               confirmPassword: t.auth.confirmPassword,
               updatePassword: t.auth.updatePassword,
               updatingPassword: t.auth.updatingPassword,
+              passwordWeak: t.auth.passwordWeak,
             }}
           />
         </div>

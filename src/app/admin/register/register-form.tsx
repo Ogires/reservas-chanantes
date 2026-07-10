@@ -75,9 +75,10 @@ export function RegisterForm({ isOAuthUser, translations: t }: RegisterFormProps
               name="password"
               type="password"
               required
-              minLength={6}
+              minLength={12}
               className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
             />
+            <p className="mt-1.5 text-xs text-slate-500">{t.passwordWeak}</p>
           </div>
         </>
       )}

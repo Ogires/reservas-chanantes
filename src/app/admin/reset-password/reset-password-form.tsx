@@ -7,7 +7,11 @@ import type { AdminTranslations } from '@/infrastructure/i18n/admin-translations
 interface ResetPasswordFormProps {
   translations: Pick<
     AdminTranslations['auth'],
-    'newPassword' | 'confirmPassword' | 'updatePassword' | 'updatingPassword'
+    | 'newPassword'
+    | 'confirmPassword'
+    | 'updatePassword'
+    | 'updatingPassword'
+    | 'passwordWeak'
   >
 }
 
@@ -34,9 +38,10 @@ export function ResetPasswordForm({ translations: t }: ResetPasswordFormProps) {
           name="password"
           type="password"
           required
-          minLength={6}
+          minLength={12}
           className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
         />
+        <p className="mt-1.5 text-xs text-slate-500">{t.passwordWeak}</p>
       </div>
 
       <div>
@@ -51,7 +56,7 @@ export function ResetPasswordForm({ translations: t }: ResetPasswordFormProps) {
           name="confirm"
           type="password"
           required
-          minLength={6}
+          minLength={12}
           className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
         />
       </div>

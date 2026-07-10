@@ -37,6 +37,7 @@ export interface AdminTranslations {
     updatePassword: string
     updatingPassword: string
     passwordMismatch: string
+    passwordWeak: string
     resetLinkInvalid: string
     sendResetLink: string
     sending: string
@@ -194,6 +195,8 @@ const es: AdminTranslations = {
     updatePassword: 'Guardar contrasena',
     updatingPassword: 'Guardando...',
     passwordMismatch: 'Las contrasenas no coinciden.',
+    passwordWeak:
+      'La contrasena debe tener al menos 12 caracteres e incluir mayuscula, minuscula, numero y caracter especial.',
     resetLinkInvalid: 'El enlace no es valido o ha caducado. Solicita uno nuevo.',
     sendResetLink: 'Enviar enlace',
     sending: 'Enviando...',
@@ -351,6 +354,8 @@ const en: AdminTranslations = {
     updatePassword: 'Save password',
     updatingPassword: 'Saving...',
     passwordMismatch: 'Passwords do not match.',
+    passwordWeak:
+      'Password must be at least 12 characters and include an uppercase letter, a lowercase letter, a number and a special character.',
     resetLinkInvalid: 'The link is invalid or expired. Request a new one.',
     sendResetLink: 'Send link',
     sending: 'Sending...',
