@@ -138,7 +138,7 @@ A diferencia de una aplicación SPA tradicional, el sistema **no emplea un almac
 
 ## 4.7. Diseño de la persistencia
 
-La persistencia es **remota**, sobre una base de datos relacional PostgreSQL gestionada por Supabase. El modelo se compone de cinco tablas, evolucionadas a través de diez migraciones versionadas (`supabase/migrations/`).
+La persistencia es **remota**, sobre una base de datos relacional PostgreSQL gestionada por Supabase. El modelo se compone de cinco tablas, evolucionadas a través de once migraciones versionadas (`supabase/migrations/`).
 
 ```mermaid
 erDiagram

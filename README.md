@@ -103,7 +103,7 @@ Decisiones técnicas no triviales documentadas en la memoria: cálculo de dispon
 | Pagos | **Stripe Connect** (modelo B2B2C) |
 | Correo transaccional | **Resend** |
 | Estilos | **Tailwind CSS 4** |
-| Pruebas | **Vitest** (268 casos en 37 ficheros) |
+| Pruebas | **Vitest** (279 casos en 41 ficheros) |
 | Despliegue | **Vercel** (*serverless*) + *cron* programado |
 
 ## Estructura del proyecto
@@ -126,7 +126,7 @@ src/
     api/                   auth/callback · cron/send-reminders · stripe/* · webhooks/*
   proxy.ts                 Refresco de sesión y protección de rutas
 supabase/
-  migrations/              10 migraciones SQL (fuente de verdad del esquema)
+  migrations/              11 migraciones SQL (fuente de verdad del esquema)
 docs/
   memoria/                 Memoria académica del TFM (7 capítulos + anexos)
   presentacion/            Diapositivas de la presentación (HTML)
@@ -204,7 +204,7 @@ La aplicación está desplegada en **Vercel**. Para reproducir el despliegue:
 
 ## Pruebas
 
-El proyecto se desarrolla con **TDD** en las capas de dominio y aplicación. La suite ejecuta **268 pruebas** (37 ficheros) con Vitest, con **umbral de cobertura** que hace de puerta de calidad, pruebas de **componente con Testing Library** y pruebas **E2E cross-browser con Playwright** (Chromium/Firefox/WebKit) del flujo de reserva:
+El proyecto se desarrolla con **TDD** en las capas de dominio y aplicación. La suite ejecuta **279 pruebas** (41 ficheros) con Vitest, con **umbral de cobertura** que hace de puerta de calidad, pruebas de **componente con Testing Library** y pruebas **E2E cross-browser con Playwright** (Chromium/Firefox/WebKit) del flujo de reserva:
 
 ```bash
 npm test               # ejecuta toda la suite una vez
@@ -217,7 +217,7 @@ Un flujo de **integración continua** (GitHub Actions, [`.github/workflows/ci.ym
 
 ## Estado y limitaciones
 
-Este es el **MVP funcional** del sistema, desplegado y operativo. La memoria documenta con transparencia las limitaciones conocidas y las líneas futuras (ver [`docs/memoria/07-conclusiones.md`](docs/memoria/07-conclusiones.md)). En resumen: políticas RLS aún permisivas en algunas tablas, monetización por plan diseñada pero no activada, una desviación arquitectónica acotada en la rama de administración, y la ausencia de pruebas de integración contra una base de datos real (la CI, la cobertura con umbral y las pruebas E2E ya están operativas). Estas brechas no comprometen el funcionamiento del producto en su alcance de MVP y se reconocen explícitamente como parte del objetivo metodológico del trabajo.
+Este es el **MVP funcional** del sistema, desplegado y operativo. La memoria documenta con transparencia las limitaciones conocidas y las líneas futuras (ver [`docs/memoria/07-conclusiones.md`](docs/memoria/07-conclusiones.md)). Se ha aplicado un **paquete de endurecimiento de seguridad OWASP** (detalle en el [Anexo E de la memoria](docs/memoria/09-anexos.md)): RLS acotada a **propietario y titular** —cerrando la exposición de PII—, **cabeceras de seguridad y CSP**, **política de contraseñas fuerte**, **validación del entorno con Zod**, **limitación de tasa** y **registro estructurado de eventos de seguridad**. Las limitaciones que restan son: monetización por plan diseñada pero no activada, una desviación arquitectónica acotada en la rama de administración, y la ausencia de pruebas de integración contra una base de datos real (la CI, la cobertura con umbral y las pruebas E2E ya están operativas). Estas brechas no comprometen el funcionamiento del producto en su alcance de MVP y se reconocen explícitamente como parte del objetivo metodológico del trabajo.
 
 ## Licencia
 

@@ -4,7 +4,7 @@ Los anexos recogen el detalle estructural del sistema, complementando los capít
 
 ## Anexo A. Diccionario de datos
 
-Esquema relacional completo tras aplicar las diez migraciones. Tipos y restricciones en notación PostgreSQL.
+Esquema relacional completo tras aplicar las once migraciones. Tipos y restricciones en notación PostgreSQL.
 
 ### Tabla `tenants`
 
@@ -121,15 +121,14 @@ La seguridad a nivel de fila está **habilitada en las cinco tablas**. La siguie
 | `services` | Public read active | `SELECT` | `active = true` |
 | `schedules` | Owner full access | `ALL` | pertenencia al `tenant` del propietario |
 | `schedules` | Public read | `SELECT` | `true` |
-| `customers` | Public insert | `INSERT` | `true` ⚠️ |
-| `customers` | Public read | `SELECT` | `true` ⚠️ |
+| `customers` | Customer read own | `SELECT` | `auth_user_id = auth.uid()` |
+| `customers` | Owner reads booking customers | `SELECT` | el cliente tiene una reserva en un `tenant` del propietario |
 | `customers` | Customer update own | `UPDATE` | `auth_user_id = auth.uid()` |
 | `bookings` | Owner full access | `ALL` | pertenencia al `tenant` del propietario |
-| `bookings` | Public insert | `INSERT` | `true` ⚠️ |
-| `bookings` | Public read | `SELECT` | `true` ⚠️ |
+| `bookings` | Customer read own bookings | `SELECT` | propiedad vía `customer_id` ↔ `auth_user_id` |
 | `bookings` | Customer update own bookings | `UPDATE` | propiedad vía `customer_id` ↔ `auth_user_id` |
 
-> ⚠️ Las políticas marcadas son **deliberadamente permisivas** y constituyen la principal deuda de seguridad del sistema (habilitan el flujo de reserva anónimo a costa de un aislamiento *multi-tenant* incompleto). Su endurecimiento es la primera línea futura prioritaria ([Capítulo 7 §7.4.1](07-conclusiones.md)).
+> Desde la migración `20260710_tighten_rls_pii.sql` (Anexo C, #11), las tablas `customers` y `bookings` **ya no admiten lectura ni inserción públicas**: el acceso queda acotado al **propietario** del negocio y al **titular** de los datos. Los flujos anónimos legítimos —cálculo de disponibilidad, creación de reserva y auto-enlace del cliente en el portal— se resuelven en la capa de servidor con el cliente de *service-role*, que emite únicamente consultas parametrizadas y de confianza. Con ello se cierra la fuga de información personal que exponía la clave anónima; el análisis completo figura en el [Anexo E](#anexo-e-evaluación-de-seguridad-owasp-top-102021) y en el [Capítulo 5 §5.7](05-implementacion.md).
 
 ## Anexo C. Historial de migraciones
 
@@ -145,6 +144,7 @@ La seguridad a nivel de fila está **habilitada en las cinco tablas**. La siguie
 | 8 | `20260306_add_tenant_profile.sql` | Perfil de negocio y SEO en `tenants` (7 columnas) |
 | 9 | `20260422_prevent_booking_overlap.sql` | Extensión `btree_gist` + restricción de exclusión `bookings_no_overlap` |
 | 10 | `20260629_add_onsite_payment.sql` | `allow_onsite_payment` en `tenants`; `payment_method` en `bookings` (`CHECK ONLINE`/`ON_SITE`) — habilita el pago presencial |
+| 11 | `20260710_tighten_rls_pii.sql` | Endurece la RLS de `customers` y `bookings`: retira la lectura/inserción públicas que exponían la PII y acota el acceso a propietario y titular; los flujos anónimos de confianza se reenrutan al cliente de *service-role* (OWASP A01/A02) |
 
 > Obsérvese que **ninguna migración añade una columna `plan`**: el modelo de planes (FREE/PRO) está diseñado en el dominio pero no persistido, por lo que todo negocio resuelve a `FREE` (véase [Capítulo 5 §5.5](05-implementacion.md)).
 
@@ -169,24 +169,53 @@ Variables de configuración requeridas por el sistema (verificadas en el código
 
 ## Anexo E. Evaluación de seguridad (OWASP Top 10:2021)
 
-Autoevaluación del sistema frente al estándar **OWASP Top 10:2021** [17], verificada contra el código fuente. Estado: ✅ cubierto · 🟡 parcial · 🔴 pendiente. Este anexo da soporte a las limitaciones de seguridad recogidas en el [Capítulo 7 §7.3](07-conclusiones.md) y a la línea futura de endurecimiento (§7.4.1).
+Este anexo constituye la **sección de seguridad** de la memoria. Documenta el paquete de endurecimiento aplicado sobre la rama `security/owasp-hardening` y autoevalúa el sistema frente al estándar **OWASP Top 10:2021** [17], verificando cada defensa contra el código fuente y las migraciones versionadas. Estado: ✅ cubierto · 🟡 parcial (con brecha localizada) · 🔴 pendiente. Da soporte al grado de cumplimiento del objetivo OE-4 y a las líneas de seguridad recogidas en el [Capítulo 7](07-conclusiones.md).
 
-| Categoría | Estado | Valoración (evidencia y brecha) |
-|-----------|:------:|----------------------------------|
-| **A01 · Broken Access Control** | 🟡 | ✅ Rutas privadas protegidas validando la sesión en servidor (`src/proxy.ts:28-51`, `auth.getUser()`); verificación de propiedad en cancelaciones (`admin/(dashboard)/bookings/actions.ts:15`; `application/use-cases/cancel-customer-booking.ts:37`). 🔴 Políticas **RLS permisivas** en `bookings`/`customers` (`supabase/migrations/20260220221052_initial_schema.sql:78-84`): el aislamiento entre *tenants* lo impone la aplicación, no la base de datos. 🟢 El *onboarding* de cuentas conectadas usa **Connect Express** (enlaces alojados por Stripe), por lo que no hay redireccionamiento OAuth con parámetro `state` que la plataforma deba validar. |
-| **A02 · Cryptographic Failures** | ✅ | HTTPS gestionado por Vercel; *hashing* de contraseñas y emisión de JWT delegados a Supabase Auth; secretos fuera del código (variables de entorno); firmas de *webhook* verificadas. (La política de contraseñas se evalúa en A07.) |
-| **A03 · Injection** | 🟡 | ✅ Acceso a datos parametrizado mediante el cliente de Supabase (`.eq`, `.insert`), sin concatenación de SQL. 🔴 **Inyección HTML en correos**: se interpolan datos del formulario público —`customer.name/email/phone`— sin escapar (`infrastructure/resend/email-templates.ts:42-44`; también `tenantName`/`service.name` en `:12,:30`). |
-| **A04 · Insecure Design** | 🟡 | ✅ Diseño defensivo notable: invariantes de dominio y restricción `EXCLUDE`/`btree_gist` contra solapamientos (Cap. 5 §5.3). 🔴 Sin *rate limiting* en los puntos de entrada de la aplicación; sin modelo de amenazas formal. |
-| **A05 · Security Misconfiguration** | 🟡 | 🔴 RLS mal configurada (véase A01). 🟡 No constan cabeceras de seguridad ni CSP (pendiente de verificación/adición en la configuración del *framework*). |
-| **A06 · Vulnerable & Outdated Components** | 🟡 | ✅ Dependencias en versiones actuales (Next.js 16.1.6, React 19.2.3, etc.). 🔴 Sin análisis automatizado de dependencias (`npm audit` / Dependabot) integrado aún en la CI. |
-| **A07 · Identification & Authentication Failures** | 🟡 | ✅ Autenticación por Supabase Auth y Google OAuth, **verificación de email obligatoria en el registro** (confirmación por enlace, `api/auth/confirm`), sesión validada en servidor, recuperación de contraseña funcional (`admin/reset-password`). 🟡 política de contraseñas débil (mínimo 6, sin requisitos de complejidad; `supabase/config.toml:175,178`); MFA deshabilitado. |
-| **A08 · Software & Data Integrity Failures** | ✅ | ✅ Verificación de firma en **ambos** *webhooks* (`api/webhooks/stripe-connect/route.ts:23`; `api/webhooks/stripe/route.ts:21`) y guarda de idempotencia (`status === PENDING`). 🟡 Sin *idempotency keys* de Stripe en las llamadas salientes. |
-| **A09 · Security Logging & Monitoring Failures** | 🔴 | Registro limitado a `console.error`; sin trazas estructuradas, alertas ni auditoría. |
-| **A10 · Server-Side Request Forgery (SSRF)** | ✅ | Sin peticiones de servidor a URLs controladas por el usuario; las salidas se dirigen a proveedores fijos (Stripe, Supabase, Resend). Exposición baja. |
+El endurecimiento se materializó en **seis intervenciones independientes**, cada una trazable a un *commit* y a una categoría del material de seguridad del Máster:
 
-### E.1. Síntesis y prioridades
+| # | Commit | Intervención | Categoría |
+|---|--------|--------------|-----------|
+| 1 | `35db607` | Cabeceras de seguridad (CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy) vía `next.config.ts`, con un E2E de verificación | A05 |
+| 2 | `5b5b119` | Política de contraseñas fuerte —objeto de valor `Password`: 12+ caracteres con mayúscula, minúscula, número y carácter especial— en registro y reseteo | A07 |
+| 3 | `b00c979` | Validación de variables de entorno con Zod, *fail-first* perezoso (`env-schema.ts` + `env.ts`) | Variables de entorno y secretos |
+| 4 | `853470a` | Limitación de tasa (*rate limiting*) de ventana deslizante por IP en autenticación (5/min) y reserva (10/min) | A04 + A07 |
+| 5 | `7f27c9d` | Registro estructurado de eventos de seguridad (`logSecurityEvent`) con lista blanca de campos | A09 |
+| 6 | `51187be` | Endurecimiento de la RLS de `customers`/`bookings` para cerrar la exposición de PII por la clave anónima | A01 + A02 |
 
-El sistema es **sólido** en A02, A08 y A10, y **parcial** —con brechas concretas y localizadas— en A01, A03, A04, A05, A06, A07 y A09. Las tres intervenciones de mayor retorno, ya recogidas como trabajo futuro en el [Capítulo 7 §7.4.1](07-conclusiones.md), son: (1) endurecer las políticas **RLS** (A01/A05); (2) **escapar el HTML** de los correos (A03); y (3) incorporar **logging estructurado** (A09). Su resolución elevaría la mayoría de categorías a ✅ y sustentaría un capítulo de modelado de amenazas.
+### E.1. Matriz de cumplimiento OWASP Top 10:2021
+
+| Categoría | Estado | Riesgo principal | Defensa aplicada | Evidencia (fichero · commit) |
+|-----------|:------:|------------------|------------------|------------------------------|
+| **A01 · Broken Access Control** | ✅ | Acceso a datos de otros negocios o clientes | RLS acotada a **propietario + titular** en las cinco tablas; autorización de servidor (`requireAdmin`/`requireCustomer`) y verificación de propiedad en cancelaciones; validación de sesión en el *middleware*; flujos anónimos de confianza reenrutados al *service-role* | `supabase/migrations/20260710_tighten_rls_pii.sql` · `51187be`; `infrastructure/supabase/admin-auth.ts`, `customer-auth.ts`; `src/proxy.ts` |
+| **A02 · Cryptographic Failures** | ✅ | Exposición de credenciales o datos personales | *Hashing* de contraseñas y emisión de JWT delegados a Supabase Auth; HTTPS (Vercel) reforzado con **HSTS** (`max-age=63072000; includeSubDomains; preload`); los datos de tarjeta nunca tocan el servidor (Stripe Checkout); cierre de la fuga de PII por la *anon key* | `next.config.ts` · `35db607`; `20260710_tighten_rls_pii.sql` · `51187be` |
+| **A03 · Injection** | 🟡 | Inyección SQL / XSS | Acceso a datos **parametrizado** mediante el constructor de consultas de Supabase (`.eq`, `.insert`), sin concatenación de SQL; auto-escapado de React; JSON-LD serializado y escapado (`<`). Brecha residual: interpolación HTML sin escapar en las plantillas de correo | `src/app/[slug]/page.tsx:108`; `infrastructure/resend/email-templates.ts` |
+| **A04 · Insecure Design** | 🟡 | Ausencia de controles de diseño (abuso, fuerza bruta) | Invariantes de dominio y restricción `EXCLUDE`/`btree_gist` contra solapamientos; mensajes de error genéricos y **anti-enumeración** en el restablecimiento; **limitación de tasa** por IP en login/registro/reset/reserva. Resta un modelo de amenazas formal | `infrastructure/security/rate-limiter.ts` · `853470a`; Cap. 5 §5.3 |
+| **A05 · Security Misconfiguration** | ✅ | Configuración insegura por defecto | **Cabeceras de seguridad y CSP** en todas las rutas (X-Frame-Options `DENY`, `frame-ancestors 'none'`, nosniff, Referrer-Policy, Permissions-Policy); RLS correctamente configurada (véase A01). Matiz: la CSP emplea `'unsafe-inline'` en `script-src` | `next.config.ts` · `35db607`; `e2e/security-headers.spec.ts` |
+| **A06 · Vulnerable & Outdated Components** | 🟡 | Dependencias con vulnerabilidades conocidas | Dependencias en versiones actuales (Next.js 16.1.6, React 19.2.3). Resta el análisis automatizado (`npm audit` / Dependabot) integrado en la CI | `package.json` |
+| **A07 · Identification & Authentication Failures** | 🟡 | Contraseñas débiles y ataques de fuerza bruta | **Política de contraseñas fuerte** (12+, complejidad, `WeakPasswordError`) en registro y reseteo; verificación de email obligatoria; sesión validada en servidor; **limitación de tasa** en autenticación. Resta habilitar MFA | `src/domain/value-objects/password.ts` · `5b5b119`; `rate-limiter.ts` · `853470a` |
+| **A08 · Software & Data Integrity Failures** | ✅ | Manipulación de eventos o datos | Verificación de firma en **ambos** *webhooks* (Stripe `constructEvent` + HMAC *Standard Webhooks*) y guarda de idempotencia (`status === PENDING`). Matiz menor: sin *idempotency keys* en las llamadas salientes a Stripe | `api/webhooks/stripe-connect/route.ts`; `api/webhooks/stripe/route.ts` |
+| **A09 · Security Logging & Monitoring Failures** | 🟡 | Falta de trazabilidad ante incidentes | **Registro estructurado** de eventos (`logSecurityEvent`) con **lista blanca** de campos (nunca contraseñas ni *tokens*) en login OK/KO, rate-limit, cancelación de reserva y solicitud de reseteo. Resta alertado y APM (p. ej. Sentry) | `src/infrastructure/observability/security-logger.ts` · `7f27c9d` |
+| **A10 · Server-Side Request Forgery (SSRF)** | ✅ | Peticiones de servidor a destinos controlados por el usuario | Sin peticiones de servidor a URLs controladas por el usuario; las salidas se dirigen a proveedores fijos (Stripe, Supabase, Resend). Exposición baja | — |
+
+### E.2. Autenticación y autorización basadas en JWT
+
+La identidad se gestiona con **Supabase Auth**, que emite un **JWT** almacenado en *cookies* `HttpOnly` —nunca en `localStorage`—, lo que lo sustrae al alcance de un XSS. Cada petición de servidor revalida la sesión con `auth.getUser()` (no se confía en la *cookie* sin verificar) y la autorización se centraliza en dos guardas: `requireAdmin` (panel del negocio) y `requireCustomer` (portal del cliente). La distinción entre **autenticación** y **autorización** se refleja en la respuesta: la ausencia de sesión provoca un **redireccionamiento 401** al *login* correspondiente, mientras que un acceso a un recurso ajeno se rechaza como **403** o, en la capa de datos, mediante la RLS de propietario/titular. Finalmente, las notificaciones entrantes se autentican por **firma**: los *webhooks* de Stripe con `constructEvent` y el *Send Email Hook* de Supabase con HMAC (*Standard Webhooks*), de modo que un tercero no puede falsificar un evento de confirmación de pago o de envío de correo.
+
+### E.3. Seguridad web (XSS, CSP y transporte)
+
+El riesgo de **XSS** se mitiga en origen por el **auto-escapado de React**, que trata todo texto interpolado como datos, no como marcado; el único punto que inyecta HTML crudo —el bloque **JSON-LD** de datos estructurados de la página pública— serializa el objeto y escapa el carácter `<` como `<` (`src/app/[slug]/page.tsx:108`), impidiendo la ruptura del contexto `<script>`. Sobre esa base, el paquete de endurecimiento añade una **política de seguridad de contenido (CSP)** y el resto de **cabeceras de seguridad** en todas las rutas (`next.config.ts`): `default-src 'self'`, `frame-ancestors 'none'` y `X-Frame-Options: DENY` (anti-*clickjacking*), `X-Content-Type-Options: nosniff`, `Referrer-Policy` y `Permissions-Policy` restrictiva. El **transporte** se fuerza a HTTPS con **HSTS** (`max-age` de dos años, `includeSubDomains; preload`). Un E2E de Playwright (`e2e/security-headers.spec.ts`) verifica la presencia de estas cabeceras como artefacto de regresión.
+
+### E.4. Variables de entorno y gestión de secretos
+
+Siguiendo la filosofía *fail-first* del material, la configuración se valida con un **esquema Zod** (`src/infrastructure/config/env-schema.ts`) que la función pura `parseEnv` —cubierta por pruebas unitarias— aplica sobre `process.env` en `env.ts`. La validación es **perezosa**: se ejecuta en el primer acceso, no al importar el módulo, de modo que no acopla el `next build` ni la CI a la presencia de los secretos, pero **falla de inmediato y con un mensaje claro** —sin imprimir jamás el valor del secreto— antes de que una configuración inválida cause daño. El módulo declara `import 'server-only'`, garantizando que los secretos **no puedan filtrarse a un componente de cliente**; la separación entre variables públicas (`NEXT_PUBLIC_*`, inyectadas en *build*) y secretos de servidor se detalla en el [Anexo D](#anexo-d-variables-de-entorno). El repositorio versiona una plantilla `.env.local.example` y el `.gitignore` cubre `.env*`, de modo que ningún secreto llega al control de versiones; la clave de *service-role* es exclusiva del servidor.
+
+### E.5. Defensa en profundidad
+
+Las garantías se disponen en **capas redundantes**, de forma que el compromiso de una no expone el sistema: en la **base de datos**, la RLS de propietario/titular y la restricción `EXCLUDE` de integridad; en la **aplicación**, la autorización de servidor, la política de contraseñas y la limitación de tasa; en el **transporte y el navegador**, HSTS y la CSP; y en la **observabilidad**, el registro estructurado de eventos de seguridad. El reenrutado de tres rutas anónimas de confianza al *service-role* (disponibilidad, creación de reserva y auto-enlace del cliente) renuncia deliberadamente a la RLS **solo** en código de servidor que emite consultas parametrizadas concretas; aun ahí, la aplicación filtra por `tenant_id` y la restricción de solapamiento sigue vigente en la base de datos, conservando así más de un nivel de protección.
+
+### E.6. Compromisos y líneas futuras
+
+El endurecimiento se documenta con honestidad, incluidos sus **compromisos conscientes**. La CSP emplea `'unsafe-inline'` en `script-src` porque Next.js inyecta *scripts* de hidratación sin *nonce*; una **CSP estricta basada en *nonce*** queda como trabajo futuro. La limitación de tasa es **en memoria y por instancia**, adecuada como defensa en profundidad a nivel de aplicación sobre el *rate limiting* real de Supabase Auth, pero efímera en un entorno *serverless*; su **durabilidad** requeriría un almacén compartido (Upstash / Vercel KV). La monitorización es **basada en trazas**; su evolución natural es un **DSN de Sentry** con alertado. Restan, además, brechas menores y localizadas: el **escapado del HTML** en las plantillas de correo (A03), el **análisis automatizado de dependencias** (A06), la habilitación de **MFA** (A07) y las **claves de idempotencia** salientes de Stripe (A08). En conjunto, el sistema pasa a ser **sólido** en A01, A02, A05, A08 y A10, y **parcial con brechas acotadas** en A03, A04, A06, A07 y A09; su resolución sustentaría un futuro **capítulo de modelado de amenazas**.
 
 ## Anexo F. Estrategia de pruebas y política de cobertura
 
@@ -196,9 +225,9 @@ Complementa el [Capítulo 6](06-pruebas-calidad.md) detallando la **naturaleza d
 
 | Tipo | Naturaleza | Casos | ¿En cobertura? | Objetivo recomendado |
 |------|-----------|:-----:|:--------------:|:--------------------:|
-| **Unitarias de dominio** (objetos de valor y servicios puros) | Aisladas, deterministas, sin E/S | 123 (46 %) | Sí | ~100 % líneas / ~95 % ramas |
-| **De casos de uso** (aplicación, con *test doubles* en memoria) | "Sociables": verifican la orquestación con dobles, no la implementación | 57 (21 %) | Sí | ~90 % líneas / ~85 % ramas |
-| **De adaptador** (infraestructura, con *mocks* de los SDK) | Verifican el *mapeo* (p. ej. `23P01 → SlotTakenError`, cálculo de comisión), no la dependencia real | 82 (31 %) | Sí | ~90 % líneas / ~80 % ramas |
+| **Unitarias de dominio** (objetos de valor y servicios puros) | Aisladas, deterministas, sin E/S | 126 (45 %) | Sí | ~100 % líneas / ~95 % ramas |
+| **De casos de uso** (aplicación, con *test doubles* en memoria) | "Sociables": verifican la orquestación con dobles, no la implementación | 57 (20 %) | Sí | ~90 % líneas / ~85 % ramas |
+| **De adaptador** (infraestructura, con *mocks* de los SDK) | Verifican el *mapeo* (p. ej. `23P01 → SlotTakenError`, cálculo de comisión), no la dependencia real | 90 (32 %) | Sí | ~90 % líneas / ~80 % ramas |
 | **De componente** (Testing Library + happy-dom) | Validan lo que el usuario ve mediante roles y etiquetas accesibles (incluye interacción con `user-event`) | 6 (2 %) | No (valida presentación) | render e interacción |
 | **Integración real** (contra PostgreSQL efímero) | Ejercitaría la restricción `EXCLUDE` y las políticas RLS de extremo a extremo | 0 | — | flujos críticos (línea futura) |
 | **E2E** (Playwright, cross-browser) | Recorrido completo del usuario contra el despliegue en Chromium, Firefox y WebKit | 6 (automatizadas) | No (valida presentación) | flujo reservar → confirmar |

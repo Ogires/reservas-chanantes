@@ -220,16 +220,22 @@ create policy "Owner full access" on public.services
 ```
 > *Fragmento 5.9. Política RLS de acceso del propietario a sus propios servicios (`20260220221052_initial_schema.sql`).*
 
-Este patrón se aplica de forma robusta a `tenants`, `services` y `schedules`. Ahora bien, en coherencia con el principio de **documentación honesta de las limitaciones** que vertebra este trabajo, debe señalarse una **brecha real de seguridad** en el esquema actual: las tablas `bookings` y `customers` definen políticas **deliberadamente permisivas**, con lectura e inserción públicas sin restricción:
+Este patrón se aplica de forma robusta a `tenants`, `services` y `schedules`. Las tablas `bookings` y `customers`, en cambio, presentaban originalmente políticas **deliberadamente permisivas** —lectura e inserción públicas sin restricción— como concesión pragmática para habilitar el flujo de reserva **anónimo** (un cliente final sin sesión debe poder crear una reserva y su registro de cliente). Su efecto colateral era una **fuga real de información personal**: dado que la clave anónima de Supabase es pública por diseño, cualquiera podía volcar los datos de clientes y reservas de todos los negocios a través de la API REST.
+
+Esta brecha se ha **cerrado** con la migración `20260710_tighten_rls_pii.sql`, que retira la lectura e inserción públicas y **acota el acceso a propietario y titular**:
 
 ```sql
-create policy "Public insert" on public.customers for insert with check (true);
-create policy "Public read"   on public.customers for select using (true);
--- ídem para bookings
-```
-> *Fragmento 5.10. Políticas permisivas que constituyen la principal deuda de seguridad del sistema (`20260220221052_initial_schema.sql`).*
+drop policy if exists "Public read"   on public.customers;
+drop policy if exists "Public insert" on public.customers;
 
-Esta permisividad fue una concesión pragmática para habilitar el flujo de reserva **anónimo** (un cliente final sin sesión debe poder crear una reserva y su registro de cliente). Su efecto colateral es que **el aislamiento estricto de datos entre *tenants* no está garantizado a nivel de fila** para estas dos tablas: un acceso directo al cliente de datos podría, en teoría, leer reservas o datos de clientes de otros negocios. En la práctica, el código de aplicación siempre filtra por `tenant_id`, pero la garantía **no está, como debería, en la capa declarativa de la base de datos**. La subsanación de esta brecha —reescribir las políticas para acotar el acceso anónimo a la operación estrictamente necesaria— es la primera de las líneas prioritarias del Capítulo 7 y alimentaría un capítulo de modelado de amenazas.
+-- El cliente lee su propio registro; el dueño, los clientes con reserva en su negocio.
+create policy "Customer read own" on public.customers for select
+  using (auth_user_id = auth.uid());
+-- (ídem, mutatis mutandis, para bookings)
+```
+> *Fragmento 5.10. Endurecimiento de la RLS que cierra la exposición de PII (`20260710_tighten_rls_pii.sql`).*
+
+Para que el flujo anónimo siga funcionando bajo una RLS restrictiva, las tres rutas de servidor de confianza que dependían del acceso público —el cálculo de **disponibilidad**, la **creación de reserva** y el **auto-enlace del cliente** en el portal— se reenrutan al cliente de ***service-role***, que opera al margen de la RLS pero emite únicamente consultas parametrizadas y acotadas. Es un **compromiso consciente de defensa en profundidad**: se renuncia a la RLS solo en código de servidor auditado, mientras la aplicación sigue filtrando por `tenant_id` y la restricción de solapamiento permanece vigente en la base de datos. Con ello, la garantía de aislamiento pasa a residir **también en la capa declarativa de la base de datos**, y no solo en la aplicación. La evaluación completa de este y de los demás controles de seguridad —cabeceras, contraseñas fuertes, limitación de tasa, validación del entorno y registro de eventos— figura en el [Anexo E](09-anexos.md).
 
 ## 5.8. Internacionalización
 
@@ -239,7 +245,7 @@ Un tercer plano —los **correos de autenticación** (confirmación de cuenta, r
 
 ## 5.9. Síntesis
 
-Los seis aspectos detallados comparten un mismo principio rector: **situar cada garantía en la capa adecuada**. La lógica de disponibilidad reside en el dominio puro y comprobable; la integridad ante la concurrencia se delega en la capa autoritativa de la base de datos mediante una restricción de exclusión; la confirmación del pago se ancla en un *webhook* firmado e idempotente; y la idempotencia de los recordatorios se logra con una operación atómica de comparar-e-intercambiar. El capítulo ha expuesto asimismo, sin omitirlas, las dos limitaciones más relevantes —la permisividad de las políticas RLS sobre `bookings`/`customers` y la inoperatividad del modelo de planes—, que se retoman como trabajo futuro. La estrategia de pruebas que verifica todos estos comportamientos se describe en el Capítulo 6.
+Los seis aspectos detallados comparten un mismo principio rector: **situar cada garantía en la capa adecuada**. La lógica de disponibilidad reside en el dominio puro y comprobable; la integridad ante la concurrencia se delega en la capa autoritativa de la base de datos mediante una restricción de exclusión; la confirmación del pago se ancla en un *webhook* firmado e idempotente; y la idempotencia de los recordatorios se logra con una operación atómica de comparar-e-intercambiar. El capítulo ha documentado asimismo el **endurecimiento de la RLS** sobre `bookings`/`customers` —cuya permisividad original, una fuga real de PII, se ha subsanado (Anexo E)— y ha expuesto, sin omitirla, la limitación más relevante que aún persiste —la inoperatividad del modelo de planes—, que se retoma como trabajo futuro. La estrategia de pruebas que verifica todos estos comportamientos se describe en el Capítulo 6.
 
 ---
 
