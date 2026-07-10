@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import type Stripe from 'stripe'
 import { getStripe } from '@/infrastructure/stripe/client'
-import { createSupabaseServer } from '@/infrastructure/supabase/server'
+import { createSupabaseAdmin } from '@/infrastructure/supabase/admin-client'
 import { SupabaseTenantRepository } from '@/infrastructure/supabase/tenant-repository'
 import { SupabaseServiceRepository } from '@/infrastructure/supabase/service-repository'
 import { SupabaseBookingRepository } from '@/infrastructure/supabase/booking-repository'
@@ -24,7 +24,10 @@ export default async function BookingSuccessPage({
 
   if (!session_id) notFound()
 
-  const supabase = await createSupabaseServer()
+  // Página pública tras el pago: la reserva se identifica por el bookingId que
+  // viene en la metadata de una sesión de Stripe ya verificada. Lectura de
+  // servidor de confianza → service-role (la RLS de bookings ya no es pública).
+  const supabase = createSupabaseAdmin()
   const tenantRepo = new SupabaseTenantRepository(supabase)
   const tenant = await tenantRepo.findBySlug(slug)
   // La sesion de Checkout vive en la cuenta conectada (cargo directo), asi que

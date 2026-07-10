@@ -1,7 +1,6 @@
 'use server'
 
 import { headers } from 'next/headers'
-import { createSupabaseServer } from '@/infrastructure/supabase/server'
 import { createRepositories } from '@/infrastructure/supabase/repositories'
 import { GetAvailabilityUseCase } from '@/application/use-cases/get-availability'
 import { CreateBookingUseCase } from '@/application/use-cases/create-booking'
@@ -19,7 +18,10 @@ export async function getAvailability(
   date: string
 ): Promise<{ slots: SlotDTO[]; error?: string }> {
   try {
-    const supabase = await createSupabaseServer()
+    // Lectura de servidor de confianza (disponibilidad pública / creación de
+    // reserva anónima): usa service-role para poder bloquear la RLS de
+    // customers/bookings a owner+self sin romper el flujo público.
+    const supabase = createSupabaseAdmin()
     const { tenantRepo, scheduleRepo, bookingRepo } =
       createRepositories(supabase)
 
@@ -66,7 +68,10 @@ export async function createBooking(input: {
   }
 
   try {
-    const supabase = await createSupabaseServer()
+    // Lectura de servidor de confianza (disponibilidad pública / creación de
+    // reserva anónima): usa service-role para poder bloquear la RLS de
+    // customers/bookings a owner+self sin romper el flujo público.
+    const supabase = createSupabaseAdmin()
     const { tenantRepo, serviceRepo, scheduleRepo, bookingRepo, customerRepo } =
       createRepositories(supabase)
 

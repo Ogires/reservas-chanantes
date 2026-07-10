@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { createSupabaseAdmin } from '@/infrastructure/supabase/admin-client'
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl
@@ -44,14 +45,19 @@ export async function GET(request: NextRequest) {
     const userId = data.user?.id
     const email = data.user?.email
     if (userId && email) {
-      const { data: existingCustomer } = await supabase
+      // Enlace del cliente por email: la fila puede estar aún sin enlazar
+      // (auth_user_id NULL), que la RLS "self" no dejaría leer/actualizar. Se
+      // hace con service-role (operación de servidor de confianza, ya validada
+      // la sesión del usuario).
+      const admin = createSupabaseAdmin()
+      const { data: existingCustomer } = await admin
         .from('customers')
         .select('id, auth_user_id')
         .eq('email', email)
         .single()
 
       if (existingCustomer && !existingCustomer.auth_user_id) {
-        await supabase
+        await admin
           .from('customers')
           .update({ auth_user_id: userId })
           .eq('id', existingCustomer.id)

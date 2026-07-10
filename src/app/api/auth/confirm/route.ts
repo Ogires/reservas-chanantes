@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import type { EmailOtpType } from '@supabase/supabase-js'
 import { createSupabaseServer } from '@/infrastructure/supabase/server'
+import { createSupabaseAdmin } from '@/infrastructure/supabase/admin-client'
 import { provisionTenant } from '@/infrastructure/supabase/provision-tenant'
 
 /**
@@ -52,14 +53,18 @@ export async function GET(request: NextRequest) {
   if (type === 'signup') {
     if (isCustomerFlow) {
       if (user.email) {
-        const { data: existingCustomer } = await supabase
+        // Enlace del cliente por email vía service-role: la fila puede estar
+        // aún sin enlazar (auth_user_id NULL), que la RLS "self" no dejaría
+        // leer/actualizar. Operación de servidor de confianza (OTP verificado).
+        const admin = createSupabaseAdmin()
+        const { data: existingCustomer } = await admin
           .from('customers')
           .select('id, auth_user_id')
           .eq('email', user.email)
           .single()
 
         if (existingCustomer && !existingCustomer.auth_user_id) {
-          await supabase
+          await admin
             .from('customers')
             .update({ auth_user_id: user.id })
             .eq('id', existingCustomer.id)
