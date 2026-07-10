@@ -3,7 +3,10 @@ import { Webhook } from 'standardwebhooks'
 import { getResend } from '@/infrastructure/resend/client'
 import { renderAuthEmail, authOtpType } from '@/infrastructure/resend/auth-email'
 import type { Locale } from '@/domain/types'
+import { env } from '@/infrastructure/config/env'
 
+// Dato de configuración no secreto (con fallback): se lee directamente de
+// process.env para no forzar la validación del entorno en el import del módulo.
 const FROM = `Reservas Chanantes <reservas@${process.env.RESEND_FROM_DOMAIN ?? 'resend.dev'}>`
 // Los enlaces de confirmación apuntan a NUESTRA app, no a la URL de Supabase
 // (email_data.site_url es la URL de GoTrue, `…supabase.co/auth/v1`).
@@ -33,7 +36,7 @@ function resolveAuthLocale(raw?: string): Locale {
  * Resend, cubriendo todos los `email_action_type`.
  */
 export async function POST(request: NextRequest) {
-  const secret = process.env.SUPABASE_AUTH_HOOK_SECRET
+  const secret = env.SUPABASE_AUTH_HOOK_SECRET
   if (!secret) {
     console.error('[auth/send-email] SUPABASE_AUTH_HOOK_SECRET no configurado')
     return NextResponse.json({ error: 'not configured' }, { status: 500 })

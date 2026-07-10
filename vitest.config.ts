@@ -29,6 +29,9 @@ export default defineConfig({
         'src/application/ports/**',
         // Glue de SDKs externos (clientes/singletons), no unitario
         'src/infrastructure/**/client.ts',
+        // Bootstrap server-only: solo invoca parseEnv(process.env) (env-schema
+        // sí se testea). No es unitario y contiene `import 'server-only'`.
+        'src/infrastructure/config/env.ts',
         'src/infrastructure/supabase/server.ts',
         'src/infrastructure/supabase/admin-client.ts',
         // Glue de sesión (redirect + createSupabaseServer) → validado por E2E

@@ -5,10 +5,11 @@ import { SupabaseCustomerRepository } from '@/infrastructure/supabase/customer-r
 import { SupabaseServiceRepository } from '@/infrastructure/supabase/service-repository'
 import { SupabaseTenantRepository } from '@/infrastructure/supabase/tenant-repository'
 import { ResendNotificationService } from '@/infrastructure/resend/resend-notification-service'
+import { env } from '@/infrastructure/config/env'
 
 export async function GET(request: Request) {
   const authHeader = request.headers.get('authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (authHeader !== `Bearer ${env.CRON_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

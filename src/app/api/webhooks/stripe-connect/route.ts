@@ -5,6 +5,7 @@ import { createSupabaseAdmin } from '@/infrastructure/supabase/admin-client'
 import { SupabaseBookingRepository } from '@/infrastructure/supabase/booking-repository'
 import { BookingStatus } from '@/domain/types'
 import { sendConfirmationEmails } from '@/infrastructure/resend/send-booking-emails'
+import { env } from '@/infrastructure/config/env'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -23,7 +24,7 @@ export async function POST(request: Request) {
     event = stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_CONNECT_WEBHOOK_SECRET!
+      env.STRIPE_CONNECT_WEBHOOK_SECRET!
     )
   } catch {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
