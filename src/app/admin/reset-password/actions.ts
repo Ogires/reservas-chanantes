@@ -1,10 +1,12 @@
 'use server'
 
+import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createSupabaseServer } from '@/infrastructure/supabase/server'
 import { detectLocaleFromHeaders } from '@/infrastructure/i18n/detect-locale'
 import { getAdminTranslations } from '@/infrastructure/i18n/admin-translations'
 import { Password } from '@/domain/value-objects/password'
+import { authLimiter } from '@/infrastructure/security/rate-limiter'
 
 export type ResetPasswordState = { error: string } | null
 
@@ -17,6 +19,12 @@ export async function updatePassword(
   _prevState: ResetPasswordState,
   formData: FormData
 ): Promise<ResetPasswordState> {
+  const ip =
+    (await headers()).get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
+  if (!authLimiter.check(`reset-pw:${ip}`)) {
+    return { error: 'Demasiados intentos. Inténtalo de nuevo en un minuto.' }
+  }
+
   const t = getAdminTranslations(await detectLocaleFromHeaders()).auth
   const password = formData.get('password')
   const confirm = formData.get('confirm')

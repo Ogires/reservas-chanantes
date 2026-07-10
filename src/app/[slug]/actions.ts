@@ -11,6 +11,7 @@ import { DomainError, SlotTakenError } from '@/domain/errors/domain-errors'
 import { PaymentMethod } from '@/domain/types'
 import { sendConfirmationEmails } from '@/infrastructure/resend/send-booking-emails'
 import { createSupabaseAdmin } from '@/infrastructure/supabase/admin-client'
+import { bookingLimiter } from '@/infrastructure/security/rate-limiter'
 import type { SlotDTO } from '@/application/use-cases/get-availability'
 
 export async function getAvailability(
@@ -55,6 +56,15 @@ export async function createBooking(input: {
   error?: string
   slotTaken?: boolean
 }> {
+  const ip =
+    (await headers()).get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
+  if (!bookingLimiter.check(`booking:${ip}`)) {
+    return {
+      success: false,
+      error: 'Demasiadas peticiones. Inténtalo de nuevo en un minuto.',
+    }
+  }
+
   try {
     const supabase = await createSupabaseServer()
     const { tenantRepo, serviceRepo, scheduleRepo, bookingRepo, customerRepo } =

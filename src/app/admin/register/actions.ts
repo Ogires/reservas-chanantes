@@ -1,11 +1,13 @@
 'use server'
 
+import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createSupabaseServer } from '@/infrastructure/supabase/server'
 import { provisionTenant } from '@/infrastructure/supabase/provision-tenant'
 import { detectLocaleFromHeaders } from '@/infrastructure/i18n/detect-locale'
 import { Password } from '@/domain/value-objects/password'
 import { WeakPasswordError } from '@/domain/errors/domain-errors'
+import { authLimiter } from '@/infrastructure/security/rate-limiter'
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://reservas-chanantes.vercel.app'
@@ -19,6 +21,12 @@ export async function register(
   _prevState: RegisterState,
   formData: FormData
 ): Promise<RegisterState> {
+  const ip =
+    (await headers()).get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
+  if (!authLimiter.check(`register:${ip}`)) {
+    return { error: 'Demasiados intentos. Inténtalo de nuevo en un minuto.' }
+  }
+
   const businessName = formData.get('businessName')
   if (typeof businessName !== 'string' || businessName.trim() === '') {
     return { error: 'Business name is required.' }
