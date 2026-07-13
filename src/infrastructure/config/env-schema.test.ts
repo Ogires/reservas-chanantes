@@ -22,4 +22,14 @@ describe('parseEnv', () => {
   it('falla si la URL de Supabase no es una URL', () => {
     expect(() => parseEnv({ ...base, NEXT_PUBLIC_SUPABASE_URL: 'no-url' })).toThrow()
   })
+
+  it('acepta la ausencia de SUPERADMIN_EMAILS (opcional)', () => {
+    expect(parseEnv(base).SUPERADMIN_EMAILS).toBeUndefined()
+  })
+
+  it('pasa SUPERADMIN_EMAILS cuando está presente', () => {
+    expect(
+      parseEnv({ ...base, SUPERADMIN_EMAILS: 'op@x.com, a@x.com' }).SUPERADMIN_EMAILS
+    ).toBe('op@x.com, a@x.com')
+  })
 })

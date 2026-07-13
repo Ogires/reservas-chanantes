@@ -17,6 +17,9 @@ const envSchema = z.object({
   SUPABASE_AUTH_HOOK_SECRET: z.string().min(1).optional(),
   NEXT_PUBLIC_SITE_URL: z.url().optional(),
   NEXT_PUBLIC_APP_URL: z.url().optional(),
+  // Lista de emails (separados por comas) autorizados como operador de plataforma
+  // (superadmin). Fail-closed: si está ausente/vacía, nadie es superadmin.
+  SUPERADMIN_EMAILS: z.string().optional(),
 })
 
 export type Env = z.infer<typeof envSchema>
