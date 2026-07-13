@@ -346,12 +346,12 @@
     <div class="kicker k2">09 · La calidad como evidencia</div>
     <h2>No se declara: se mide.</h2>
     <div class="metrics">
-      <div class="metric"><div class="n"><span>197</span></div><div class="l">pruebas automáticas<br>en 22 ficheros</div></div>
-      <div class="metric"><div class="n">87<span>%</span></div><div class="l">cobertura en dominio<br>y aplicación</div></div>
+      <div class="metric"><div class="n"><span>279</span></div><div class="l">pruebas automáticas<br>en 41 ficheros</div></div>
+      <div class="metric"><div class="n">96<span>%</span></div><div class="l">cobertura de sentencias<br>(89 % ramas), umbral en CI</div></div>
       <div class="metric"><div class="n">20</div><div class="l">requisitos funcionales<br>trazables al código</div></div>
-      <div class="metric"><div class="n">10</div><div class="l">migraciones SQL<br>versionadas</div></div>
+      <div class="metric"><div class="n">11</div><div class="l">migraciones SQL<br>versionadas</div></div>
     </div>
-    <p class="lead" style="margin-top:1.8rem;font-size:1.05rem">Pirámide de base ancha — dominio y aplicación concentran las pruebas — habilitada por la arquitectura desacoplada.</p>
+    <p class="lead" style="margin-top:1.8rem;font-size:1.05rem">Pirámide de base ancha —dominio y aplicación concentran las pruebas—, habilitada por la arquitectura desacoplada. La cobertura con umbral, el pipeline <strong>CI→CD encadenado</strong> y las pruebas <strong>E2E cross-browser</strong> la convierten en calidad forzada por la herramienta.</p>
     <div class="foot"><span class="brand">RESERVAS CHANANTES · TFM</span><span class="num">09</span></div>
   </section>
 
@@ -363,20 +363,20 @@
       <div class="lim">
         <h4>Limitaciones reconocidas</h4>
         <ul class="clean">
-          <li>RLS permisiva en <strong>bookings</strong> y <strong>customers</strong>.</li>
           <li>Monetización por plan <strong>no activada</strong>.</li>
           <li>Clean Architecture <strong>parcial</strong> en la rama de administración.</li>
           <li>Defecto conocido de <strong>zona horaria</strong> (getUTCDay).</li>
-          <li>Sin <strong>CI/CD</strong> ni E2E automatizado.</li>
+          <li>Sin pruebas de integración contra una <strong>BD real</strong> (se usan dobles).</li>
         </ul>
+        <p class="lead" style="font-size:.8rem;margin-top:.7rem;opacity:.85">Ya subsanadas respecto a versiones previas: la <strong>RLS permisiva</strong> (ahora acotada a propietario + titular) y la ausencia de <strong>CI/CD y E2E</strong>.</p>
       </div>
       <div class="fut">
         <h4>Líneas futuras priorizadas</h4>
         <ul class="clean green">
-          <li>Endurecer seguridad → <strong>capítulo de modelado de amenazas</strong>.</li>
-          <li>CI/CD + E2E + <strong>umbral de cobertura</strong>.</li>
+          <li>Modelado de amenazas formal, sobre el <strong>paquete OWASP</strong> ya aplicado.</li>
+          <li>Pruebas de integración contra un <strong>PostgreSQL efímero</strong>.</li>
           <li>Activar monetización y sanear coherencia arquitectónica.</li>
-          <li>Corregir zona horaria y mejorar observabilidad.</li>
+          <li>Corregir zona horaria y mejorar <strong>observabilidad</strong> (APM).</li>
         </ul>
       </div>
     </div>
