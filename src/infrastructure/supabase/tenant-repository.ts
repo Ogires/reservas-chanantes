@@ -18,6 +18,7 @@ interface TenantRow {
   max_advance_days: number
   created_at: string
   plan?: string
+  active?: boolean
   stripe_account_id: string | null
   stripe_account_enabled: boolean
   allow_onsite_payment: boolean | null
@@ -45,6 +46,7 @@ function toDomain(row: TenantRow): Tenant {
     }),
     createdAt: new Date(row.created_at),
     plan: (row.plan as TenantPlan) ?? TenantPlan.FREE,
+    active: row.active ?? true,
     stripeAccountId: row.stripe_account_id ?? undefined,
     stripeAccountEnabled: row.stripe_account_enabled ?? false,
     allowOnSitePayment: row.allow_onsite_payment ?? false,

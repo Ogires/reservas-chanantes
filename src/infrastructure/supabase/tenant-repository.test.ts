@@ -81,3 +81,23 @@ describe('SupabaseTenantRepository — mapeo de allow_onsite_payment', () => {
     )
   })
 })
+
+describe('SupabaseTenantRepository — mapeo de active', () => {
+  it('mapea active=false a tenant.active=false', async () => {
+    const repo = new SupabaseTenantRepository(
+      mockForSelect(baseRow({ active: false }))
+    )
+
+    const tenant = await repo.findBySlug('peluqueria-aurora')
+
+    expect(tenant?.active).toBe(false)
+  })
+
+  it('code-first: sin la columna active (undefined) → tenant.active=true', async () => {
+    const repo = new SupabaseTenantRepository(mockForSelect(baseRow()))
+
+    const tenant = await repo.findBySlug('peluqueria-aurora')
+
+    expect(tenant?.active).toBe(true)
+  })
+})
