@@ -81,4 +81,20 @@ export class SupabasePlatformRepository {
       bookings,
     }
   }
+
+  /**
+   * Activa/desactiva un negocio (flag `active`). Requiere service-role: la
+   * migración instala un trigger que solo permite este cambio al operador de
+   * plataforma. Usar SOLO tras `requireSuperadmin()`.
+   */
+  async setTenantActive(tenantId: string, active: boolean): Promise<void> {
+    const { error } = await this.supabase
+      .from('tenants')
+      .update({ active })
+      .eq('id', tenantId)
+
+    if (error) {
+      throw new Error(`Failed to set tenant active: ${error.message}`)
+    }
+  }
 }

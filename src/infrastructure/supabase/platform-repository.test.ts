@@ -147,3 +147,36 @@ describe('SupabasePlatformRepository.getPlatformData', () => {
     await expect(repo.getPlatformData()).rejects.toThrow(/boom-bookings/)
   })
 })
+
+/**
+ * Mock encadenable para `setTenantActive`:
+ * `.from('tenants').update({active}).eq('id', id)` resuelve `{ error }`.
+ */
+function makeUpdateSupabase(error: { message: string } | null) {
+  const eq = vi.fn(() => Promise.resolve({ error }))
+  const update = vi.fn(() => ({ eq }))
+  const from = vi.fn(() => ({ update }))
+  return { supabase: { from } as never, from, update, eq }
+}
+
+describe('SupabasePlatformRepository.setTenantActive', () => {
+  it('updates the active flag for the given tenant', async () => {
+    const { supabase, from, update, eq } = makeUpdateSupabase(null)
+    const repo = new SupabasePlatformRepository(supabase)
+
+    await repo.setTenantActive('t-1', false)
+
+    expect(from).toHaveBeenCalledWith('tenants')
+    expect(update).toHaveBeenCalledWith({ active: false })
+    expect(eq).toHaveBeenCalledWith('id', 't-1')
+  })
+
+  it('throws when the update errors', async () => {
+    const { supabase } = makeUpdateSupabase({ message: 'boom-update' })
+    const repo = new SupabasePlatformRepository(supabase)
+
+    await expect(repo.setTenantActive('t-1', true)).rejects.toThrow(
+      /boom-update/
+    )
+  })
+})
