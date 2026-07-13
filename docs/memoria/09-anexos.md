@@ -167,6 +167,14 @@ Variables de configuración requeridas por el sistema (verificadas en el código
 | `NEXT_PUBLIC_SITE_URL` | Público | URL pública del sitio (SEO, *sitemap*, *robots*) |
 | `NEXT_PUBLIC_APP_URL` | Público | URL base usada en las plantillas de correo |
 
+Adicionalmente, el **pipeline de despliegue encadenado** (GitHub Actions → Vercel, §6.7) requiere tres *secrets* de repositorio en GitHub, empleados **solo en tiempo de CI** y nunca por la aplicación:
+
+| Secret (GitHub Actions) | Ámbito | Propósito |
+|-------------------------|--------|-----------|
+| `VERCEL_TOKEN` | CI/CD (secreto) | Token de despliegue de Vercel para publicar desde la CI |
+| `VERCEL_ORG_ID` | CI/CD | Identificador de la organización/equipo de Vercel |
+| `VERCEL_PROJECT_ID` | CI/CD | Identificador del proyecto de Vercel |
+
 ## Anexo E. Evaluación de seguridad (OWASP Top 10:2021)
 
 Este anexo constituye la **sección de seguridad** de la memoria. Documenta el paquete de endurecimiento aplicado sobre la rama `security/owasp-hardening` y autoevalúa el sistema frente al estándar **OWASP Top 10:2021** [17], verificando cada defensa contra el código fuente y las migraciones versionadas. Estado: ✅ cubierto · 🟡 parcial (con brecha localizada) · 🔴 pendiente. Da soporte al grado de cumplimiento del objetivo OE-4 y a las líneas de seguridad recogidas en el [Capítulo 7](07-conclusiones.md).

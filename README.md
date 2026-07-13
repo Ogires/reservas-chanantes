@@ -202,6 +202,8 @@ La aplicación está desplegada en **Vercel**. Para reproducir el despliegue:
 3. El archivo [`vercel.json`](vercel.json) registra un ***cron*** diario (`0 8 * * *`) que invoca `/api/cron/send-reminders` para enviar los recordatorios.
 4. Configura los *webhooks* de Stripe (`/api/webhooks/stripe` y `/api/webhooks/stripe-connect`) apuntando al dominio de producción.
 
+El despliegue a producción está **encadenado a la CI** (véase §6.7 de la memoria): el despliegue automático de Vercel por *git* está **desactivado** (Ignored Build Step → *Don't build anything*) y la publicación la realiza el *workflow* de GitHub Actions tras superar la puerta `quality`, empleando los *secrets* `VERCEL_TOKEN`, `VERCEL_ORG_ID` y `VERCEL_PROJECT_ID`.
+
 ## Pruebas
 
 El proyecto se desarrolla con **TDD** en las capas de dominio y aplicación. La suite ejecuta **279 pruebas** (41 ficheros) con Vitest, con **umbral de cobertura** que hace de puerta de calidad, pruebas de **componente con Testing Library** y pruebas **E2E cross-browser con Playwright** (Chromium/Firefox/WebKit) del flujo de reserva:
@@ -213,7 +215,7 @@ npm run test:coverage  # cobertura (falla por debajo del umbral)
 npm run test:e2e       # E2E de Playwright (contra el despliegue)
 ```
 
-Un flujo de **integración continua** (GitHub Actions, [`.github/workflows/ci.yml`](.github/workflows/ci.yml)) ejecuta `lint → tsc → tests+cobertura → build` en cada *push*.
+Un flujo de **integración y despliegue continuos** (GitHub Actions, [`.github/workflows/ci.yml`](.github/workflows/ci.yml)) ejecuta `lint → tsc → tests+cobertura → build` (trabajo `quality`) en cada *push* y *pull request*. Si esa puerta pasa, un trabajo `deploy` **encadenado** (`needs: quality`) publica en producción con la CLI de Vercel, y los *pull requests* reciben una **vista previa**. Producción, por tanto, **solo se despliega con la CI en verde**.
 
 ## Estado y limitaciones
 

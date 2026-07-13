@@ -38,7 +38,7 @@ Se consolidan aquí, de forma transparente, las limitaciones señaladas a lo lar
 1. **Monetización no funcional**: ausencia de columna `plan`; todo *tenant* resuelve a `FREE` (§5.5).
 2. **Arquitectura Limpia parcial en presentación**: los *Server Actions* de administración acceden directamente a los repositorios (§4.5).
 3. **Defecto conocido de zona horaria**: derivación del día de la semana con `getUTCDay()` (§5.4).
-4. **Sin pruebas de integración contra base de datos real**: los adaptadores de persistencia se prueban con dobles (*mocks*); la restricción `EXCLUDE` y las políticas RLS se validan a ese nivel solo indirectamente, no contra un PostgreSQL efímero (§6.7, Anexo F). *(El resto del marco de calidad —CI, E2E automatizado y umbral de cobertura— ya está en marcha.)*
+4. **Sin pruebas de integración contra base de datos real**: los adaptadores de persistencia se prueban con dobles (*mocks*); la restricción `EXCLUDE` y las políticas RLS se validan a ese nivel solo indirectamente, no contra un PostgreSQL efímero (§6.7, Anexo F). *(El resto del marco de calidad —CI con despliegue encadenado, E2E automatizado y umbral de cobertura— ya está en marcha.)*
 5. **Monitorización basada en trazas**: el registro de eventos de seguridad ya es **estructurado** (`logSecurityEvent`, con lista blanca de campos; Anexo E), pero la observabilidad carece todavía de alertado y de una plataforma de APM (p. ej. un DSN de Sentry).
 
 ## 7.4. Líneas futuras
@@ -48,7 +48,7 @@ Las líneas de evolución se priorizan por su **retorno** —tanto de producto c
 ### 7.4.1. Prioridad alta (refuerzo de la calidad declarada)
 
 1. **Endurecimiento de la seguridad (realizado) y su continuación.** El paquete de seguridad OWASP ya está **aplicado** (rama `security/owasp-hardening`; evaluación por categoría en el [Anexo E](09-anexos.md)): se **acotó la RLS** de `bookings`/`customers` a propietario y titular —cerrando la fuga de PII por la clave anónima—, y se incorporaron **limitación de tasa** (*rate limiting*), **cabeceras de seguridad y CSP**, una **política de contraseñas fuerte** (12+, complejidad), la **validación del entorno con Zod** (*fail-first*) y el **registro estructurado de eventos de seguridad**. Como continuación restan las **claves de idempotencia** en las operaciones salientes de Stripe y, sobre la base de esta evaluación OWASP, la redacción de un **capítulo de modelado de amenazas**.
-2. **Pruebas de integración contra base de datos real.** La integración continua (GitHub Actions: `lint → tsc → vitest --coverage` con umbral), las **pruebas E2E de Playwright** y el gate de cobertura ya están operativos (§6.7); el siguiente refuerzo natural es ejercitar la restricción `EXCLUDE` y las políticas RLS **de extremo a extremo contra un PostgreSQL efímero**, hoy verificadas solo con dobles de prueba.
+2. **Pruebas de integración contra base de datos real.** La integración continua (GitHub Actions: `lint → tsc → vitest --coverage` con umbral), el **despliegue continuo encadenado** (producción solo tras la CI en verde, §6.7), las **pruebas E2E de Playwright** y el gate de cobertura ya están operativos; el siguiente refuerzo natural es ejercitar la restricción `EXCLUDE` y las políticas RLS **de extremo a extremo contra un PostgreSQL efímero**, hoy verificadas solo con dobles de prueba.
 
 ### 7.4.2. Prioridad media (completar el producto)
 
