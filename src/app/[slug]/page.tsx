@@ -76,7 +76,7 @@ export default async function TenantPage({
   const canPayOnSite = tenant.allowOnSitePayment
   const canBook = activeServices.length > 0 && (canPayOnline || canPayOnSite)
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://reservas-chanantes.vercel.app'
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://reservas-chanantes.vercel.app'
 
   const jsonLd = {
     '@context': 'https://schema.org',

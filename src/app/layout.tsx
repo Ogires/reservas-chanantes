@@ -13,7 +13,7 @@ const dmSans = DM_Sans({
   subsets: ["latin"],
 });
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://reservas-chanantes.vercel.app'
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://reservas-chanantes.vercel.app'
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),

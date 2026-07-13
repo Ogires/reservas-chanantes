@@ -10,7 +10,7 @@ import { WeakPasswordError } from '@/domain/errors/domain-errors'
 import { authLimiter } from '@/infrastructure/security/rate-limiter'
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://reservas-chanantes.vercel.app'
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://reservas-chanantes.vercel.app'
 
 export type RegisterState =
   | { error: string }

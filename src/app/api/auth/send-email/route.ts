@@ -11,7 +11,7 @@ const FROM = `Reservas Chanantes <reservas@${process.env.RESEND_FROM_DOMAIN ?? '
 // Los enlaces de confirmación apuntan a NUESTRA app, no a la URL de Supabase
 // (email_data.site_url es la URL de GoTrue, `…supabase.co/auth/v1`).
 const APP_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://reservas-chanantes.vercel.app'
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://reservas-chanantes.vercel.app'
 
 interface HookPayload {
   user: { email: string; user_metadata?: { locale?: string } }

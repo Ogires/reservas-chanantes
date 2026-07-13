@@ -7,7 +7,7 @@ import { authLimiter } from '@/infrastructure/security/rate-limiter'
 import { logSecurityEvent } from '@/infrastructure/observability/security-logger'
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://reservas-chanantes.vercel.app'
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://reservas-chanantes.vercel.app'
 
 export async function login(
   _prevState: { error: string } | null,

@@ -5,7 +5,7 @@ import { createSupabaseServer } from '@/infrastructure/supabase/server'
 import { detectLocaleFromHeaders } from '@/infrastructure/i18n/detect-locale'
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://reservas-chanantes.vercel.app'
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://reservas-chanantes.vercel.app'
 
 export type CustomerAuthState =
   | { error: string }
