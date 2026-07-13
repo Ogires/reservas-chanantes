@@ -45,6 +45,12 @@ export class GetAvailabilityUseCase {
     const tenant = await this.tenantRepo.findBySlug(input.tenantSlug)
     if (!tenant) throw new TenantNotFoundError(input.tenantSlug)
 
+    // Negocio desactivado por el operador: sin disponibilidad pública.
+    // `active` ausente (undefined) se trata como activo (code-first).
+    if (tenant.active === false) {
+      return { tenantName: tenant.name, date: input.date, slots: [] }
+    }
+
     const { timezone, minAdvanceMinutes, maxAdvanceDays } =
       tenant.bookingPolicy
     const tenantLocalDate = getTenantLocalDate(timezone, now)

@@ -18,6 +18,7 @@ import { BookingStatus, PaymentMethod, type DayOfWeek } from '@/domain/types'
 import { EmailAddress } from '@/domain/value-objects/email-address'
 import {
   TenantNotFoundError,
+  TenantInactiveError,
   ServiceNotFoundError,
   BusinessClosedError,
   ServiceDoesNotFitError,
@@ -55,6 +56,10 @@ export class CreateBookingUseCase {
     const paymentMethod = input.paymentMethod ?? PaymentMethod.ONLINE
     const tenant = await this.tenantRepo.findBySlug(input.tenantSlug)
     if (!tenant) throw new TenantNotFoundError(input.tenantSlug)
+
+    // Negocio desactivado por el operador de plataforma: no se admiten reservas
+    // públicas. `active` ausente (undefined) se trata como activo (code-first).
+    if (tenant.active === false) throw new TenantInactiveError()
 
     // El pago en el centro solo es válido si el negocio lo ha habilitado.
     if (paymentMethod === PaymentMethod.ON_SITE && !tenant.allowOnSitePayment) {

@@ -15,6 +15,7 @@ import { Money } from '@/domain/value-objects/money'
 import { DayOfWeek, BookingStatus, PaymentMethod } from '@/domain/types'
 import {
   TenantNotFoundError,
+  TenantInactiveError,
   ServiceNotFoundError,
   ServiceDoesNotFitError,
   BusinessClosedError,
@@ -165,6 +166,24 @@ describe('CreateBookingUseCase', () => {
     await expect(useCase.execute(validInput)).rejects.toThrow(
       TenantNotFoundError
     )
+  })
+
+  it('throws TenantInactiveError and does not create a booking when tenant is deactivated', async () => {
+    const inactiveTenant = { ...TENANT, active: false } as Tenant
+    const repos = createMockRepos({ tenant: inactiveTenant })
+    const saveSpy = vi.spyOn(repos.bookingRepo, 'save')
+    const useCase = new CreateBookingUseCase(
+      repos.tenantRepo,
+      repos.serviceRepo,
+      repos.scheduleRepo,
+      repos.bookingRepo,
+      repos.customerRepo
+    )
+
+    await expect(useCase.execute(validInput)).rejects.toThrow(
+      TenantInactiveError
+    )
+    expect(saveSpy).not.toHaveBeenCalled()
   })
 
   it('throws ServiceNotFoundError for unknown service', async () => {
