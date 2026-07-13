@@ -40,6 +40,7 @@ Se consolidan aquí, de forma transparente, las limitaciones señaladas a lo lar
 3. **Defecto conocido de zona horaria**: derivación del día de la semana con `getUTCDay()` (§5.4).
 4. **Sin pruebas de integración contra base de datos real**: los adaptadores de persistencia se prueban con dobles (*mocks*); la restricción `EXCLUDE` y las políticas RLS se validan a ese nivel solo indirectamente, no contra un PostgreSQL efímero (§6.7, Anexo F). *(El resto del marco de calidad —CI con despliegue encadenado, E2E automatizado y umbral de cobertura— ya está en marcha.)*
 5. **Monitorización basada en trazas**: el registro de eventos de seguridad ya es **estructurado** (`logSecurityEvent`, con lista blanca de campos; Anexo E), pero la observabilidad carece todavía de alertado y de una plataforma de APM (p. ej. un DSN de Sentry).
+6. **Operación de la plataforma sin *backoffice* propio**: la administración de los negocios cliente —alta, baja, soporte y ajustes— se realiza mediante la **consola de Supabase**, no con una interfaz de operador a medida. La capacidad operativa existe; la ausencia de una interfaz propia es una **decisión de alcance** coherente con el MVP, no un defecto funcional (una consola del operador se apoyaría en el rol de servicio ya existente).
 
 ## 7.4. Líneas futuras
 
