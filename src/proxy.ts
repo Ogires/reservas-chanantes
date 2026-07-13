@@ -31,7 +31,8 @@ export async function proxy(request: NextRequest) {
 
   if (
     !user &&
-    request.nextUrl.pathname.startsWith('/admin') &&
+    (request.nextUrl.pathname.startsWith('/admin') ||
+      request.nextUrl.pathname.startsWith('/superadmin')) &&
     !request.nextUrl.pathname.startsWith('/admin/login') &&
     !request.nextUrl.pathname.startsWith('/admin/register')
   ) {
