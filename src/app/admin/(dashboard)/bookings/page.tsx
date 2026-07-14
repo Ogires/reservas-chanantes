@@ -4,6 +4,8 @@ import { SupabaseCustomerRepository } from '@/infrastructure/supabase/customer-r
 import { SupabaseServiceRepository } from '@/infrastructure/supabase/service-repository'
 import { getAdminTranslations } from '@/infrastructure/i18n/admin-translations'
 import { BookingStatus } from '@/domain/types'
+import { paymentPresentation } from '@/domain/services/payment-presentation'
+import { PaymentBadge } from '@/app/_components/payment-badge'
 import { CancelBookingButton } from './cancel-button'
 
 function formatMinutes(minutes: number): string {
@@ -60,6 +62,12 @@ export default async function BookingsPage({
     [BookingStatus.CANCELLED]: 'bg-slate-100 text-slate-600',
   }
 
+  const paymentLabels = {
+    PAID_ONLINE: t.bookings.paymentPaid,
+    PENDING_ONLINE: t.bookings.paymentPending,
+    ON_SITE: t.bookings.paymentOnsite,
+  } as const
+
   return (
     <div>
       <h1 className="text-2xl font-bold font-serif text-slate-900 mb-6">{t.bookings.title}</h1>
@@ -110,6 +118,7 @@ export default async function BookingsPage({
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">{t.bookings.customer}</th>
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">{t.bookings.phone}</th>
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">{t.bookings.status}</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">{t.bookings.payment}</th>
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">{t.bookings.actions}</th>
               </tr>
             </thead>
@@ -127,6 +136,16 @@ export default async function BookingsPage({
                     <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${statusStyles[booking.status]}`}>
                       {statusLabels[booking.status]}
                     </span>
+                  </td>
+                  <td className="whitespace-nowrap px-4 py-3 text-sm">
+                    {(() => {
+                      const payKey = paymentPresentation(booking)
+                      return payKey ? (
+                        <PaymentBadge paymentKey={payKey} labels={paymentLabels} />
+                      ) : (
+                        <span className="text-slate-400">—</span>
+                      )
+                    })()}
                   </td>
                   <td className="whitespace-nowrap px-4 py-3 text-sm">
                     {booking.status !== BookingStatus.CANCELLED && (

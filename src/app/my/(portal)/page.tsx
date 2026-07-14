@@ -6,6 +6,8 @@ import { SupabaseTenantRepository } from '@/infrastructure/supabase/tenant-repos
 import { GetCustomerBookingsUseCase } from '@/application/use-cases/get-customer-bookings'
 import { SupabaseCustomerRepository } from '@/infrastructure/supabase/customer-repository'
 import { BookingStatus } from '@/domain/types'
+import { paymentPresentation } from '@/domain/services/payment-presentation'
+import { PaymentBadge } from '@/app/_components/payment-badge'
 import { CancelBookingButton } from './cancel-booking-button'
 
 export default async function MyDashboardPage() {
@@ -65,6 +67,10 @@ export default async function MyDashboardPage() {
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
+                  {(() => {
+                    const payKey = paymentPresentation(booking)
+                    return payKey ? <PaymentBadge paymentKey={payKey} /> : null
+                  })()}
                   <CancelBookingButton bookingId={booking.id} />
                   {tenant && service && (
                     <Link

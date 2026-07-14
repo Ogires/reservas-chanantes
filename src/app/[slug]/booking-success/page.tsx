@@ -7,6 +7,7 @@ import { createSupabaseAdmin } from '@/infrastructure/supabase/admin-client'
 import { SupabaseTenantRepository } from '@/infrastructure/supabase/tenant-repository'
 import { SupabaseServiceRepository } from '@/infrastructure/supabase/service-repository'
 import { SupabaseBookingRepository } from '@/infrastructure/supabase/booking-repository'
+import { PaymentBadge } from '@/app/_components/payment-badge'
 
 export const metadata: Metadata = {
   robots: { index: false },
@@ -83,6 +84,12 @@ export default async function BookingSuccessPage({
           <p className="text-sm text-emerald-600">
             Confirmation sent to {session.customer_email}
           </p>
+
+          {/* Estado de pago estático: llegar a esta URL (redirect de Stripe)
+              implica que el cobro online se completó, sin depender del webhook. */}
+          <div className="mt-3">
+            <PaymentBadge paymentKey="PAID_ONLINE" />
+          </div>
 
           <Link
             href={`/${slug}`}

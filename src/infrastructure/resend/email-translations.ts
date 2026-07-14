@@ -1,4 +1,5 @@
 import type { Locale } from '@/domain/types'
+import type { PaymentPresentationKey } from '@/domain/services/payment-presentation'
 
 export interface EmailTranslations {
   labels: {
@@ -10,7 +11,9 @@ export interface EmailTranslations {
     email: string
     phone: string
     customer: string
+    payment: string
   }
+  paymentStatus: Record<PaymentPresentationKey, string>
   subjects: {
     confirmation: (serviceName: string) => string
     cancellation: (serviceName: string) => string
@@ -42,6 +45,12 @@ const es: EmailTranslations = {
     email: 'Email',
     phone: 'Teléfono',
     customer: 'Cliente',
+    payment: 'Pago',
+  },
+  paymentStatus: {
+    PAID_ONLINE: 'Pagado online',
+    PENDING_ONLINE: 'Pago pendiente',
+    ON_SITE: 'En el centro (al llegar)',
   },
   subjects: {
     confirmation: (s) => `Reserva confirmada – ${s}`,
@@ -74,6 +83,12 @@ const en: EmailTranslations = {
     email: 'Email',
     phone: 'Phone',
     customer: 'Customer',
+    payment: 'Payment',
+  },
+  paymentStatus: {
+    PAID_ONLINE: 'Paid online',
+    PENDING_ONLINE: 'Payment pending',
+    ON_SITE: 'At the venue',
   },
   subjects: {
     confirmation: (s) => `Booking confirmed – ${s}`,
