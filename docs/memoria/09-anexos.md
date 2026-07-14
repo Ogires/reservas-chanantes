@@ -164,6 +164,7 @@ Variables de configuración requeridas por el sistema (verificadas en el código
 | `RESEND_FROM_DOMAIN` | Secreto | Dominio remitente verificado de los correos (`reservas@…`) |
 | `SUPABASE_AUTH_HOOK_SECRET` | Secreto | Firma del *Send Email Hook* de Supabase Auth (correos de autenticación i18n) |
 | `CRON_SECRET` | Secreto | Autorización de la tarea programada de recordatorios |
+| `SUPERADMIN_EMAILS` | Secreto | Lista blanca de correos (separados por comas) con acceso al panel de operador `/superadmin`; ausente ⇒ nadie tiene acceso (*fail-closed*) |
 | `NEXT_PUBLIC_SITE_URL` | Público | URL pública del sitio (SEO, *sitemap*, *robots*) |
 | `NEXT_PUBLIC_APP_URL` | Público | URL base usada en las plantillas de correo |
 

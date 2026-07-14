@@ -204,6 +204,8 @@ La aplicación está desplegada en **Vercel**. Para reproducir el despliegue:
 
 El despliegue a producción está **encadenado a la CI** (véase §6.7 de la memoria): el despliegue automático de Vercel por *git* está **desactivado** (Ignored Build Step → *Don't build anything*) y la publicación la realiza el *workflow* de GitHub Actions tras superar la puerta `quality`, empleando los *secrets* `VERCEL_TOKEN`, `VERCEL_ORG_ID` y `VERCEL_PROJECT_ID`.
 
+**Panel de operador (`/superadmin`).** El operador de la plataforma dispone de un panel para gestionar los negocios cliente: métricas por negocio (reservas, clientes, volumen y comisión) y activación/desactivación. El acceso se restringe por lista blanca de correos en la variable `SUPERADMIN_EMAILS` (si está ausente, nadie tiene acceso).
+
 ## Pruebas
 
 El proyecto se desarrolla con **TDD** en las capas de dominio y aplicación. La suite ejecuta **279 pruebas** (41 ficheros) con Vitest, con **umbral de cobertura** que hace de puerta de calidad, pruebas de **componente con Testing Library** y pruebas **E2E cross-browser con Playwright** (Chromium/Firefox/WebKit) del flujo de reserva:
