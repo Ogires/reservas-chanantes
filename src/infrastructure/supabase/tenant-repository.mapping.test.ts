@@ -59,6 +59,7 @@ const domainTenant = (): Tenant => ({
   bookingPolicy: { timezone: 'Europe/Madrid', minAdvanceMinutes: 120, maxAdvanceDays: 30 },
   createdAt: new Date('2026-01-01T00:00:00Z'),
   plan: TenantPlan.PRO,
+  active: true,
   stripeAccountId: 'acct_1',
   stripeAccountEnabled: true,
   allowOnSitePayment: true,

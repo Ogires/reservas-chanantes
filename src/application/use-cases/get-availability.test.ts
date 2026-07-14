@@ -147,6 +147,28 @@ describe('GetAvailabilityUseCase', () => {
     expect(result.slots).toHaveLength(0)
   })
 
+  it('returns empty slots when the tenant is deactivated', async () => {
+    const inactiveTenant = { ...TENANT, active: false } as Tenant
+    const { tenantRepo, scheduleRepo, bookingRepo } = createMockRepos({
+      tenant: inactiveTenant,
+    })
+    const useCase = new GetAvailabilityUseCase(
+      tenantRepo,
+      scheduleRepo,
+      bookingRepo
+    )
+
+    // 2026-02-23 is a Monday with an open schedule, so a non-empty result would
+    // be expected if `active` were ignored.
+    const result = await useCase.execute({
+      tenantSlug: 'peluqueria-juan',
+      date: '2026-02-23',
+      now: new Date('2026-02-23T00:00:00Z'),
+    })
+
+    expect(result.slots).toHaveLength(0)
+  })
+
   it('throws TenantNotFoundError for unknown slug', async () => {
     const { tenantRepo, scheduleRepo, bookingRepo } = createMockRepos({
       tenant: null,

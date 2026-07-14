@@ -32,6 +32,7 @@ export async function provisionTenant(
     bookingPolicy: createBookingPolicy(),
     createdAt: new Date(),
     plan: TenantPlan.FREE,
+    active: true,
     stripeAccountEnabled: false,
     allowOnSitePayment: false,
   })

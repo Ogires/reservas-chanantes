@@ -74,7 +74,12 @@ export default async function TenantPage({
   // reservar: lo indicamos por adelantado en vez de dejar al cliente chocar al final.
   const canPayOnline = !!tenant.stripeAccountId && tenant.stripeAccountEnabled
   const canPayOnSite = tenant.allowOnSitePayment
-  const canBook = activeServices.length > 0 && (canPayOnline || canPayOnSite)
+  // Un negocio desactivado por el operador no admite reservas públicas.
+  // `active` ausente (undefined) se trata como activo (code-first).
+  const canBook =
+    tenant.active !== false &&
+    activeServices.length > 0 &&
+    (canPayOnline || canPayOnSite)
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://reservas-chanantes.vercel.app'
 

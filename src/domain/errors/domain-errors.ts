@@ -33,6 +33,12 @@ export class TenantNotFoundError extends DomainError {
   }
 }
 
+export class TenantInactiveError extends DomainError {
+  constructor() {
+    super('This business is not currently available for booking')
+  }
+}
+
 export class ServiceNotFoundError extends DomainError {
   constructor(id: string) {
     super(`Service not found: "${id}"`)

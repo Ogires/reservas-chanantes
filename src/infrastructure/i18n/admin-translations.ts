@@ -60,6 +60,7 @@ export interface AdminTranslations {
     schedule: string
     settings: string
     viewPublicPage: string
+    superadmin: string
   }
   dashboard: {
     title: string
@@ -219,6 +220,7 @@ const es: AdminTranslations = {
     schedule: 'Horario',
     settings: 'Ajustes',
     viewPublicPage: 'Ver pagina publica',
+    superadmin: 'Plataforma',
   },
   dashboard: {
     title: 'Panel',
@@ -378,6 +380,7 @@ const en: AdminTranslations = {
     schedule: 'Schedule',
     settings: 'Settings',
     viewPublicPage: 'View public page',
+    superadmin: 'Platform',
   },
   dashboard: {
     title: 'Dashboard',

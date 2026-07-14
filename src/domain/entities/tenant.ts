@@ -12,6 +12,8 @@ export interface Tenant {
   readonly bookingPolicy: BookingPolicy
   readonly createdAt: Date
   readonly plan: TenantPlan
+  /** Si el negocio está activo. Desactivado (por el operador) bloquea sus reservas públicas. */
+  readonly active: boolean
   readonly stripeAccountId?: string
   readonly stripeAccountEnabled: boolean
   /** Si el negocio admite reservas con pago presencial en el centro. No excluyente con el pago online. */

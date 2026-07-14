@@ -88,6 +88,15 @@ export async function createBooking(input: {
       tenantRepo.findBySlug(input.tenantSlug),
       serviceRepo.findById(input.serviceId),
     ])
+    // Negocio desactivado por el operador de plataforma: se corta antes del
+    // chequeo de Stripe para devolver el mensaje correcto (no "pago no
+    // configurado"). El caso de uso vuelve a comprobarlo (defensa en profundidad).
+    if (tenant?.active === false) {
+      return {
+        success: false,
+        error: 'This business is not currently available for booking',
+      }
+    }
     if (
       method === PaymentMethod.ONLINE &&
       (!tenant?.stripeAccountId || !tenant.stripeAccountEnabled)
