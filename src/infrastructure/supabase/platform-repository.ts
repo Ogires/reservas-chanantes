@@ -65,6 +65,10 @@ export class SupabasePlatformRepository {
       const { data, error } = await this.supabase
         .from('bookings')
         .select('tenant_id,status,payment_method,customer_id,service:services(price_cents)')
+        // Orden determinista por clave primaria: la paginación por offset de
+        // PostgREST necesita un `ORDER BY` estable, o filas en el límite de
+        // página podrían saltarse o duplicarse entre peticiones.
+        .order('id', { ascending: true })
         .range(from, from + PAGE_SIZE - 1)
 
       if (error) {
