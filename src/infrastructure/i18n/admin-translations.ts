@@ -103,6 +103,10 @@ export interface AdminTranslations {
     customer: string
     phone: string
     status: string
+    payment: string
+    paymentPaid: string
+    paymentPending: string
+    paymentOnsite: string
     actions: string
     confirmCancel: string
     statusPending: string
@@ -263,6 +267,10 @@ const es: AdminTranslations = {
     customer: 'Cliente',
     phone: 'Telefono',
     status: 'Estado',
+    payment: 'Pago',
+    paymentPaid: 'Pagado online',
+    paymentPending: 'Pago pendiente',
+    paymentOnsite: 'En el centro',
     actions: 'Acciones',
     confirmCancel: '¿Seguro que quieres cancelar esta reserva?',
     statusPending: 'Pendiente',
@@ -423,6 +431,10 @@ const en: AdminTranslations = {
     customer: 'Customer',
     phone: 'Phone',
     status: 'Status',
+    payment: 'Payment',
+    paymentPaid: 'Paid online',
+    paymentPending: 'Payment pending',
+    paymentOnsite: 'At the venue',
     actions: 'Actions',
     confirmCancel: 'Are you sure you want to cancel this booking?',
     statusPending: 'Pending',

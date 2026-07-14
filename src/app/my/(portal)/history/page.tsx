@@ -6,6 +6,8 @@ import { SupabaseTenantRepository } from '@/infrastructure/supabase/tenant-repos
 import { SupabaseCustomerRepository } from '@/infrastructure/supabase/customer-repository'
 import { GetCustomerBookingsUseCase } from '@/application/use-cases/get-customer-bookings'
 import { BookingStatus } from '@/domain/types'
+import { paymentPresentation } from '@/domain/services/payment-presentation'
+import { PaymentBadge } from '@/app/_components/payment-badge'
 
 const statusBadge: Record<string, { label: string; className: string }> = {
   [BookingStatus.CONFIRMED]: {
@@ -75,6 +77,10 @@ export default async function HistoryPage() {
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
+                    {(() => {
+                      const payKey = paymentPresentation(booking)
+                      return payKey ? <PaymentBadge paymentKey={payKey} /> : null
+                    })()}
                     <span className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${badge.className}`}>
                       {badge.label}
                     </span>

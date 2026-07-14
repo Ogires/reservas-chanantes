@@ -3,6 +3,7 @@ import type { Locale } from '@/domain/types'
 import { resolveLocale } from '@/domain/services/locale-resolver'
 import { getEmailTranslations } from './email-translations'
 import { formatEmailDate } from './email-formatters'
+import { paymentPresentation } from '@/domain/services/payment-presentation'
 
 function layout(tenantName: string, locale: Locale, body: string): string {
   return `<!DOCTYPE html>
@@ -26,11 +27,18 @@ function bookingDetails(data: BookingEmailData): string {
   const locale = getCustomerLocale(data)
   const t = getEmailTranslations(locale)
   const time = booking.timeRange.toHHMM()
+  // El estado de pago no se muestra en reservas canceladas (clave null): evita
+  // afirmar un pago engañoso en el email de cancelación (comparte esta función).
+  const payKey = paymentPresentation(booking)
+  const paymentRow = payKey
+    ? `<tr><td style="padding:4px 12px 4px 0;font-weight:bold">${t.labels.payment}</td><td>${t.paymentStatus[payKey]}</td></tr>`
+    : ''
   return `<table style="border-collapse:collapse;margin:16px 0">
     <tr><td style="padding:4px 12px 4px 0;font-weight:bold">${t.labels.service}</td><td>${service.name}</td></tr>
     <tr><td style="padding:4px 12px 4px 0;font-weight:bold">${t.labels.date}</td><td>${formatEmailDate(booking.date, locale)}</td></tr>
     <tr><td style="padding:4px 12px 4px 0;font-weight:bold">${t.labels.time}</td><td>${time.start} – ${time.end}</td></tr>
     <tr><td style="padding:4px 12px 4px 0;font-weight:bold">${t.labels.price}</td><td>${service.price.formatLocalized(locale)}</td></tr>
+    ${paymentRow}
   </table>`
 }
 
