@@ -48,7 +48,8 @@ function makeSupabase(opts: {
     pageIndex++
     return Promise.resolve({ data: page, error: null })
   })
-  const bookingsSelect = vi.fn(() => ({ range }))
+  const order = vi.fn(() => ({ range }))
+  const bookingsSelect = vi.fn(() => ({ order, range }))
   const tenantsSelect = vi.fn(() =>
     Promise.resolve({
       data: opts.tenantsError ? null : (opts.tenants ?? []),
@@ -61,6 +62,7 @@ function makeSupabase(opts: {
   return {
     supabase: { from } as never,
     range,
+    order,
     rangeCalls,
     bookingsSelect,
     tenantsSelect,
@@ -85,6 +87,20 @@ describe('SupabasePlatformRepository.getPlatformData', () => {
       [0, 999],
       [1000, 1999],
     ])
+  })
+
+  it('orders bookings by a stable key before paginating', async () => {
+    const { supabase, order } = makeSupabase({
+      tenants: TENANTS,
+      pages: [makeBookingRows(3)],
+    })
+    const repo = new SupabasePlatformRepository(supabase)
+
+    await repo.getPlatformData()
+
+    // Sin ORDER BY estable, la paginación por offset puede saltarse/duplicar
+    // filas en el límite de página entre peticiones.
+    expect(order).toHaveBeenCalledWith('id', { ascending: true })
   })
 
   it('stops after a single page when it returns fewer than 1000 rows', async () => {
