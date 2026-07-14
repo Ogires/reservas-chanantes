@@ -103,7 +103,7 @@ Decisiones técnicas no triviales documentadas en la memoria: cálculo de dispon
 | Pagos | **Stripe Connect** (modelo B2B2C) |
 | Correo transaccional | **Resend** |
 | Estilos | **Tailwind CSS 4** |
-| Pruebas | **Vitest** (320 casos en 45 ficheros) |
+| Pruebas | **Vitest** (325 casos en 46 ficheros) |
 | Despliegue | **Vercel** (*serverless*) + *cron* programado |
 
 ## Estructura del proyecto
@@ -126,7 +126,7 @@ src/
     api/                   auth/callback · cron/send-reminders · stripe/* · webhooks/*
   proxy.ts                 Refresco de sesión y protección de rutas
 supabase/
-  migrations/              11 migraciones SQL (fuente de verdad del esquema)
+  migrations/              14 migraciones SQL (fuente de verdad del esquema)
 docs/
   memoria/                 Memoria académica del TFM (7 capítulos + anexos)
   presentacion/            Diapositivas de la presentación (HTML)
@@ -208,7 +208,7 @@ El despliegue a producción está **encadenado a la CI** (véase §6.7 de la mem
 
 ## Pruebas
 
-El proyecto se desarrolla con **TDD** en las capas de dominio y aplicación. La suite ejecuta **320 pruebas** (45 ficheros) con Vitest, con **umbral de cobertura** que hace de puerta de calidad, pruebas de **componente con Testing Library** y pruebas **E2E cross-browser con Playwright** (Chromium/Firefox/WebKit) del flujo de reserva:
+El proyecto se desarrolla con **TDD** en las capas de dominio y aplicación. La suite ejecuta **325 pruebas** (46 ficheros) con Vitest, con **umbral de cobertura** que hace de puerta de calidad, pruebas de **componente con Testing Library** y pruebas **E2E cross-browser con Playwright** (Chromium/Firefox/WebKit) del flujo de reserva:
 
 ```bash
 npm test               # ejecuta toda la suite una vez
