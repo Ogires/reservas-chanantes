@@ -144,6 +144,10 @@ La seguridad a nivel de fila está **habilitada en las cinco tablas**. La siguie
 | 8 | `20260306_add_tenant_profile.sql` | Perfil de negocio y SEO en `tenants` (7 columnas) |
 | 9 | `20260422_prevent_booking_overlap.sql` | Extensión `btree_gist` + restricción de exclusión `bookings_no_overlap` |
 | 10 | `20260629_add_onsite_payment.sql` | `allow_onsite_payment` en `tenants`; `payment_method` en `bookings` (`CHECK ONLINE`/`ON_SITE`) — habilita el pago presencial |
+| 11 | `20260710_tighten_rls_pii.sql` | Endurece la RLS de `customers`/`bookings` a propietario + titular; cierra la fuga de PII por la clave anónima (A01/A02) |
+| 12 | `20260713_add_tenant_active.sql` | Columna `active` en `tenants` + *trigger* que la hace inmutable para el dueño (soporte del panel de operador) |
+| 13 | `20260713_fix_rls_recursion.sql` | Corrige la recursión mutua entre las RLS de `customers` y `bookings` con una función `SECURITY DEFINER` |
+| 14 | `20260714_harden_active_trigger.sql` | Endurece el *trigger* de `active` ante `auth.role()` nulo (*fail-closed*) |
 | 11 | `20260710_tighten_rls_pii.sql` | Endurece la RLS de `customers` y `bookings`: retira la lectura/inserción públicas que exponían la PII y acota el acceso a propietario y titular; los flujos anónimos de confianza se reenrutan al cliente de *service-role* (OWASP A01/A02) |
 
 > Obsérvese que **ninguna migración añade una columna `plan`**: el modelo de planes (FREE/PRO) está diseñado en el dominio pero no persistido, por lo que todo negocio resuelve a `FREE` (véase [Capítulo 5 §5.5](05-implementacion.md)).

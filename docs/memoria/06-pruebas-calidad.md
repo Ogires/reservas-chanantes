@@ -13,27 +13,27 @@ El marco de pruebas es **Vitest 4** (`vitest run` para la ejecución única; `vi
 
 ## 6.3. Distribución de la batería de pruebas
 
-La suite comprende **320 casos de prueba distribuidos en 45 ficheros**. Su reparto por capas evidencia la pirámide descrita:
+La suite comprende **325 casos de prueba distribuidos en 46 ficheros**. Su reparto por capas evidencia la pirámide descrita:
 
 | Capa | Ficheros de prueba | Casos | Peso |
 |------|--------------------|-------|------|
-| **Dominio** | 12 | 126 | 39 % |
+| **Dominio** | 13 | 131 | 40 % |
 | **Aplicación** (casos de uso) | 9 | 81 | 25 % |
 | **Infraestructura** | 21 | 107 | 33 % |
 | **Presentación** (componentes, Testing Library) | 3 | 6 | 2 % |
-| **Total** | **45** | **320** | **100 %** |
+| **Total** | **46** | **325** | **100 %** |
 
 > *Tabla 6.1. Distribución de la batería de pruebas por capa arquitectónica.*
 
-El dato relevante no es solo el volumen, sino su **forma**: el 65 % de las pruebas se concentra en las capas de dominio y aplicación —las que albergan las reglas de negocio—, y el dominio por sí solo sigue siendo la capa más ejercitada (39 %), lo que constituye una evidencia objetiva de que la arquitectura ha cumplido su propósito de hacer la lógica crítica verificable de forma aislada y barata.
+El dato relevante no es solo el volumen, sino su **forma**: el 65 % de las pruebas se concentra en las capas de dominio y aplicación —las que albergan las reglas de negocio—, y el dominio por sí solo sigue siendo la capa más ejercitada (40 %), lo que constituye una evidencia objetiva de que la arquitectura ha cumplido su propósito de hacer la lógica crítica verificable de forma aislada y barata.
 
 ```mermaid
 flowchart TB
-    subgraph Pyramid["Batería de pruebas (320 casos + E2E)"]
+    subgraph Pyramid["Batería de pruebas (325 casos + E2E)"]
         E["Presentación — componentes (Testing Library) + E2E cross-browser<br/>lo que ve el usuario"]
         I["Infraestructura — 107 casos (33%)<br/>adaptadores: Supabase, Stripe, Resend, Auth, i18n"]
         A["Aplicación — 81 casos (25%)<br/>casos de uso con dobles de prueba"]
-        D["Dominio — 126 casos (39%)<br/>objetos de valor y servicios puros"]
+        D["Dominio — 131 casos (40%)<br/>objetos de valor y servicios puros"]
     end
     E --- I --- A --- D
 ```
@@ -74,7 +74,7 @@ La capa de **presentación** (rutas, *Server Actions* y componentes), cuya cober
 
 ## 6.8. Síntesis
 
-La estrategia de pruebas no es un añadido posterior, sino el reflejo directo de la arquitectura: una pirámide de 320 casos cuya base ancha (65 % en dominio y aplicación) solo es posible porque la lógica de negocio se diseñó desacoplada y comprobable. El análisis estático estricto, la cobertura acotada por **umbral**, las pruebas de **componente (Testing Library)** y **E2E cross-browser**, y su ejecución en **integración continua**, completan un marco de calidad no solo *practicado*, sino *medido y forzado por la herramienta*.
+La estrategia de pruebas no es un añadido posterior, sino el reflejo directo de la arquitectura: una pirámide de 325 casos cuya base ancha (65 % en dominio y aplicación) solo es posible porque la lógica de negocio se diseñó desacoplada y comprobable. El análisis estático estricto, la cobertura acotada por **umbral**, las pruebas de **componente (Testing Library)** y **E2E cross-browser**, y su ejecución en **integración continua**, completan un marco de calidad no solo *practicado*, sino *medido y forzado por la herramienta*.
 
 ---
 
