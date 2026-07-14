@@ -9,7 +9,9 @@ export interface TenantStatsRow {
   created_at: string
   active: boolean | null
   stripe_account_enabled: boolean | null
-  plan: string | null
+  // La monetización no está persistida (no hay columna `plan` en la BD): todos
+  // los tenants resuelven a FREE. Se mantiene opcional por si se añade el plan.
+  plan?: string | null
 }
 
 /**
@@ -48,7 +50,7 @@ export class SupabasePlatformRepository {
   }> {
     const { data: tenantsData, error: tenantsError } = await this.supabase
       .from('tenants')
-      .select('id,name,slug,city,created_at,active,stripe_account_enabled,plan')
+      .select('id,name,slug,city,created_at,active,stripe_account_enabled')
 
     if (tenantsError) {
       throw new Error(`Failed to fetch tenants: ${tenantsError.message}`)
