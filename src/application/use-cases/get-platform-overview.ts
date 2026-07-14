@@ -59,7 +59,7 @@ function isActive(row: TenantStatsRow): boolean {
 }
 
 /** Normaliza el plan crudo a un `TenantPlan` conocido (null/desconocido → FREE). */
-function normalizePlan(plan: string | null): TenantPlan {
+function normalizePlan(plan: string | null | undefined): TenantPlan {
   return plan === TenantPlan.PRO ? TenantPlan.PRO : TenantPlan.FREE
 }
 
