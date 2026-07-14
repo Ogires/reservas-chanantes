@@ -33,14 +33,13 @@ La conclusión metodológica es que el desarrollo asistido por IA, **conducido b
 
 ## 7.3. Limitaciones del trabajo
 
-Se consolidan aquí, de forma transparente, las limitaciones señaladas a lo largo de la memoria. La deuda de seguridad más señalada en versiones anteriores —las políticas RLS permisivas sobre `bookings`/`customers`— ha sido **subsanada** con el paquete de endurecimiento OWASP (§5.7, [Anexo E](09-anexos.md)), por lo que ya no figura en esta lista.
+Se consolidan aquí, de forma transparente, las limitaciones señaladas a lo largo de la memoria. La deuda de seguridad más señalada en versiones anteriores —las políticas RLS permisivas sobre `bookings`/`customers`— ha sido **subsanada** con el paquete de endurecimiento OWASP (§5.7, [Anexo E](09-anexos.md)), por lo que ya no figura en esta lista. Asimismo, la operación de la plataforma dispone ya de un **panel de superadmin** (`/superadmin`): permite al operador consultar métricas por negocio cliente (reservas, clientes, volumen confirmado y comisión) y **activar/desactivar** negocios; el acceso se restringe por lista blanca de correos (`SUPERADMIN_EMAILS`) con respuesta `404` para el resto, y los datos *cross-tenant* se sirven con el rol de servicio **solo tras** el guard; la desactivación se hace inmutable para el propio dueño mediante un *trigger* de base de datos.
 
 1. **Monetización no funcional**: ausencia de columna `plan`; todo *tenant* resuelve a `FREE` (§5.5).
 2. **Arquitectura Limpia parcial en presentación**: los *Server Actions* de administración acceden directamente a los repositorios (§4.5).
 3. **Defecto conocido de zona horaria**: derivación del día de la semana con `getUTCDay()` (§5.4).
 4. **Sin pruebas de integración contra base de datos real**: los adaptadores de persistencia se prueban con dobles (*mocks*); la restricción `EXCLUDE` y las políticas RLS se validan a ese nivel solo indirectamente, no contra un PostgreSQL efímero (§6.7, Anexo F). *(El resto del marco de calidad —CI con despliegue encadenado, E2E automatizado y umbral de cobertura— ya está en marcha.)*
 5. **Monitorización basada en trazas**: el registro de eventos de seguridad ya es **estructurado** (`logSecurityEvent`, con lista blanca de campos; Anexo E), pero la observabilidad carece todavía de alertado y de una plataforma de APM (p. ej. un DSN de Sentry).
-6. **Operación de la plataforma sin *backoffice* propio**: la administración de los negocios cliente —alta, baja, soporte y ajustes— se realiza mediante la **consola de Supabase**, no con una interfaz de operador a medida. La capacidad operativa existe; la ausencia de una interfaz propia es una **decisión de alcance** coherente con el MVP, no un defecto funcional (una consola del operador se apoyaría en el rol de servicio ya existente).
 
 ## 7.4. Líneas futuras
 
