@@ -14,6 +14,8 @@ interface SetupStatus {
 interface SidebarProps {
   tenant: Tenant
   setupStatus: SetupStatus
+  // Enlace condicional al panel de plataforma (solo operadores superadmin).
+  showSuperadmin: boolean
   // Solo los campos serializables que usa el Sidebar. NO recibir el objeto
   // `auth` completo: contiene `hello` (función), que no cruza la frontera
   // servidor→cliente y rompería el render (RSC serialization).
@@ -23,7 +25,12 @@ interface SidebarProps {
   }
 }
 
-export function Sidebar({ tenant, setupStatus, translations }: SidebarProps) {
+export function Sidebar({
+  tenant,
+  setupStatus,
+  showSuperadmin,
+  translations,
+}: SidebarProps) {
   const pathname = usePathname()
   const { nav, auth } = translations
 
@@ -124,6 +131,22 @@ export function Sidebar({ tenant, setupStatus, translations }: SidebarProps) {
           </svg>
           {nav.viewPublicPage}
         </Link>
+
+        {showSuperadmin && (
+          <Link
+            href="/superadmin"
+            className={`mt-2 flex items-center gap-3 rounded-lg border-t border-slate-800 px-3 py-2 pt-4 text-sm transition-colors ${
+              pathname.startsWith('/superadmin')
+                ? 'text-teal-400 font-medium'
+                : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+            }`}
+          >
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
+            </svg>
+            {nav.superadmin}
+          </Link>
+        )}
       </nav>
 
       <LogoutButton label={auth.signOut} />
