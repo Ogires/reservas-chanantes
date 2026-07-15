@@ -5,24 +5,38 @@ import { createSupabaseAdmin } from '@/infrastructure/supabase/admin-client'
 import { provisionTenant } from '@/infrastructure/supabase/provision-tenant'
 
 /**
- * Destino de los enlaces de confirmación de email (token_hash + verifyOtp).
- * A diferencia del callback OAuth (que intercambia un `code` con PKCE), este
- * verifica el OTP directamente, por lo que funciona aunque el enlace se abra en
- * otro navegador. Al confirmar: crea el negocio (flujo admin) o vincula el
- * cliente (flujo /my), y redirige a `next`.
+ * Confirmación de email por token_hash + verifyOtp.
+ *
+ * El GET NO consume el token: los clientes de correo y los escáneres de
+ * seguridad (Gmail, Safe Links, antivirus corporativos) pre-visitan los enlaces
+ * y gastarían el OTP de un solo uso antes de que el usuario haga clic. Por eso
+ * el GET solo reenvía a la página `/auth/confirm`, que muestra un botón; el
+ * token se verifica en el POST que origina ese botón (un bot no envía
+ * formularios). A diferencia del callback OAuth (que intercambia un `code` con
+ * PKCE), verifyOtp funciona aunque el enlace se abra en otro navegador. Al
+ * confirmar: crea el negocio (flujo admin) o vincula el cliente (flujo /my).
  */
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl
-  const tokenHash = searchParams.get('token_hash')
-  const type = searchParams.get('type') as EmailOtpType | null
-  const nextParam = searchParams.get('next') ?? '/admin/dashboard'
+  const page = new URL('/auth/confirm', origin)
+  for (const key of ['token_hash', 'type', 'next', 'lang'] as const) {
+    const value = searchParams.get(key)
+    if (value) page.searchParams.set(key, value)
+  }
+  return NextResponse.redirect(page)
+}
+
+export async function POST(request: NextRequest) {
+  const { origin } = request.nextUrl
+  const form = await request.formData()
+  const tokenHash = form.get('token_hash')?.toString() || null
+  const type = (form.get('type')?.toString() || null) as EmailOtpType | null
+  const nextParam = form.get('next')?.toString() || '/admin/dashboard'
 
   // `next` puede llegar como ruta o como URL absoluta (emailRedirectTo).
   let nextPath = '/admin/dashboard'
   try {
-    nextPath = nextParam.startsWith('/')
-      ? nextParam
-      : new URL(nextParam).pathname
+    nextPath = nextParam.startsWith('/') ? nextParam : new URL(nextParam).pathname
   } catch {
     nextPath = '/admin/dashboard'
   }
@@ -31,8 +45,12 @@ export async function GET(request: NextRequest) {
     ? '/my/login?error=auth'
     : '/admin/login?error=auth'
 
+  // 303: tras un POST, el navegador debe hacer GET del destino (no repetir POST).
+  const redirect = (path: string) =>
+    NextResponse.redirect(new URL(path, origin), 303)
+
   if (!tokenHash || !type) {
-    return NextResponse.redirect(new URL(loginUrl, origin))
+    return redirect(loginUrl)
   }
 
   const supabase = await createSupabaseServer()
@@ -42,7 +60,7 @@ export async function GET(request: NextRequest) {
   })
 
   if (error || !data.user) {
-    return NextResponse.redirect(new URL(loginUrl, origin))
+    return redirect(loginUrl)
   }
 
   const user = data.user
@@ -81,13 +99,11 @@ export async function GET(request: NextRequest) {
         try {
           await provisionTenant(supabase, user.id, businessName)
         } catch {
-          return NextResponse.redirect(
-            new URL('/admin/register?error=provision', origin)
-          )
+          return redirect('/admin/register?error=provision')
         }
       }
     }
   }
 
-  return NextResponse.redirect(new URL(nextPath, origin))
+  return redirect(nextPath)
 }
