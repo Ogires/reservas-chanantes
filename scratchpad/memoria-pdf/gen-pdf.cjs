@@ -47,6 +47,22 @@ const bodyHtml = files
   })
   .join('\n')
 
+// Incrusta las imágenes locales (img/...) como data URI: setContent no tiene
+// base URL, así que las rutas relativas no cargarían de otro modo.
+function inlineImages(html) {
+  return html.replace(/src="(img\/[^"]+)"/g, (m, rel) => {
+    try {
+      const b64 = fs.readFileSync(path.join(memoriaDir, rel)).toString('base64')
+      const ext = path.extname(rel).slice(1).toLowerCase()
+      const mime = ext === 'svg' ? 'image/svg+xml' : `image/${ext === 'jpg' ? 'jpeg' : ext}`
+      return `src="data:${mime};base64,${b64}"`
+    } catch {
+      console.warn('[img] no encontrada:', rel)
+      return m
+    }
+  })
+}
+
 const page = `<!doctype html>
 <html lang="es"><head><meta charset="utf-8">
 <style>
@@ -76,7 +92,9 @@ const page = `<!doctype html>
                color: var(--muted); background: #fafbfc; }
   ul, ol { margin: 0 0 9px; padding-left: 22px; }
   li { margin: 2px 0; }
-  img, svg { max-width: 100%; height: auto; }
+  svg { max-width: 100%; height: auto; }
+  img { display: block; margin: 12px auto; max-width: 92%; height: auto;
+        border: 1px solid var(--line); border-radius: 6px; page-break-inside: avoid; }
   hr { border: none; border-top: 1px solid var(--line); margin: 16px 0; }
   .mermaid { text-align: center; margin: 14px 0; page-break-inside: avoid; }
   .mermaid svg { max-width: 100%; height: auto; }
@@ -85,7 +103,7 @@ const page = `<!doctype html>
   .doc:first-child > div[align="center"] { text-align: center; }
 </style></head>
 <body>
-${bodyHtml}
+${inlineImages(bodyHtml)}
 <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script>
   window.__done = false;

@@ -276,6 +276,38 @@ coverage: {
 
 Complementado con una capa de **pruebas de integración** (la restricción `EXCLUDE` y la RLS contra un PostgreSQL real —p. ej. Supabase local o *Testcontainers*—) y **pruebas E2E** (Playwright del flujo de reserva), que cubren la infraestructura y la presentación que la cobertura unitaria, por diseño, no contempla.
 
+## Anexo G. Galería de la aplicación
+
+Este anexo recoge una selección de capturas de la aplicación desplegada, que ilustran el recorrido de extremo a extremo descrito en la memoria: desde la reserva pública que hace el cliente hasta la operación de la plataforma. Todas provienen de negocios de demostración, con datos ficticios.
+
+![Página pública de reserva de un negocio](img/g1-pagina-publica.png)
+
+> *Figura G.1. Página pública de un negocio (`/[slug]`): catálogo de servicios y punto de entrada a la reserva, servida desde una URL propia del negocio.*
+
+![Selección de un hueco disponible](img/g2-disponibilidad.png)
+
+> *Figura G.2. Disponibilidad en tiempo real: los huecos se calculan como el horario de apertura menos las reservas ya ocupadas (Cap. 5 §5.2).*
+
+![Elección del método de pago](img/g3-eleccion-pago.png)
+
+> *Figura G.3. Elección del método de cobro cuando el negocio admite ambos: pago en línea con tarjeta o pago en el centro (Cap. 5 §5.5).*
+
+![Panel del negocio con la columna de estado de pago](img/g4-panel-reservas.png)
+
+> *Figura G.4. Panel del negocio: listado de reservas con su estado y la columna «Pago» (pagado online / en el centro), coherente con el resto de superficies (Cap. 5 §5.5).*
+
+![Correo de confirmación con el indicador de pago](img/g5-email-confirmacion.png)
+
+> *Figura G.5. Correo de confirmación (Resend), bilingüe según el locale del negocio (Cap. 5 §5.8) e incluyendo el estado de pago de la reserva (§5.5).*
+
+![Portal de autoservicio del cliente](img/g6-portal-cliente.png)
+
+> *Figura G.6. Portal del cliente (`/my`): próximas citas e historial, estado de pago y cancelación en autoservicio (Cap. 5 §5.9).*
+
+![Panel de operador de la plataforma](img/g7-panel-operador.png)
+
+> *Figura G.7. Panel de operador (`/superadmin`): métricas por negocio cliente y activación/desactivación, tras el guard de lista blanca (Cap. 5 §5.10).*
+
 ---
 
 [◀ Bibliografía](08-bibliografia.md) · [🏠 Índice](README.md)
