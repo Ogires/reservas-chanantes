@@ -148,7 +148,6 @@ La seguridad a nivel de fila está **habilitada en las cinco tablas**. La siguie
 | 12 | `20260713_add_tenant_active.sql` | Columna `active` en `tenants` + *trigger* que la hace inmutable para el dueño (soporte del panel de operador) |
 | 13 | `20260713_fix_rls_recursion.sql` | Corrige la recursión mutua entre las RLS de `customers` y `bookings` con una función `SECURITY DEFINER` |
 | 14 | `20260714_harden_active_trigger.sql` | Endurece el *trigger* de `active` ante `auth.role()` nulo (*fail-closed*) |
-| 11 | `20260710_tighten_rls_pii.sql` | Endurece la RLS de `customers` y `bookings`: retira la lectura/inserción públicas que exponían la PII y acota el acceso a propietario y titular; los flujos anónimos de confianza se reenrutan al cliente de *service-role* (OWASP A01/A02) |
 
 > Obsérvese que **ninguna migración añade una columna `plan`**: el modelo de planes (FREE/PRO) está diseñado en el dominio pero no persistido, por lo que todo negocio resuelve a `FREE` (véase [Capítulo 5 §5.5](05-implementacion.md)).
 
@@ -238,9 +237,9 @@ Complementa el [Capítulo 6](06-pruebas-calidad.md) detallando la **naturaleza d
 
 | Tipo | Naturaleza | Casos | ¿En cobertura? | Objetivo recomendado |
 |------|-----------|:-----:|:--------------:|:--------------------:|
-| **Unitarias de dominio** (objetos de valor y servicios puros) | Aisladas, deterministas, sin E/S | 126 (45 %) | Sí | ~100 % líneas / ~95 % ramas |
-| **De casos de uso** (aplicación, con *test doubles* en memoria) | "Sociables": verifican la orquestación con dobles, no la implementación | 57 (20 %) | Sí | ~90 % líneas / ~85 % ramas |
-| **De adaptador** (infraestructura, con *mocks* de los SDK) | Verifican el *mapeo* (p. ej. `23P01 → SlotTakenError`, cálculo de comisión), no la dependencia real | 90 (32 %) | Sí | ~90 % líneas / ~80 % ramas |
+| **Unitarias de dominio** (objetos de valor y servicios puros) | Aisladas, deterministas, sin E/S | 131 (40 %) | Sí | ~100 % líneas / ~95 % ramas |
+| **De casos de uso** (aplicación, con *test doubles* en memoria) | "Sociables": verifican la orquestación con dobles, no la implementación | 81 (25 %) | Sí | ~90 % líneas / ~85 % ramas |
+| **De adaptador** (infraestructura, con *mocks* de los SDK) | Verifican el *mapeo* (p. ej. `23P01 → SlotTakenError`, cálculo de comisión), no la dependencia real | 107 (33 %) | Sí | ~90 % líneas / ~80 % ramas |
 | **De componente** (Testing Library + happy-dom) | Validan lo que el usuario ve mediante roles y etiquetas accesibles (incluye interacción con `user-event`) | 6 (2 %) | No (valida presentación) | render e interacción |
 | **Integración real** (contra PostgreSQL efímero) | Ejercitaría la restricción `EXCLUDE` y las políticas RLS de extremo a extremo | 0 | — | flujos críticos (línea futura) |
 | **E2E** (Playwright, cross-browser) | Recorrido completo del usuario contra el despliegue en Chromium, Firefox y WebKit | 6 (automatizadas) | No (valida presentación) | flujo reservar → confirmar |
