@@ -77,9 +77,12 @@ export async function POST(request: NextRequest) {
         : email_data.token_hash
     const type = authOtpType(action)
     const next = email_data.redirect_to || `${APP_URL}/admin/dashboard`
-    const url = `${APP_URL}/api/auth/confirm?token_hash=${encodeURIComponent(
+    // Enlaza a la PÁGINA de confirmación (con botón), no a la API: así un
+    // escáner de correo que pre-visite el enlace no consume el token de un solo
+    // uso. La verificación ocurre en el POST que dispara el botón.
+    const url = `${APP_URL}/auth/confirm?token_hash=${encodeURIComponent(
       tokenHash
-    )}&type=${type}&next=${encodeURIComponent(next)}`
+    )}&type=${type}&next=${encodeURIComponent(next)}&lang=${locale}`
     opts = { url }
   }
 
