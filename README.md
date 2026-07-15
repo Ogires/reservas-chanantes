@@ -55,6 +55,7 @@ La aplicación está **desplegada y accesible** en <https://reservas-chanantes.v
 - Configuración del negocio: **zona horaria**, política de antelación y perfil público.
 - **Conexión de una cuenta de cobro** (Stripe Connect) para recibir pagos.
 - **Método de cobro flexible**: pago en línea (Stripe), **pago presencial en el centro**, o ambos a la vez (no excluyentes).
+- **Indicador de estado de pago** en cada reserva —pagado en línea, pago pendiente o pago en el centro—, coherente en el panel, el portal del cliente y los correos.
 
 **Para el cliente final (página pública `/[slug]` y portal `/my`)**
 - Consulta de **disponibilidad en tiempo real** (horario menos reservas ocupadas).
