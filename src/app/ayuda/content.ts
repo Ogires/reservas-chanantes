@@ -225,15 +225,15 @@ export const AYUDA_STEPS: AyudaStep[] = [
     number: 5,
     screenshot: {
       src: '/img/ayuda/5-cobros.png',
-      alt: 'Sección de Ajustes para conectar la cuenta de Stripe',
-      width: 1297,
-      height: 166,
+      alt: 'Sección de Ajustes: conectar la cuenta de Stripe y activar el pago en el centro',
+      width: 2072,
+      height: 658,
     },
     screenshotEn: {
       src: '/img/ayuda/5-cobros-en.png',
-      alt: 'Settings section to connect the Stripe account',
-      width: 1297,
-      height: 166,
+      alt: 'Settings section: connect the Stripe account and enable pay on site',
+      width: 2072,
+      height: 658,
     },
     es: {
       title: 'Configura los cobros',
