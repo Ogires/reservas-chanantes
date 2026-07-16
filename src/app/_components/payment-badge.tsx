@@ -6,7 +6,8 @@ const COLORS: Record<PaymentPresentationKey, string> = {
   ON_SITE: 'bg-sky-100 text-sky-800',
 }
 
-/** Etiquetas por defecto (páginas ya en inglés: portal `/my` y página de éxito). */
+/** Etiquetas por defecto (inglés). El panel, el portal `/my` y la página de éxito
+ *  inyectan sus etiquetas localizadas; este mapa es solo el fallback. */
 export const PAYMENT_LABELS_EN: Record<PaymentPresentationKey, string> = {
   PAID_ONLINE: 'Paid online',
   PENDING_ONLINE: 'Payment pending',

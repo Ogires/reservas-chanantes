@@ -34,11 +34,12 @@ export async function getAvailability(
     const result = await useCase.execute({ tenantSlug, date })
     return { slots: result.slots }
   } catch (e) {
-    if (e instanceof DomainError) {
-      return { slots: [], error: e.message }
+    // Las server actions devuelven una CLAVE de error; el cliente la traduce
+    // con su diccionario (public-translations) según la locale del negocio.
+    if (!(e instanceof DomainError)) {
+      console.error('[getAvailability] unexpected error:', e)
     }
-    console.error('[getAvailability] unexpected error:', e)
-    return { slots: [], error: 'No se ha podido cargar la disponibilidad' }
+    return { slots: [], error: 'errAvailability' }
   }
 }
 
@@ -61,10 +62,7 @@ export async function createBooking(input: {
   const ip =
     (await headers()).get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
   if (!bookingLimiter.check(`booking:${ip}`)) {
-    return {
-      success: false,
-      error: 'Demasiadas peticiones. Inténtalo de nuevo en un minuto.',
-    }
+    return { success: false, error: 'errRateLimit' }
   }
 
   try {
@@ -92,16 +90,13 @@ export async function createBooking(input: {
     // chequeo de Stripe para devolver el mensaje correcto (no "pago no
     // configurado"). El caso de uso vuelve a comprobarlo (defensa en profundidad).
     if (tenant?.active === false) {
-      return {
-        success: false,
-        error: 'This business is not currently available for booking',
-      }
+      return { success: false, error: 'errTenantInactive' }
     }
     if (
       method === PaymentMethod.ONLINE &&
       (!tenant?.stripeAccountId || !tenant.stripeAccountEnabled)
     ) {
-      return { success: false, error: 'Payment not configured for this business' }
+      return { success: false, error: 'errPaymentNotConfigured' }
     }
 
     const useCase = new CreateBookingUseCase(
@@ -137,7 +132,7 @@ export async function createBooking(input: {
     // Flujo online: negocio y Stripe ya validados arriba (el servicio lo
     // garantiza el caso de uso). El guard satisface el estrechamiento de tipos.
     if (!service || !tenant?.stripeAccountId) {
-      return { success: false, error: 'Payment not configured for this business' }
+      return { success: false, error: 'errPaymentNotConfigured' }
     }
 
     const hdrs = await headers()
@@ -165,19 +160,13 @@ export async function createBooking(input: {
     return { success: true, checkoutUrl: checkout.checkoutUrl }
   } catch (e) {
     if (e instanceof SlotTakenError) {
-      return {
-        success: false,
-        error: 'Ese hueco se acaba de ocupar. Elige otro.',
-        slotTaken: true,
-      }
+      return { success: false, error: 'errSlotTaken', slotTaken: true }
     }
-    if (e instanceof DomainError) {
-      return { success: false, error: e.message }
+    // Los mensajes específicos de dominio (validación, política de antelación…)
+    // se mapean a un genérico localizado; su localización fina es línea futura.
+    if (!(e instanceof DomainError)) {
+      console.error('[createBooking] unexpected error:', e)
     }
-    console.error('[createBooking] unexpected error:', e)
-    return {
-      success: false,
-      error: 'No se ha podido crear la reserva',
-    }
+    return { success: false, error: 'errBookingFailed' }
   }
 }

@@ -7,6 +7,7 @@ interface CancelLabels {
   cancel: string
   cancelling: string
   cancelled: string
+  error: string
 }
 
 export function CancelBookingButton({
@@ -26,7 +27,7 @@ export function CancelBookingButton({
     <form action={formAction}>
       <input type="hidden" name="bookingId" value={bookingId} />
       {state?.error && (
-        <span className="text-xs text-rose-500 mr-2">{state.error}</span>
+        <span className="text-xs text-rose-500 mr-2">{labels.error}</span>
       )}
       <button
         type="submit"

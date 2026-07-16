@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { getAvailability, createBooking } from './actions'
 import type { SlotDTO } from '@/application/use-cases/get-availability'
 import type { Locale } from '@/domain/types'
-import type { PublicTranslations } from '@/infrastructure/i18n/public-translations'
+import { publicError, type PublicTranslations } from '@/infrastructure/i18n/public-translations'
 
 interface SlotPickerProps {
   slug: string
@@ -69,7 +69,7 @@ export function SlotPicker({
       const result = await getAvailability(slug, date)
       if (ignore) return
       if (result.error) {
-        setError(result.error)
+        setError(publicError(t, result.error))
       } else {
         setSlots(result.slots)
       }
@@ -79,7 +79,7 @@ export function SlotPicker({
     return () => {
       ignore = true
     }
-  }, [slug, date])
+  }, [slug, date, t])
 
   if (loading) {
     return <p className="text-slate-500">{t.loadingSlots}</p>
@@ -178,7 +178,7 @@ export function SlotPicker({
       setSubmitting(false)
       return
     }
-    setError(result.error || t.bookingFailed)
+    setError(publicError(t, result.error))
     setSubmitting(false)
   }
 
