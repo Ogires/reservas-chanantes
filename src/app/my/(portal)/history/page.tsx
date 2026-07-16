@@ -8,24 +8,25 @@ import { GetCustomerBookingsUseCase } from '@/application/use-cases/get-customer
 import { BookingStatus } from '@/domain/types'
 import { paymentPresentation } from '@/domain/services/payment-presentation'
 import { PaymentBadge } from '@/app/_components/payment-badge'
+import {
+  getPortalTranslations,
+  resolvePortalLocale,
+} from '@/infrastructure/i18n/portal-translations'
 
-const statusBadge: Record<string, { label: string; className: string }> = {
-  [BookingStatus.CONFIRMED]: {
-    label: 'Confirmed',
-    className: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  },
-  [BookingStatus.PENDING]: {
-    label: 'Pending',
-    className: 'bg-amber-50 text-amber-700 border-amber-200',
-  },
-  [BookingStatus.CANCELLED]: {
-    label: 'Cancelled',
-    className: 'bg-slate-100 text-slate-500 border-slate-200',
-  },
+const statusStyles: Record<string, string> = {
+  [BookingStatus.CONFIRMED]: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  [BookingStatus.PENDING]: 'bg-amber-50 text-amber-700 border-amber-200',
+  [BookingStatus.CANCELLED]: 'bg-slate-100 text-slate-500 border-slate-200',
 }
 
 export default async function HistoryPage() {
   const { customer, supabase } = await requireCustomer()
+  const t = getPortalTranslations(resolvePortalLocale(customer.preferredLocale))
+  const statusLabels: Record<string, string> = {
+    [BookingStatus.CONFIRMED]: t.statusConfirmed,
+    [BookingStatus.PENDING]: t.statusPending,
+    [BookingStatus.CANCELLED]: t.statusCancelled,
+  }
 
   const useCase = new GetCustomerBookingsUseCase(
     new SupabaseCustomerRepository(supabase),
@@ -49,11 +50,11 @@ export default async function HistoryPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-lg font-semibold font-serif text-slate-900">Booking history</h2>
+      <h2 className="text-lg font-semibold font-serif text-slate-900">{t.bookingHistory}</h2>
 
       {allBookings.length === 0 && (
         <div className="rounded-xl border border-[var(--color-warm-border)] bg-white p-8 text-center">
-          <p className="text-slate-500">No bookings yet</p>
+          <p className="text-slate-500">{t.noBookings}</p>
         </div>
       )}
 
@@ -64,13 +65,14 @@ export default async function HistoryPage() {
           </div>
           <ul className="divide-y divide-slate-100">
             {items.map(({ booking, service, tenant }) => {
-              const badge = statusBadge[booking.status] ?? statusBadge[BookingStatus.PENDING]
+              const badgeClass = statusStyles[booking.status] ?? statusStyles[BookingStatus.PENDING]
+              const badgeLabel = statusLabels[booking.status] ?? statusLabels[BookingStatus.PENDING]
               const isPast = booking.date < new Date().toISOString().split('T')[0]
               return (
                 <li key={booking.id} className="flex items-center justify-between px-5 py-4">
                   <div>
                     <p className={`font-medium ${booking.status === BookingStatus.CANCELLED ? 'text-slate-400 line-through' : 'text-slate-900'}`}>
-                      {service?.name ?? 'Unknown service'}
+                      {service?.name ?? t.unknownService}
                     </p>
                     <p className="text-sm text-slate-500">
                       {booking.date} &middot; {booking.timeRange.toHHMM().start} – {booking.timeRange.toHHMM().end}
@@ -81,15 +83,15 @@ export default async function HistoryPage() {
                       const payKey = paymentPresentation(booking)
                       return payKey ? <PaymentBadge paymentKey={payKey} /> : null
                     })()}
-                    <span className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${badge.className}`}>
-                      {badge.label}
+                    <span className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${badgeClass}`}>
+                      {badgeLabel}
                     </span>
                     {isPast && tenant && service && booking.status !== BookingStatus.CANCELLED && (
                       <Link
                         href={`/${tenant.slug}?service=${service.id}`}
                         className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-50 transition-colors"
                       >
-                        Book again
+                        {t.bookAgain}
                       </Link>
                     )}
                   </div>

@@ -3,16 +3,23 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createSupabaseBrowser } from '@/infrastructure/supabase/client'
+import type { PortalTranslations } from '@/infrastructure/i18n/portal-translations'
 
-const navItems = [
-  { href: '/my', label: 'Upcoming', exact: true },
-  { href: '/my/history', label: 'History', exact: false },
-  { href: '/my/profile', label: 'Profile', exact: false },
-]
-
-export function PortalNav({ customerName }: { customerName: string }) {
+export function PortalNav({
+  customerName,
+  t,
+}: {
+  customerName: string
+  t: PortalTranslations
+}) {
   const pathname = usePathname()
   const router = useRouter()
+
+  const navItems = [
+    { href: '/my', label: t.upcoming, exact: true },
+    { href: '/my/history', label: t.history, exact: false },
+    { href: '/my/profile', label: t.profile, exact: false },
+  ]
 
   function isActive(item: { href: string; exact: boolean }) {
     return item.exact ? pathname === item.href : pathname.startsWith(item.href)
@@ -27,7 +34,7 @@ export function PortalNav({ customerName }: { customerName: string }) {
   return (
     <header className="flex items-center justify-between">
       <div>
-        <h1 className="text-xl font-bold font-serif text-slate-900">My Bookings</h1>
+        <h1 className="text-xl font-bold font-serif text-slate-900">{t.myBookings}</h1>
         <p className="text-sm text-slate-500">{customerName}</p>
       </div>
 
@@ -52,7 +59,7 @@ export function PortalNav({ customerName }: { customerName: string }) {
           onClick={handleLogout}
           className="ml-2 rounded-lg px-3 py-1.5 text-sm text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors"
         >
-          Sign out
+          {t.signOut}
         </button>
       </div>
     </header>

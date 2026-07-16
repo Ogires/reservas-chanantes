@@ -8,10 +8,15 @@ import { SupabaseCustomerRepository } from '@/infrastructure/supabase/customer-r
 import { BookingStatus } from '@/domain/types'
 import { paymentPresentation } from '@/domain/services/payment-presentation'
 import { PaymentBadge } from '@/app/_components/payment-badge'
+import {
+  getPortalTranslations,
+  resolvePortalLocale,
+} from '@/infrastructure/i18n/portal-translations'
 import { CancelBookingButton } from './cancel-booking-button'
 
 export default async function MyDashboardPage() {
   const { customer, supabase } = await requireCustomer()
+  const t = getPortalTranslations(resolvePortalLocale(customer.preferredLocale))
 
   const useCase = new GetCustomerBookingsUseCase(
     new SupabaseCustomerRepository(supabase),
@@ -42,11 +47,11 @@ export default async function MyDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-lg font-semibold font-serif text-slate-900">Upcoming bookings</h2>
+      <h2 className="text-lg font-semibold font-serif text-slate-900">{t.upcomingBookings}</h2>
 
       {upcoming.length === 0 && (
         <div className="rounded-xl border border-[var(--color-warm-border)] bg-white p-8 text-center">
-          <p className="text-slate-500">No upcoming bookings</p>
+          <p className="text-slate-500">{t.noUpcoming}</p>
         </div>
       )}
 
@@ -60,7 +65,7 @@ export default async function MyDashboardPage() {
               <li key={booking.id} className="flex items-center justify-between px-5 py-4">
                 <div>
                   <p className="font-medium text-slate-900">
-                    {service?.name ?? 'Unknown service'}
+                    {service?.name ?? t.unknownService}
                   </p>
                   <p className="text-sm text-slate-500">
                     {booking.date} &middot; {booking.timeRange.toHHMM().start} – {booking.timeRange.toHHMM().end}
@@ -71,13 +76,16 @@ export default async function MyDashboardPage() {
                     const payKey = paymentPresentation(booking)
                     return payKey ? <PaymentBadge paymentKey={payKey} /> : null
                   })()}
-                  <CancelBookingButton bookingId={booking.id} />
+                  <CancelBookingButton
+                    bookingId={booking.id}
+                    labels={{ cancel: t.cancel, cancelling: t.cancelling, cancelled: t.cancelled }}
+                  />
                   {tenant && service && (
                     <Link
                       href={`/${tenant.slug}?service=${service.id}`}
                       className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-50 transition-colors"
                     >
-                      Book again
+                      {t.bookAgain}
                     </Link>
                   )}
                 </div>
