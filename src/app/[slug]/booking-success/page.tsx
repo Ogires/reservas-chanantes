@@ -8,6 +8,7 @@ import { SupabaseTenantRepository } from '@/infrastructure/supabase/tenant-repos
 import { SupabaseServiceRepository } from '@/infrastructure/supabase/service-repository'
 import { SupabaseBookingRepository } from '@/infrastructure/supabase/booking-repository'
 import { PaymentBadge } from '@/app/_components/payment-badge'
+import { getPublicTranslations } from '@/infrastructure/i18n/public-translations'
 
 export const metadata: Metadata = {
   robots: { index: false },
@@ -56,6 +57,13 @@ export default async function BookingSuccessPage({
 
   const timeStart = `${String(Math.floor(booking.timeRange.start / 60)).padStart(2, '0')}:${String(booking.timeRange.start % 60).padStart(2, '0')}`
 
+  const t = getPublicTranslations(tenant.defaultLocale)
+  const [yy, mm, dd] = booking.date.split('-').map(Number)
+  const readableDate = new Date(yy, mm - 1, dd).toLocaleDateString(
+    tenant.defaultLocale,
+    { month: 'short', day: 'numeric', year: 'numeric' }
+  )
+
   return (
     <div className="min-h-screen bg-warm-bg">
       <div className="mx-auto max-w-2xl px-4 py-12">
@@ -76,13 +84,13 @@ export default async function BookingSuccessPage({
             </svg>
           </div>
           <h1 className="font-serif text-2xl font-bold text-emerald-800 mb-2">
-            Booking confirmed!
+            {t.bookingConfirmed}
           </h1>
           <p className="text-emerald-700 mb-1">
-            {service?.name ?? 'Service'} on {booking.date} at {timeStart}
+            {service?.name ?? t.stepService} {t.on} {readableDate} {t.at} {timeStart}
           </p>
           <p className="text-sm text-emerald-600">
-            Confirmation sent to {session.customer_email}
+            {t.confirmationSentTo.replace('{email}', session.customer_email ?? '')}
           </p>
 
           {/* Estado de pago estático: llegar a esta URL (redirect de Stripe)
@@ -96,13 +104,13 @@ export default async function BookingSuccessPage({
               href={`/${slug}`}
               className="inline-block rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 transition-colors"
             >
-              Book another appointment
+              {t.bookAnother}
             </Link>
             <Link
               href="/my"
               className="text-sm font-medium text-emerald-700 underline hover:text-emerald-900 transition-colors"
             >
-              Manage your bookings
+              {t.manageBookings}
             </Link>
           </div>
         </div>

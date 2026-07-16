@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import type { Locale } from '@/domain/types'
+import type { PublicTranslations } from '@/infrastructure/i18n/public-translations'
 import { SlotPicker } from './slot-picker'
 
 interface ServiceInfo {
@@ -17,20 +19,21 @@ interface BookingWidgetProps {
   maxDate: string
   canPayOnline: boolean
   canPayOnSite: boolean
+  t: PublicTranslations
+  locale: Locale
 }
 
-const STEP_LABELS = ['Service', 'Date', 'Time'] as const
-
-function ProgressBar({ current }: { current: number }) {
+function ProgressBar({ current, t }: { current: number; t: PublicTranslations }) {
+  const stepLabels = [t.stepService, t.stepDate, t.stepTime]
   return (
-    <nav aria-label="Booking progress" className="mb-8 flex items-center justify-center">
-      {STEP_LABELS.map((label, i) => (
+    <nav aria-label={t.progressLabel} className="mb-8 flex items-center justify-center">
+      {stepLabels.map((label, i) => (
         <div key={i} className="flex items-center">
           {/* Step circle */}
           <div className="flex flex-col items-center">
             <div
               role="img"
-              aria-label={`Step ${i + 1}: ${label} — ${i < current ? 'completed' : i === current ? 'current' : 'upcoming'}`}
+              aria-label={`${t.step} ${i + 1}: ${label} — ${i < current ? t.statusCompleted : i === current ? t.statusCurrent : t.statusUpcoming}`}
               className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium transition-all duration-500 ${
                 i < current
                   ? 'bg-teal-600 text-white'
@@ -54,7 +57,7 @@ function ProgressBar({ current }: { current: number }) {
             </span>
           </div>
           {/* Connector bar */}
-          {i < STEP_LABELS.length - 1 && (
+          {i < stepLabels.length - 1 && (
             <div className="mx-2 mb-5 h-0.5 w-12 sm:w-16 overflow-hidden rounded-full bg-stone-200">
               <div
                 className="h-full bg-teal-600 transition-all duration-500"
@@ -68,16 +71,16 @@ function ProgressBar({ current }: { current: number }) {
   )
 }
 
-function formatReadableDate(dateStr: string): string {
+function formatReadableDate(dateStr: string, locale: Locale): string {
   const [y, m, d] = dateStr.split('-').map(Number)
-  return new Date(y, m - 1, d).toLocaleDateString(undefined, {
+  return new Date(y, m - 1, d).toLocaleDateString(locale, {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
   })
 }
 
-export function BookingWidget({ slug, services, minDate, maxDate, canPayOnline, canPayOnSite }: BookingWidgetProps) {
+export function BookingWidget({ slug, services, minDate, maxDate, canPayOnline, canPayOnSite, t, locale }: BookingWidgetProps) {
   const [selectedService, setSelectedService] = useState<ServiceInfo | null>(
     null
   )
@@ -89,8 +92,8 @@ export function BookingWidget({ slug, services, minDate, maxDate, canPayOnline, 
   if (!selectedService) {
     return (
       <div className="rounded-2xl border border-warm-border bg-white p-6 shadow-lg">
-        <ProgressBar current={0} />
-        <h2 className="font-serif text-xl font-semibold text-slate-900 mb-4">Choose a service</h2>
+        <ProgressBar current={0} t={t} />
+        <h2 className="font-serif text-xl font-semibold text-slate-900 mb-4">{t.chooseService}</h2>
         <div className="grid gap-3 sm:grid-cols-2">
           {services.map((service) => (
             <button
@@ -112,21 +115,21 @@ export function BookingWidget({ slug, services, minDate, maxDate, canPayOnline, 
   if (!selectedDate) {
     return (
       <div className="rounded-2xl border border-warm-border bg-white p-6 shadow-lg">
-        <ProgressBar current={1} />
+        <ProgressBar current={1} t={t} />
         <button
           onClick={() => setSelectedService(null)}
-          aria-label="Go back to service selection"
+          aria-label={t.backToService}
           className="text-sm text-slate-500 hover:text-slate-900 transition-colors mb-4"
         >
-          <span aria-hidden="true">&larr;</span> Change service
+          <span aria-hidden="true">&larr;</span> {t.changeService}
         </button>
-        <h2 className="font-serif text-xl font-semibold text-slate-900 mb-1">Choose a date</h2>
+        <h2 className="font-serif text-xl font-semibold text-slate-900 mb-1">{t.chooseDate}</h2>
         <p className="text-sm text-slate-500 mb-4">
           {selectedService.name} &middot; {selectedService.durationMinutes} min
         </p>
         <div>
           <label htmlFor="booking-date" className="block text-sm font-medium text-slate-700 mb-1.5">
-            Select a date
+            {t.selectDate}
           </label>
           <input
             id="booking-date"
@@ -143,7 +146,9 @@ export function BookingWidget({ slug, services, minDate, maxDate, canPayOnline, 
             className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
           />
           <p className="text-xs text-slate-400 mt-1.5">
-            Available from {formatReadableDate(minDate)} to {formatReadableDate(maxDate)}
+            {t.availableFromTo
+              .replace('{from}', formatReadableDate(minDate, locale))
+              .replace('{to}', formatReadableDate(maxDate, locale))}
           </p>
         </div>
       </div>
@@ -152,17 +157,17 @@ export function BookingWidget({ slug, services, minDate, maxDate, canPayOnline, 
 
   return (
     <div className="rounded-2xl border border-warm-border bg-white p-6 shadow-lg">
-      <ProgressBar current={2} />
+      <ProgressBar current={2} t={t} />
       <button
         onClick={() => setSelectedDate('')}
-        aria-label="Go back to date selection"
+        aria-label={t.backToDate}
         className="text-sm text-slate-500 hover:text-slate-900 transition-colors mb-4"
       >
-        <span aria-hidden="true">&larr;</span> Change date
+        <span aria-hidden="true">&larr;</span> {t.changeDate}
       </button>
-      <h2 className="font-serif text-xl font-semibold text-slate-900 mb-1">Pick a time</h2>
+      <h2 className="font-serif text-xl font-semibold text-slate-900 mb-1">{t.pickTime}</h2>
       <p className="text-sm text-slate-500 mb-4">
-        {selectedService.name} &middot; {formatReadableDate(selectedDate)}
+        {selectedService.name} &middot; {formatReadableDate(selectedDate, locale)}
       </p>
       <SlotPicker
         slug={slug}
@@ -178,6 +183,8 @@ export function BookingWidget({ slug, services, minDate, maxDate, canPayOnline, 
         onCustomerPhoneChange={setCustomerPhone}
         canPayOnline={canPayOnline}
         canPayOnSite={canPayOnSite}
+        t={t}
+        locale={locale}
       />
     </div>
   )

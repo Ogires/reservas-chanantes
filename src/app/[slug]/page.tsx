@@ -8,6 +8,7 @@ import {
   getTenantLocalDate,
   addDaysToLocalDate,
 } from '@/domain/services/tenant-clock'
+import { getPublicTranslations } from '@/infrastructure/i18n/public-translations'
 import { BookingWidget } from './booking-widget'
 
 const getTenant = cache(async (slug: string) => {
@@ -28,10 +29,10 @@ export async function generateMetadata({
     return { title: 'Not found' }
   }
 
-  const title = tenant.seoTitle || `Reserva cita en ${tenant.name}`
+  const tm = getPublicTranslations(tenant.defaultLocale)
+  const title = tenant.seoTitle || tm.metaTitle.replace('{name}', tenant.name)
   const description =
-    tenant.seoDescription ||
-    `Reserva tu cita online en ${tenant.name}. Elige servicio, dia y hora disponible. Confirmacion inmediata.`
+    tenant.seoDescription || tm.metaDescription.replace('{name}', tenant.name)
 
   return {
     title,
@@ -54,6 +55,7 @@ export default async function TenantPage({
 
   if (!tenant) notFound()
 
+  const t = getPublicTranslations(tenant.defaultLocale)
   const { timezone, maxAdvanceDays } = tenant.bookingPolicy
   const today = getTenantLocalDate(timezone)
   const maxDate = addDaysToLocalDate(today, maxAdvanceDays)
@@ -118,7 +120,7 @@ export default async function TenantPage({
           {tenant.description ? (
             <p className="mt-2 max-w-lg mx-auto text-slate-600">{tenant.description}</p>
           ) : (
-            <p className="mt-2 text-slate-500">Book your appointment online</p>
+            <p className="mt-2 text-slate-500">{t.bookOnline}</p>
           )}
           {(tenant.city || tenant.phone) && (
             <div className="mt-3 flex items-center justify-center gap-4 text-sm text-slate-500">
@@ -146,9 +148,7 @@ export default async function TenantPage({
         {!canBook ? (
           <div className="rounded-xl border border-warm-border bg-white p-8 text-center shadow-sm">
             <p className="text-slate-500">
-              {activeServices.length === 0
-                ? 'No services available at the moment. Please check back later.'
-                : 'Online booking is not available right now. Please contact the business directly.'}
+              {activeServices.length === 0 ? t.noServices : t.bookingUnavailable}
             </p>
           </div>
         ) : (
@@ -159,6 +159,8 @@ export default async function TenantPage({
             maxDate={maxDate}
             canPayOnline={canPayOnline}
             canPayOnSite={canPayOnSite}
+            t={t}
+            locale={tenant.defaultLocale}
           />
         )}
       </div>
