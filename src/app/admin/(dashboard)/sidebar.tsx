@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import type { Tenant } from '@/domain/entities/tenant'
 import type { AdminTranslations } from '@/infrastructure/i18n/admin-translations'
@@ -93,63 +94,128 @@ export function Sidebar({
     return !setupStatus[badgeKey]
   }
 
-  return (
-    <aside className="flex h-screen w-56 flex-col bg-slate-900 p-4">
-      <div className="mb-6">
-        <h2 className="font-serif text-lg font-bold text-white truncate">{tenant.name}</h2>
-        <p className="text-xs text-slate-400">/{tenant.slug}</p>
-      </div>
+  const [open, setOpen] = useState(false)
 
-      <nav className="flex flex-1 flex-col gap-1">
-        {navItems.map((item) => {
-          const isActive = pathname.startsWith(item.href)
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
-                isActive
-                  ? 'bg-teal-500/10 text-teal-400 font-medium'
-                  : 'text-slate-400 hover:bg-slate-800 hover:text-white'
-              }`}
-            >
-              {item.icon}
-              {item.label}
-              {showBadge(item.badgeKey) && (
-                <span className="ml-auto h-2 w-2 rounded-full bg-amber-400" />
-              )}
-            </Link>
-          )
-        })}
-        <Link
-          href={`/${tenant.slug}`}
-          target="_blank"
-          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
-        >
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-          </svg>
-          {nav.viewPublicPage}
-        </Link>
+  const brand = (
+    <div className="mb-6">
+      <h2 className="font-serif text-lg font-bold text-white truncate">{tenant.name}</h2>
+      <p className="text-xs text-slate-400">/{tenant.slug}</p>
+    </div>
+  )
 
-        {showSuperadmin && (
+  // `onNavigate` cierra el drawer al pulsar un enlace en móvil (no-op en escritorio).
+  const navLinks = (onNavigate?: () => void) => (
+    <nav className="flex flex-1 flex-col gap-1">
+      {navItems.map((item) => {
+        const isActive = pathname.startsWith(item.href)
+        return (
           <Link
-            href="/superadmin"
-            className={`mt-2 flex items-center gap-3 rounded-lg border-t border-slate-800 px-3 py-2 pt-4 text-sm transition-colors ${
-              pathname.startsWith('/superadmin')
-                ? 'text-teal-400 font-medium'
+            key={item.href}
+            href={item.href}
+            onClick={onNavigate}
+            className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
+              isActive
+                ? 'bg-teal-500/10 text-teal-400 font-medium'
                 : 'text-slate-400 hover:bg-slate-800 hover:text-white'
             }`}
           >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
-            </svg>
-            {nav.superadmin}
+            {item.icon}
+            {item.label}
+            {showBadge(item.badgeKey) && (
+              <span className="ml-auto h-2 w-2 rounded-full bg-amber-400" />
+            )}
           </Link>
-        )}
-      </nav>
+        )
+      })}
+      <Link
+        href={`/${tenant.slug}`}
+        target="_blank"
+        onClick={onNavigate}
+        className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+      >
+        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+        </svg>
+        {nav.viewPublicPage}
+      </Link>
 
-      <LogoutButton label={auth.signOut} />
-    </aside>
+      {showSuperadmin && (
+        <Link
+          href="/superadmin"
+          onClick={onNavigate}
+          className={`mt-2 flex items-center gap-3 rounded-lg border-t border-slate-800 px-3 py-2 pt-4 text-sm transition-colors ${
+            pathname.startsWith('/superadmin')
+              ? 'text-teal-400 font-medium'
+              : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+          }`}
+        >
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
+          </svg>
+          {nav.superadmin}
+        </Link>
+      )}
+    </nav>
+  )
+
+  const hamburgerIcon = (
+    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+    </svg>
+  )
+
+  return (
+    <>
+      {/* Barra superior en móvil: marca + botón de menú */}
+      <div className="flex items-center gap-3 bg-slate-900 px-4 py-3 md:hidden">
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label={nav.menu}
+          className="rounded-lg p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+        >
+          {hamburgerIcon}
+        </button>
+        <span className="font-serif text-lg font-bold text-white truncate">{tenant.name}</span>
+      </div>
+
+      {/* Sidebar fijo en escritorio */}
+      <aside className="hidden h-screen w-56 flex-col bg-slate-900 p-4 md:flex">
+        {brand}
+        {navLinks()}
+        <LogoutButton label={auth.signOut} />
+      </aside>
+
+      {/* Fondo oscuro del drawer en móvil */}
+      {open && (
+        <button
+          type="button"
+          aria-label={nav.closeMenu}
+          onClick={() => setOpen(false)}
+          className="fixed inset-0 z-40 bg-black/50 md:hidden"
+        />
+      )}
+
+      {/* Drawer deslizante en móvil */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-slate-900 p-4 transition-transform duration-200 md:hidden ${
+          open ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <button
+          type="button"
+          onClick={() => setOpen(false)}
+          aria-label={nav.closeMenu}
+          className="mb-2 self-end rounded-lg p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+        >
+          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+          </svg>
+        </button>
+        {brand}
+        {navLinks(() => setOpen(false))}
+        <LogoutButton label={auth.signOut} />
+      </aside>
+    </>
   )
 }

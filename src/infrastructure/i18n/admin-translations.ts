@@ -61,6 +61,8 @@ export interface AdminTranslations {
     settings: string
     viewPublicPage: string
     superadmin: string
+    menu: string
+    closeMenu: string
   }
   dashboard: {
     title: string
@@ -225,6 +227,8 @@ const es: AdminTranslations = {
     settings: 'Ajustes',
     viewPublicPage: 'Ver pagina publica',
     superadmin: 'Plataforma',
+    menu: 'Menu',
+    closeMenu: 'Cerrar menu',
   },
   dashboard: {
     title: 'Panel',
@@ -389,6 +393,8 @@ const en: AdminTranslations = {
     settings: 'Settings',
     viewPublicPage: 'View public page',
     superadmin: 'Platform',
+    menu: 'Menu',
+    closeMenu: 'Close menu',
   },
   dashboard: {
     title: 'Dashboard',
