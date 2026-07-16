@@ -26,7 +26,7 @@ export function ProfileForm({ name, email, phone, preferredLocale, isSetup, t }:
 
       {state?.error && (
         <div className="rounded-lg bg-rose-50 border border-rose-200 p-3 text-sm text-rose-600">
-          {state.error}
+          {t.errUpdate}
         </div>
       )}
 

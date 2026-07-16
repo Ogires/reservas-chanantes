@@ -40,6 +40,25 @@ export interface PortalTranslations {
   paymentPaid: string
   paymentPending: string
   paymentOnsite: string
+  errCancel: string
+  errUpdate: string
+  // Pantalla de acceso /my/login
+  yourPortal: string
+  signInToPortal: string
+  or: string
+  password: string
+  signIn: string
+  signingIn: string
+  createAccount: string
+  creatingAccount: string
+  haveAccountSignIn: string
+  noAccountRegister: string
+  checkEmail: string
+  sentConfirmationTo: string
+  openToActivate: string
+  invalidCredentials: string
+  registrationFailed: string
+  continueWithGoogle: string
 }
 
 const es: PortalTranslations = {
@@ -73,6 +92,24 @@ const es: PortalTranslations = {
   paymentPaid: 'Pagado online',
   paymentPending: 'Pago pendiente',
   paymentOnsite: 'En el centro',
+  errCancel: 'No se pudo cancelar la reserva. Inténtalo de nuevo.',
+  errUpdate: 'No se pudo actualizar el perfil. Inténtalo de nuevo.',
+  yourPortal: 'Tu portal de reservas',
+  signInToPortal: 'Accede a tu portal',
+  or: 'o',
+  password: 'Contraseña',
+  signIn: 'Iniciar sesión',
+  signingIn: 'Iniciando sesión...',
+  createAccount: 'Crear cuenta',
+  creatingAccount: 'Creando cuenta...',
+  haveAccountSignIn: '¿Ya tienes cuenta? Inicia sesión',
+  noAccountRegister: '¿No tienes cuenta? Regístrate',
+  checkEmail: 'Revisa tu correo',
+  sentConfirmationTo: 'Hemos enviado un enlace de confirmación a',
+  openToActivate: 'Ábrelo para activar tu cuenta.',
+  invalidCredentials: 'Credenciales inválidas.',
+  registrationFailed: 'No se ha podido completar el registro.',
+  continueWithGoogle: 'Continuar con Google',
 }
 
 const en: PortalTranslations = {
@@ -106,6 +143,24 @@ const en: PortalTranslations = {
   paymentPaid: 'Paid online',
   paymentPending: 'Payment pending',
   paymentOnsite: 'At the venue',
+  errCancel: 'Could not cancel the booking. Please try again.',
+  errUpdate: 'Could not update your profile. Please try again.',
+  yourPortal: 'Your booking portal',
+  signInToPortal: 'Sign in to your portal',
+  or: 'or',
+  password: 'Password',
+  signIn: 'Sign in',
+  signingIn: 'Signing in...',
+  createAccount: 'Create account',
+  creatingAccount: 'Creating account...',
+  haveAccountSignIn: 'Already have an account? Sign in',
+  noAccountRegister: "Don't have an account? Register",
+  checkEmail: 'Check your email',
+  sentConfirmationTo: "We've sent a confirmation link to",
+  openToActivate: 'Open it to activate your account.',
+  invalidCredentials: 'Invalid credentials.',
+  registrationFailed: 'Could not complete registration.',
+  continueWithGoogle: 'Continue with Google',
 }
 
 const translations: Record<Locale, PortalTranslations> = {

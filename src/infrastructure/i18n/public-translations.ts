@@ -67,6 +67,19 @@ export interface PublicTranslations {
   paymentPaid: string
   paymentPending: string
   paymentOnsite: string
+  // Mensajes de error (las server actions devuelven la CLAVE; el cliente traduce).
+  errAvailability: string
+  errRateLimit: string
+  errTenantInactive: string
+  errPaymentNotConfigured: string
+  errSlotTaken: string
+  errBookingFailed: string
+}
+
+/** Traduce un código de error devuelto por una server action (fallback genérico). */
+export function publicError(t: PublicTranslations, code?: string): string {
+  if (!code) return t.errBookingFailed
+  return (t as unknown as Record<string, string>)[code] ?? t.errBookingFailed
 }
 
 const es: PublicTranslations = {
@@ -122,6 +135,12 @@ const es: PublicTranslations = {
   paymentPaid: 'Pagado online',
   paymentPending: 'Pago pendiente',
   paymentOnsite: 'En el centro',
+  errAvailability: 'No se ha podido cargar la disponibilidad.',
+  errRateLimit: 'Demasiadas peticiones. Inténtalo de nuevo en un minuto.',
+  errTenantInactive: 'Este negocio no admite reservas ahora mismo.',
+  errPaymentNotConfigured: 'Este negocio aún no tiene el cobro configurado.',
+  errSlotTaken: 'Ese hueco se acaba de ocupar. Elige otro.',
+  errBookingFailed: 'No se ha podido crear la reserva.',
 }
 
 const en: PublicTranslations = {
@@ -177,6 +196,12 @@ const en: PublicTranslations = {
   paymentPaid: 'Paid online',
   paymentPending: 'Payment pending',
   paymentOnsite: 'At the venue',
+  errAvailability: 'Could not load availability.',
+  errRateLimit: 'Too many requests. Please try again in a minute.',
+  errTenantInactive: 'This business is not accepting bookings right now.',
+  errPaymentNotConfigured: 'This business has not set up payments yet.',
+  errSlotTaken: 'That slot was just taken. Please choose another.',
+  errBookingFailed: 'Could not create the booking.',
 }
 
 const translations: Record<Locale, PublicTranslations> = {

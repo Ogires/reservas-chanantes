@@ -2,8 +2,9 @@
 
 import { useActionState, useState } from 'react'
 import { customerLogin, customerRegister } from './actions'
+import type { PortalTranslations } from '@/infrastructure/i18n/portal-translations'
 
-export function CustomerLoginForm() {
+export function CustomerLoginForm({ t }: { t: PortalTranslations }) {
   const [isRegister, setIsRegister] = useState(false)
   const [loginState, loginAction, isLoggingIn] = useActionState(customerLogin, null)
   const [registerState, registerAction, isRegistering] = useActionState(customerRegister, null)
@@ -15,12 +16,12 @@ export function CustomerLoginForm() {
   if (isRegister && registerState && 'needsConfirmation' in registerState) {
     return (
       <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-4 text-sm text-emerald-800 space-y-1">
-        <p className="font-semibold">Check your email</p>
+        <p className="font-semibold">{t.checkEmail}</p>
         <p>
-          We&apos;ve sent a confirmation link to{' '}
+          {t.sentConfirmationTo}{' '}
           <strong>{registerState.email}</strong>.
         </p>
-        <p className="text-emerald-700">Open it to activate your account.</p>
+        <p className="text-emerald-700">{t.openToActivate}</p>
       </div>
     )
   }
@@ -29,14 +30,14 @@ export function CustomerLoginForm() {
     <div className="space-y-4">
       {state && 'error' in state && state.error && (
         <div className="rounded-lg bg-rose-50 border border-rose-200 p-3 text-sm text-rose-600">
-          {state.error}
+          {isRegister ? t.registrationFailed : t.invalidCredentials}
         </div>
       )}
 
       <form action={action} className="space-y-4">
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1.5">
-            Email
+            {t.email}
           </label>
           <input
             id="email"
@@ -49,7 +50,7 @@ export function CustomerLoginForm() {
 
         <div>
           <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1.5">
-            Password
+            {t.password}
           </label>
           <input
             id="password"
@@ -67,8 +68,8 @@ export function CustomerLoginForm() {
           className="w-full rounded-lg bg-teal-600 px-4 py-2.5 font-medium text-white shadow-sm hover:bg-teal-700 disabled:opacity-50 transition-colors"
         >
           {isPending
-            ? (isRegister ? 'Creating account...' : 'Signing in...')
-            : (isRegister ? 'Create account' : 'Sign in')
+            ? (isRegister ? t.creatingAccount : t.signingIn)
+            : (isRegister ? t.createAccount : t.signIn)
           }
         </button>
       </form>
@@ -78,10 +79,7 @@ export function CustomerLoginForm() {
         onClick={() => setIsRegister(!isRegister)}
         className="text-sm text-slate-500 hover:text-slate-900 transition-colors"
       >
-        {isRegister
-          ? 'Already have an account? Sign in'
-          : "Don't have an account? Register"
-        }
+        {isRegister ? t.haveAccountSignIn : t.noAccountRegister}
       </button>
     </div>
   )

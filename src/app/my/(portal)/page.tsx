@@ -84,7 +84,7 @@ export default async function MyDashboardPage() {
                   })()}
                   <CancelBookingButton
                     bookingId={booking.id}
-                    labels={{ cancel: t.cancel, cancelling: t.cancelling, cancelled: t.cancelled }}
+                    labels={{ cancel: t.cancel, cancelling: t.cancelling, cancelled: t.cancelled, error: t.errCancel }}
                   />
                   {tenant && service && (
                     <Link
