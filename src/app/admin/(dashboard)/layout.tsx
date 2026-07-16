@@ -37,14 +37,14 @@ export default async function DashboardLayout({
   const t = getAdminTranslations(tenant.defaultLocale)
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen flex-col md:flex-row">
       <Sidebar
         tenant={tenant}
         setupStatus={setupStatus}
         showSuperadmin={showSuperadmin}
         translations={{ nav: t.nav, auth: { signOut: t.auth.signOut } }}
       />
-      <main className="flex-1 overflow-y-auto bg-warm-bg p-8">{children}</main>
+      <main className="flex-1 overflow-y-auto bg-warm-bg p-4 sm:p-6 md:p-8">{children}</main>
     </div>
   )
 }
