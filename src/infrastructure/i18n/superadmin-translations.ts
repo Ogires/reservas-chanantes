@@ -9,6 +9,7 @@ import type { Locale } from '@/domain/types'
 export interface SuperadminTranslations {
   title: string
   subtitle: string
+  backToAdmin: string
   totals: {
     activeBusinesses: string
     ofTotal: (total: number) => string
@@ -60,6 +61,7 @@ export interface SuperadminTranslations {
 const es: SuperadminTranslations = {
   title: 'Panel de plataforma',
   subtitle: 'Gestion de negocios-cliente: metricas, estado y activacion.',
+  backToAdmin: '← Volver a mi panel',
   totals: {
     activeBusinesses: 'Negocios activos',
     ofTotal: (total) => `de ${total} en total`,
@@ -111,6 +113,7 @@ const es: SuperadminTranslations = {
 const en: SuperadminTranslations = {
   title: 'Platform dashboard',
   subtitle: 'Client business management: metrics, status and activation.',
+  backToAdmin: '← Back to my panel',
   totals: {
     activeBusinesses: 'Active businesses',
     ofTotal: (total) => `of ${total} total`,
