@@ -2,6 +2,7 @@
 
 import { useActionState } from 'react'
 import { updateProfile } from './actions'
+import type { PortalTranslations } from '@/infrastructure/i18n/portal-translations'
 
 interface ProfileFormProps {
   name: string
@@ -9,16 +10,17 @@ interface ProfileFormProps {
   phone: string
   preferredLocale?: string
   isSetup?: boolean
+  t: PortalTranslations
 }
 
-export function ProfileForm({ name, email, phone, preferredLocale, isSetup }: ProfileFormProps) {
+export function ProfileForm({ name, email, phone, preferredLocale, isSetup, t }: ProfileFormProps) {
   const [state, formAction, isPending] = useActionState(updateProfile, null)
 
   return (
     <form action={formAction} className="space-y-5">
       {isSetup && (
         <div className="rounded-lg bg-teal-50 border border-teal-200 p-3 text-sm text-teal-700">
-          Complete your profile to get started.
+          {t.completeProfile}
         </div>
       )}
 
@@ -30,13 +32,13 @@ export function ProfileForm({ name, email, phone, preferredLocale, isSetup }: Pr
 
       {state?.success && (
         <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-3 text-sm text-emerald-600">
-          Profile updated successfully.
+          {t.profileUpdated}
         </div>
       )}
 
       <div>
         <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1.5">
-          Email
+          {t.email}
         </label>
         <input
           id="email"
@@ -49,7 +51,7 @@ export function ProfileForm({ name, email, phone, preferredLocale, isSetup }: Pr
 
       <div>
         <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1.5">
-          Name
+          {t.name}
         </label>
         <input
           id="name"
@@ -63,7 +65,7 @@ export function ProfileForm({ name, email, phone, preferredLocale, isSetup }: Pr
 
       <div>
         <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-1.5">
-          Phone
+          {t.phone}
         </label>
         <input
           id="phone"
@@ -77,7 +79,7 @@ export function ProfileForm({ name, email, phone, preferredLocale, isSetup }: Pr
 
       <div>
         <label htmlFor="preferredLocale" className="block text-sm font-medium text-slate-700 mb-1.5">
-          Preferred language
+          {t.preferredLanguage}
         </label>
         <select
           id="preferredLocale"
@@ -85,7 +87,7 @@ export function ProfileForm({ name, email, phone, preferredLocale, isSetup }: Pr
           defaultValue={preferredLocale ?? ''}
           className="w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
         >
-          <option value="">Use business default</option>
+          <option value="">{t.useBusinessDefault}</option>
           <option value="es-ES">Español</option>
           <option value="en-US">English</option>
         </select>
@@ -96,7 +98,7 @@ export function ProfileForm({ name, email, phone, preferredLocale, isSetup }: Pr
         disabled={isPending}
         className="w-full rounded-lg bg-teal-600 px-4 py-2.5 font-medium text-white shadow-sm hover:bg-teal-700 disabled:opacity-50 transition-colors"
       >
-        {isPending ? 'Saving...' : 'Save profile'}
+        {isPending ? t.saving : t.saveProfile}
       </button>
     </form>
   )
