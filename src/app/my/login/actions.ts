@@ -28,7 +28,7 @@ export async function customerLogin(
 
   if (error) {
     console.error('[my/login] auth error:', error.message)
-    return { error: 'Credenciales inválidas' }
+    return { error: 'Invalid credentials' }
   }
 
   redirect('/my')
@@ -52,7 +52,7 @@ export async function customerRegister(
 
   if (error) {
     console.error('[my/register] auth error:', error.message)
-    return { error: 'No se ha podido completar el registro' }
+    return { error: 'Could not complete registration' }
   }
 
   // Con la confirmación de email activada, signUp no devuelve sesión.

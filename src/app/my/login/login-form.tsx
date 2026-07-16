@@ -15,12 +15,12 @@ export function CustomerLoginForm() {
   if (isRegister && registerState && 'needsConfirmation' in registerState) {
     return (
       <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-4 text-sm text-emerald-800 space-y-1">
-        <p className="font-semibold">Revisa tu correo</p>
+        <p className="font-semibold">Check your email</p>
         <p>
-          Hemos enviado un enlace de confirmación a{' '}
+          We&apos;ve sent a confirmation link to{' '}
           <strong>{registerState.email}</strong>.
         </p>
-        <p className="text-emerald-700">Ábrelo para activar tu cuenta.</p>
+        <p className="text-emerald-700">Open it to activate your account.</p>
       </div>
     )
   }

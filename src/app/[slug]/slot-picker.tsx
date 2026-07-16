@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { getAvailability, createBooking } from './actions'
 import type { SlotDTO } from '@/application/use-cases/get-availability'
@@ -182,12 +183,20 @@ export function SlotPicker({
           {serviceName} on {date} at {selectedSlot}
         </p>
         <p className="text-sm text-emerald-600">You will pay at the venue when you arrive.</p>
-        <a
-          href={`/${slug}`}
-          className="mt-5 inline-block rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 transition-colors"
-        >
-          Book another appointment
-        </a>
+        <div className="mt-5 flex flex-col items-center gap-3">
+          <Link
+            href={`/${slug}`}
+            className="inline-block rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 transition-colors"
+          >
+            Book another appointment
+          </Link>
+          <Link
+            href="/my"
+            className="text-sm font-medium text-emerald-700 underline hover:text-emerald-900 transition-colors"
+          >
+            Manage your bookings
+          </Link>
+        </div>
       </div>
     )
   }

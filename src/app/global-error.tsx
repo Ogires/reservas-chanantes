@@ -41,6 +41,14 @@ export default function GlobalError({
         >
           Recargar
         </button>
+        <p style={{ marginTop: '1.25rem' }}>
+          {/* global-error se renderiza fuera del árbol con Router; una navegación
+              completa (no <Link>) es deseable para resetear del todo la app. */}
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+          <a href="/" style={{ color: '#0d9488', textDecoration: 'underline' }}>
+            Ir al inicio
+          </a>
+        </p>
       </body>
     </html>
   )

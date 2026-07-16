@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { CustomerLoginForm } from './login-form'
 import { CustomerGoogleSignInButton } from './google-sign-in-button'
 
@@ -6,7 +7,7 @@ export default function CustomerLoginPage() {
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-sm space-y-6">
         <div className="text-center">
-          <p className="text-lg font-bold font-serif text-slate-900">Reservas Chanantes</p>
+          <Link href="/" className="text-lg font-bold font-serif text-slate-900 hover:text-teal-700 transition-colors">Reservas Chanantes</Link>
           <p className="text-sm text-slate-500 mt-1">Your booking portal</p>
         </div>
         <div className="rounded-2xl border border-[var(--color-warm-border)] bg-white p-8 shadow-lg">

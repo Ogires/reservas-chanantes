@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import type { Locale } from '@/domain/types'
 
 // Página intermedia de confirmación de email. Existe para NO ejecutar el
@@ -16,6 +17,7 @@ interface Strings {
   intro: string
   cta: Record<string, string>
   invalid: string
+  backHome: string
 }
 
 const STRINGS: Record<Locale, Strings> = {
@@ -32,6 +34,7 @@ const STRINGS: Record<Locale, Strings> = {
     },
     invalid:
       'Este enlace no es válido o está incompleto. Solicita uno nuevo desde la página de acceso.',
+    backHome: 'Volver al inicio',
   },
   'en-US': {
     heading: 'One last step',
@@ -46,6 +49,7 @@ const STRINGS: Record<Locale, Strings> = {
     },
     invalid:
       'This link is invalid or incomplete. Request a new one from the sign-in page.',
+    backHome: 'Back to home',
   },
 }
 
@@ -76,7 +80,7 @@ export default async function ConfirmPage({
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#FDFBF9] to-[#F5F0EB] px-4">
       <div className="w-full max-w-sm space-y-6">
         <div className="text-center">
-          <p className="text-lg font-bold font-serif text-slate-900">Reservas Chanantes</p>
+          <Link href="/" className="text-lg font-bold font-serif text-slate-900 hover:text-teal-700 transition-colors">Reservas Chanantes</Link>
         </div>
         <div className="rounded-2xl border border-warm-border bg-white p-8 shadow-lg text-center">
           <h1 className="text-2xl font-bold text-slate-900 mb-3">{s.heading}</h1>
@@ -97,7 +101,12 @@ export default async function ConfirmPage({
               </form>
             </>
           ) : (
-            <p className="text-slate-600">{s.invalid}</p>
+            <>
+              <p className="text-slate-600 mb-4">{s.invalid}</p>
+              <Link href="/" className="text-teal-600 hover:text-teal-700 font-medium transition-colors">
+                {s.backHome}
+              </Link>
+            </>
           )}
         </div>
       </div>

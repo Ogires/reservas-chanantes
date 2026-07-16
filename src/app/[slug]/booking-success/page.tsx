@@ -91,12 +91,20 @@ export default async function BookingSuccessPage({
             <PaymentBadge paymentKey="PAID_ONLINE" />
           </div>
 
-          <Link
-            href={`/${slug}`}
-            className="mt-6 inline-block rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 transition-colors"
-          >
-            Book another appointment
-          </Link>
+          <div className="mt-6 flex flex-col items-center gap-3">
+            <Link
+              href={`/${slug}`}
+              className="inline-block rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 transition-colors"
+            >
+              Book another appointment
+            </Link>
+            <Link
+              href="/my"
+              className="text-sm font-medium text-emerald-700 underline hover:text-emerald-900 transition-colors"
+            >
+              Manage your bookings
+            </Link>
+          </div>
         </div>
       </div>
     </div>

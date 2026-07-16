@@ -48,6 +48,12 @@ export default async function SuperadminPage({
     <div className="min-h-screen bg-warm-bg p-6 sm:p-8">
       <div className="mx-auto max-w-7xl">
         <header className="mb-6">
+          <Link
+            href="/admin/dashboard"
+            className="mb-2 inline-block text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors"
+          >
+            {t.backToAdmin}
+          </Link>
           <h1 className="font-serif text-2xl font-bold text-slate-900">
             {t.title}
           </h1>
