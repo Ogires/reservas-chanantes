@@ -64,6 +64,9 @@ export interface PublicTranslations {
   on: string // conector: "{service} {on} {date} {at} {time}"
   at: string
   confirmationSentTo: string // "Confirmation sent to {email}"
+  paymentPaid: string
+  paymentPending: string
+  paymentOnsite: string
 }
 
 const es: PublicTranslations = {
@@ -116,6 +119,9 @@ const es: PublicTranslations = {
   on: 'el',
   at: 'a las',
   confirmationSentTo: 'Confirmación enviada a {email}',
+  paymentPaid: 'Pagado online',
+  paymentPending: 'Pago pendiente',
+  paymentOnsite: 'En el centro',
 }
 
 const en: PublicTranslations = {
@@ -168,6 +174,9 @@ const en: PublicTranslations = {
   on: 'on',
   at: 'at',
   confirmationSentTo: 'Confirmation sent to {email}',
+  paymentPaid: 'Paid online',
+  paymentPending: 'Payment pending',
+  paymentOnsite: 'At the venue',
 }
 
 const translations: Record<Locale, PublicTranslations> = {

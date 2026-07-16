@@ -37,6 +37,9 @@ export interface PortalTranslations {
   useBusinessDefault: string
   saving: string
   saveProfile: string
+  paymentPaid: string
+  paymentPending: string
+  paymentOnsite: string
 }
 
 const es: PortalTranslations = {
@@ -67,6 +70,9 @@ const es: PortalTranslations = {
   useBusinessDefault: 'Usar el idioma del negocio',
   saving: 'Guardando...',
   saveProfile: 'Guardar perfil',
+  paymentPaid: 'Pagado online',
+  paymentPending: 'Pago pendiente',
+  paymentOnsite: 'En el centro',
 }
 
 const en: PortalTranslations = {
@@ -97,6 +103,9 @@ const en: PortalTranslations = {
   useBusinessDefault: 'Use business default',
   saving: 'Saving...',
   saveProfile: 'Save profile',
+  paymentPaid: 'Paid online',
+  paymentPending: 'Payment pending',
+  paymentOnsite: 'At the venue',
 }
 
 const translations: Record<Locale, PortalTranslations> = {

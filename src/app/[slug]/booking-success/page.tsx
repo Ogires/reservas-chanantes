@@ -96,7 +96,14 @@ export default async function BookingSuccessPage({
           {/* Estado de pago estático: llegar a esta URL (redirect de Stripe)
               implica que el cobro online se completó, sin depender del webhook. */}
           <div className="mt-3">
-            <PaymentBadge paymentKey="PAID_ONLINE" />
+            <PaymentBadge
+              paymentKey="PAID_ONLINE"
+              labels={{
+                PAID_ONLINE: t.paymentPaid,
+                PENDING_ONLINE: t.paymentPending,
+                ON_SITE: t.paymentOnsite,
+              }}
+            />
           </div>
 
           <div className="mt-6 flex flex-col items-center gap-3">
