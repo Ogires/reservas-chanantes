@@ -29,6 +29,12 @@ export default async function MyDashboardPage() {
     authUserId: customer.authUserId!,
   })
 
+  const paymentLabels = {
+    PAID_ONLINE: t.paymentPaid,
+    PENDING_ONLINE: t.paymentPending,
+    ON_SITE: t.paymentOnsite,
+  }
+
   const today = new Date().toISOString().split('T')[0]
   const upcoming = allBookings.filter(
     (b) =>
@@ -74,7 +80,7 @@ export default async function MyDashboardPage() {
                 <div className="flex items-center gap-2">
                   {(() => {
                     const payKey = paymentPresentation(booking)
-                    return payKey ? <PaymentBadge paymentKey={payKey} /> : null
+                    return payKey ? <PaymentBadge paymentKey={payKey} labels={paymentLabels} /> : null
                   })()}
                   <CancelBookingButton
                     bookingId={booking.id}

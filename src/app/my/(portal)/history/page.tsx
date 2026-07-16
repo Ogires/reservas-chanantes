@@ -27,6 +27,11 @@ export default async function HistoryPage() {
     [BookingStatus.PENDING]: t.statusPending,
     [BookingStatus.CANCELLED]: t.statusCancelled,
   }
+  const paymentLabels = {
+    PAID_ONLINE: t.paymentPaid,
+    PENDING_ONLINE: t.paymentPending,
+    ON_SITE: t.paymentOnsite,
+  }
 
   const useCase = new GetCustomerBookingsUseCase(
     new SupabaseCustomerRepository(supabase),
@@ -81,7 +86,7 @@ export default async function HistoryPage() {
                   <div className="flex items-center gap-2">
                     {(() => {
                       const payKey = paymentPresentation(booking)
-                      return payKey ? <PaymentBadge paymentKey={payKey} /> : null
+                      return payKey ? <PaymentBadge paymentKey={payKey} labels={paymentLabels} /> : null
                     })()}
                     <span className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${badgeClass}`}>
                       {badgeLabel}
