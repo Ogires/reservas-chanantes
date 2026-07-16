@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { getAvailability, createBooking } from './actions'
 import type { SlotDTO } from '@/application/use-cases/get-availability'
+import type { Locale } from '@/domain/types'
+import type { PublicTranslations } from '@/infrastructure/i18n/public-translations'
 
 interface SlotPickerProps {
   slug: string
@@ -19,6 +21,8 @@ interface SlotPickerProps {
   onCustomerPhoneChange: (value: string) => void
   canPayOnline: boolean
   canPayOnSite: boolean
+  t: PublicTranslations
+  locale: Locale
 }
 
 export function SlotPicker({
@@ -35,7 +39,17 @@ export function SlotPicker({
   onCustomerPhoneChange,
   canPayOnline,
   canPayOnSite,
+  t,
+  locale,
 }: SlotPickerProps) {
+  const readableDate = (() => {
+    const [y, m, d] = date.split('-').map(Number)
+    return new Date(y, m - 1, d).toLocaleDateString(locale, {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    })
+  })()
   const [slots, setSlots] = useState<SlotDTO[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null)
@@ -68,7 +82,7 @@ export function SlotPicker({
   }, [slug, date])
 
   if (loading) {
-    return <p className="text-slate-500">Loading available slots...</p>
+    return <p className="text-slate-500">{t.loadingSlots}</p>
   }
 
   if (error) {
@@ -84,14 +98,12 @@ export function SlotPicker({
   if (availableSlots.length === 0) {
     return (
       <div>
-        <p className="text-slate-500 mb-4">
-          No available slots on this date. Please choose another date.
-        </p>
+        <p className="text-slate-500 mb-4">{t.noSlots}</p>
         <button
           onClick={onBack}
           className="text-sm text-slate-500 hover:text-slate-900 transition-colors"
         >
-          &larr; Choose another date
+          &larr; {t.chooseAnotherDate}
         </button>
       </div>
     )
@@ -134,8 +146,8 @@ export function SlotPicker({
 
     return (
       <div className="space-y-4">
-        {renderGroup('Morning', morningSlots)}
-        {renderGroup('Afternoon', afternoonSlots)}
+        {renderGroup(t.morning, morningSlots)}
+        {renderGroup(t.afternoon, afternoonSlots)}
       </div>
     )
   }
@@ -166,7 +178,7 @@ export function SlotPicker({
       setSubmitting(false)
       return
     }
-    setError(result.error || 'Booking failed')
+    setError(result.error || t.bookingFailed)
     setSubmitting(false)
   }
 
@@ -178,23 +190,23 @@ export function SlotPicker({
             <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
           </svg>
         </div>
-        <h3 className="font-serif text-xl font-bold text-emerald-800 mb-1">Booking confirmed!</h3>
+        <h3 className="font-serif text-xl font-bold text-emerald-800 mb-1">{t.bookingConfirmed}</h3>
         <p className="text-sm text-emerald-700 mb-1">
-          {serviceName} on {date} at {selectedSlot}
+          {serviceName} {t.on} {readableDate} {t.at} {selectedSlot}
         </p>
-        <p className="text-sm text-emerald-600">You will pay at the venue when you arrive.</p>
+        <p className="text-sm text-emerald-600">{t.payAtVenueNote}</p>
         <div className="mt-5 flex flex-col items-center gap-3">
           <Link
             href={`/${slug}`}
             className="inline-block rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 transition-colors"
           >
-            Book another appointment
+            {t.bookAnother}
           </Link>
           <Link
             href="/my"
             className="text-sm font-medium text-emerald-700 underline hover:text-emerald-900 transition-colors"
           >
-            Manage your bookings
+            {t.manageBookings}
           </Link>
         </div>
       </div>
@@ -206,12 +218,12 @@ export function SlotPicker({
   return (
     <div>
       <p className="text-sm text-slate-500 mb-4">
-        Selected time: <strong className="text-slate-900">{selectedSlot}</strong>{' '}
+        {t.selectedTime} <strong className="text-slate-900">{selectedSlot}</strong>{' '}
         <button
           onClick={() => setSelectedSlot(null)}
           className="text-teal-600 hover:text-teal-700 transition-colors"
         >
-          change
+          {t.change}
         </button>
       </p>
 
@@ -224,7 +236,7 @@ export function SlotPicker({
 
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1.5">
-            Your name
+            {t.yourName}
           </label>
           <input
             id="name"
@@ -238,7 +250,7 @@ export function SlotPicker({
 
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1.5">
-            Your email
+            {t.yourEmail}
           </label>
           <input
             id="email"
@@ -253,7 +265,7 @@ export function SlotPicker({
 
         <div>
           <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-1.5">
-            Your phone
+            {t.yourPhone}
           </label>
           <input
             id="phone"
@@ -270,7 +282,7 @@ export function SlotPicker({
         {showPayChoice && (
           <fieldset className="space-y-2">
             <legend className="block text-sm font-medium text-slate-700 mb-1.5">
-              How would you like to pay?
+              {t.howToPay}
             </legend>
             <label className={`flex items-center gap-3 rounded-lg border-2 px-3 py-2.5 cursor-pointer transition-colors ${
               payMethod === 'online' ? 'border-teal-500 bg-teal-50' : 'border-warm-border hover:border-teal-300'
@@ -282,7 +294,7 @@ export function SlotPicker({
                 onChange={() => setPayMethod('online')}
                 className="h-4 w-4 text-teal-600 focus:ring-teal-500"
               />
-              <span className="text-sm text-slate-700">Pay now (online)</span>
+              <span className="text-sm text-slate-700">{t.payOnline}</span>
             </label>
             <label className={`flex items-center gap-3 rounded-lg border-2 px-3 py-2.5 cursor-pointer transition-colors ${
               payMethod === 'onsite' ? 'border-teal-500 bg-teal-50' : 'border-warm-border hover:border-teal-300'
@@ -294,7 +306,7 @@ export function SlotPicker({
                 onChange={() => setPayMethod('onsite')}
                 className="h-4 w-4 text-teal-600 focus:ring-teal-500"
               />
-              <span className="text-sm text-slate-700">Pay at the venue</span>
+              <span className="text-sm text-slate-700">{t.payOnSite}</span>
             </label>
           </fieldset>
         )}
@@ -306,11 +318,11 @@ export function SlotPicker({
         >
           {payMethod === 'onsite'
             ? submitting
-              ? 'Confirming...'
-              : 'Confirm booking'
+              ? t.confirming
+              : t.confirmBooking
             : submitting
-              ? 'Redirecting...'
-              : 'Proceed to payment'}
+              ? t.redirecting
+              : t.proceedToPayment}
         </button>
       </form>
     </div>
