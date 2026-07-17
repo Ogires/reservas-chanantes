@@ -1,3 +1,4 @@
+import { getSiteUrl } from '@/infrastructure/config/site-url'
 import { cache } from 'react'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
@@ -83,7 +84,7 @@ export default async function TenantPage({
     activeServices.length > 0 &&
     (canPayOnline || canPayOnSite)
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://reservas-chanantes.vercel.app'
+  const baseUrl = getSiteUrl()
 
   const jsonLd = {
     '@context': 'https://schema.org',

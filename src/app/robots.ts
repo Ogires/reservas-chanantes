@@ -1,7 +1,8 @@
+import { getSiteUrl } from '@/infrastructure/config/site-url'
 import type { MetadataRoute } from 'next'
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://reservas-chanantes.vercel.app'
+  const baseUrl = getSiteUrl()
 
   return {
     rules: [
