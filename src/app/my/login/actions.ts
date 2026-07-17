@@ -1,11 +1,12 @@
 'use server'
 
+import { getSiteUrl } from '@/infrastructure/config/site-url'
 import { redirect } from 'next/navigation'
 import { createSupabaseServer } from '@/infrastructure/supabase/server'
 import { detectLocaleFromHeaders } from '@/infrastructure/i18n/detect-locale'
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || 'https://reservas-chanantes.vercel.app'
+  getSiteUrl()
 
 export type CustomerAuthState =
   | { error: string }

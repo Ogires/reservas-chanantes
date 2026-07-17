@@ -1,3 +1,4 @@
+import { getSiteUrl } from '@/infrastructure/config/site-url'
 import type { Metadata } from "next";
 import { DM_Serif_Display, DM_Sans } from "next/font/google";
 import "./globals.css";
@@ -13,7 +14,7 @@ const dmSans = DM_Sans({
   subsets: ["latin"],
 });
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://reservas-chanantes.vercel.app'
+const baseUrl = getSiteUrl()
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),

@@ -1,5 +1,6 @@
 'use server'
 
+import { getSiteUrl } from '@/infrastructure/config/site-url'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createSupabaseServer } from '@/infrastructure/supabase/server'
@@ -10,7 +11,7 @@ import { WeakPasswordError } from '@/domain/errors/domain-errors'
 import { authLimiter } from '@/infrastructure/security/rate-limiter'
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || 'https://reservas-chanantes.vercel.app'
+  getSiteUrl()
 
 export type RegisterState =
   | { error: string }

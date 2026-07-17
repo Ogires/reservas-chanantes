@@ -1,10 +1,11 @@
+import { getSiteUrl } from '@/infrastructure/config/site-url'
 import type { MetadataRoute } from 'next'
 import { createServerClient } from '@supabase/ssr'
 
 export const revalidate = 3600
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://reservas-chanantes.vercel.app'
+  const baseUrl = getSiteUrl()
 
   const base: MetadataRoute.Sitemap = [
     {
