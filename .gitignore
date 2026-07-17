@@ -27,10 +27,14 @@
 # production
 /build
 
-# docs — la memoria académica y la presentación SÍ se versionan; el resto de docs queda local
+# docs — se versionan la memoria, la presentación y los artefactos del proceso
+# (planes y revisiones): estos últimos son la EVIDENCIA de la metodología asistida
+# por IA que la memoria cita (trazabilidad del proceso). El resto queda local.
 /docs/*
 !/docs/memoria/
 !/docs/presentacion/
+!/docs/plans/
+!/docs/reviews/
 
 # misc
 .DS_Store
