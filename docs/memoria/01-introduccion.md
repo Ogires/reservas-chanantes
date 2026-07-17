@@ -74,11 +74,11 @@ Se identifican los siguientes objetivos específicos, todos ellos verificables s
 
 ## 1.4. Alcance
 
-El alcance del Trabajo de Fin de Máster comprende el **producto mínimo viable funcional** del sistema: registro y autenticación de negocios, gestión de servicios y horarios, página pública de reservas con cálculo de disponibilidad, flujo de pago con Stripe, portal del cliente final y sistema de notificaciones por correo. Quedan **explícitamente fuera del alcance** de la presente entrega, y se abordan como líneas futuras (Capítulo 7), el endurecimiento de determinadas políticas de seguridad y las pruebas de integración contra una base de datos real, según se detalla en el análisis de brechas del proyecto.
+El alcance del Trabajo de Fin de Máster comprende el **producto mínimo viable funcional** del sistema: registro y autenticación de negocios, gestión de servicios y horarios, página pública de reservas con cálculo de disponibilidad, flujo de pago con Stripe, portal del cliente final y sistema de notificaciones por correo. Quedan **explícitamente fuera del alcance** de la presente entrega, y se abordan como líneas futuras (Capítulo 8), el endurecimiento de determinadas políticas de seguridad y las pruebas de integración contra una base de datos real, según se detalla en el análisis de brechas del proyecto.
 
 ## 1.5. Estructura del documento
 
-La memoria se organiza en siete capítulos. Tras esta **introducción** (Capítulo 1), el **Capítulo 2** justifica la pila tecnológica frente a sus alternativas. El **Capítulo 3** formaliza los requisitos y casos de uso. El **Capítulo 4** detalla el diseño y la arquitectura del sistema. El **Capítulo 5** profundiza en los aspectos más relevantes de la implementación. El **Capítulo 6** describe la estrategia de pruebas y control de calidad. Finalmente, el **Capítulo 7** valora el grado de cumplimiento de los objetivos y propone líneas de evolución futura.
+La memoria se organiza en ocho capítulos. Tras esta **introducción** (Capítulo 1), el **Capítulo 2** justifica la pila tecnológica frente a sus alternativas. El **Capítulo 3** formaliza los requisitos y casos de uso. El **Capítulo 4** detalla el diseño y la arquitectura del sistema. El **Capítulo 5** profundiza en los aspectos más relevantes de la implementación. El **Capítulo 6** describe la estrategia de pruebas y control de calidad. El **Capítulo 7** analiza el **proceso de desarrollo asistido por IA** —la contribución metodológica del trabajo—. Finalmente, el **Capítulo 8** valora el grado de cumplimiento de los objetivos y propone líneas de evolución futura.
 
 ---
 

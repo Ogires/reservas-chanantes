@@ -1,6 +1,6 @@
 # Bibliografía
 
-Las referencias se presentan en formato **IEEE**. Las citas numéricas entre corchetes que aparecen en el cuerpo de la memoria (`[n]`) remiten a la sección de **referencias académicas**. La **documentación técnica consultada** recoge las fuentes primarias de las tecnologías y normas empleadas, citadas a lo largo de los capítulos 2 a 7.
+Las referencias se presentan en formato **IEEE**. Las citas numéricas entre corchetes (`[n]`) que aparecen en el cuerpo de la memoria remiten a las **referencias académicas**. La **documentación técnica y normas consultadas** recoge las fuentes primarias de las tecnologías empleadas, consultadas durante el diseño y la implementación (y referenciadas de forma puntual en el texto).
 
 ## Referencias académicas
 
@@ -17,6 +17,12 @@ Las referencias se presentan en formato **IEEE**. Las citas numéricas entre cor
 [6] R. Krebs, C. Momm y S. Kounev, "Architectural Concerns in Multi-Tenant SaaS Applications," en *Proc. 2nd Int. Conf. on Cloud Computing and Services Science (CLOSER 2012)*, SciTePress, 2012, pp. 426–431.
 
 [7] React Team, "Server Components," *React Documentation*. [En línea]. Disponible: https://react.dev/reference/rsc/server-components
+
+[18] M. Chen *et al.*, "Evaluating Large Language Models Trained on Code," *arXiv:2107.03374*, 2021. [En línea]. Disponible: https://arxiv.org/abs/2107.03374
+
+[19] S. Peng, E. Kalliamvakou, P. Cihon y M. Demirer, "The Impact of AI on Developer Productivity: Evidence from GitHub Copilot," *arXiv:2302.06590*, 2023. [En línea]. Disponible: https://arxiv.org/abs/2302.06590
+
+[20] H. Pearce, B. Ahmad, B. Tan, B. Dolan-Gavitt y R. Karri, "Asleep at the Keyboard? Assessing the Security of GitHub Copilot's Code Contributions," en *Proc. 2022 IEEE Symp. on Security and Privacy (SP)*, 2022, pp. 754–768.
 
 ## Documentación técnica y normas consultadas
 
@@ -42,4 +48,4 @@ Las referencias se presentan en formato **IEEE**. Las citas numéricas entre cor
 
 ---
 
-[◀ Capítulo 7. Conclusiones y Líneas Futuras](07-conclusiones.md) · [🏠 Índice](README.md) · [Anexos ▶](09-anexos.md)
+[◀ Capítulo 8. Conclusiones y Líneas Futuras](08-conclusiones.md) · [🏠 Índice](README.md) · [Anexos ▶](10-anexos.md)

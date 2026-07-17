@@ -4,7 +4,7 @@ Los anexos recogen el detalle estructural del sistema, complementando los capít
 
 ## Anexo A. Diccionario de datos
 
-Esquema relacional completo tras aplicar las once migraciones. Tipos y restricciones en notación PostgreSQL.
+Esquema relacional completo tras aplicar las catorce migraciones. Tipos y restricciones en notación PostgreSQL.
 
 ### Tabla `tenants`
 
@@ -181,7 +181,7 @@ Adicionalmente, el **pipeline de despliegue encadenado** (GitHub Actions → Ver
 
 ## Anexo E. Evaluación de seguridad (OWASP Top 10:2021)
 
-Este anexo constituye la **sección de seguridad** de la memoria. Documenta el paquete de endurecimiento aplicado sobre la rama `security/owasp-hardening` y autoevalúa el sistema frente al estándar **OWASP Top 10:2021** [17], verificando cada defensa contra el código fuente y las migraciones versionadas. Estado: ✅ cubierto · 🟡 parcial (con brecha localizada) · 🔴 pendiente. Da soporte al grado de cumplimiento del objetivo OE-4 y a las líneas de seguridad recogidas en el [Capítulo 7](07-conclusiones.md).
+Este anexo constituye la **sección de seguridad** de la memoria. Documenta el paquete de endurecimiento aplicado sobre la rama `security/owasp-hardening` y autoevalúa el sistema frente al estándar **OWASP Top 10:2021** [17], verificando cada defensa contra el código fuente y las migraciones versionadas. Estado: ✅ cubierto · 🟡 parcial (con brecha localizada) · 🔴 pendiente. Da soporte al grado de cumplimiento del objetivo OE-4 y a las líneas de seguridad recogidas en el [Capítulo 8](08-conclusiones.md).
 
 El endurecimiento se materializó en **seis intervenciones independientes**, cada una trazable a un *commit* y a una categoría del material de seguridad del Máster:
 
@@ -310,4 +310,4 @@ Este anexo recoge una selección de capturas de la aplicación desplegada, que i
 
 ---
 
-[◀ Bibliografía](08-bibliografia.md) · [🏠 Índice](README.md)
+[◀ Bibliografía](09-bibliografia.md) · [🏠 Índice](README.md)

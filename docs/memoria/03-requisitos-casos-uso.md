@@ -73,7 +73,7 @@ El sistema cuenta, por tanto, con **20 requisitos funcionales** (8 del propietar
 | RNF-9 | Usabilidad | Estados de carga y de error en todas las superficies | Convenciones `loading.tsx` / `error.tsx` |
 | RNF-10 | Disponibilidad | Despliegue *serverless* de ejecución continua | Plataforma Vercel |
 
-Se hace constar, en coherencia con el Capítulo 2, que el aislamiento de datos entre *tenants* (un requisito de seguridad esperable en un SaaS maduro) está **parcialmente cubierto**: las políticas RLS actuales son permisivas en determinadas tablas. Esta brecha se documenta como línea futura en el Capítulo 7.
+Se hace constar, en coherencia con el Capítulo 2, que el aislamiento de datos entre *tenants* (un requisito de seguridad esperable en un SaaS maduro) quedó **plenamente cubierto** tras el endurecimiento de la RLS (Capítulo 5 §5.7 y Anexo E): las políticas acotan el acceso a **propietario y titular**. En el esquema inicial fue una brecha conocida —permisividad en algunas tablas—, hoy subsanada.
 
 ## 3.5. Modelado de casos de uso
 
