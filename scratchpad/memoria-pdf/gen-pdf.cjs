@@ -16,7 +16,7 @@ const files = [
   'README.md',
   '01-introduccion.md', '02-estado-del-arte.md', '03-requisitos-casos-uso.md',
   '04-diseno-arquitectura.md', '05-implementacion.md', '06-pruebas-calidad.md',
-  '07-conclusiones.md', '08-bibliografia.md', '09-anexos.md',
+  '07-metodologia.md', '08-conclusiones.md', '09-bibliografia.md', '10-anexos.md',
 ]
 
 // Elimina las líneas de navegación (footer "[◀ … · 🏠 Índice · … ▶]") que

@@ -124,7 +124,7 @@ export function createRepositories(supabase: SupabaseClient) {
 La capa de presentación (`src/app`) se construye sobre el App Router de Next.js:
 
 - Los **Server Components** renderizan las páginas en el servidor y solicitan datos a través de los casos de uso.
-- Los **Server Actions** (`actions.ts`) actúan como **controladores**: reciben la entrada del usuario, invocan la lógica correspondiente y traducen los errores de dominio a mensajes presentables. Conviene precisar una **asimetría real** del proyecto: los *Server Actions* de los flujos **público** (`[slug]/actions.ts`) y de **portal del cliente** (`my/`) invocan los **casos de uso** de la capa de aplicación, mientras que los del **panel de administración** (`bookings`, `schedule`, `services`, `settings`) acceden **directamente a los repositorios** de infraestructura, sin pasar por la capa de aplicación. Esta desviación parcial de la regla de dependencias en la rama de administración se documenta como deuda arquitectónica en el Capítulo 7.
+- Los **Server Actions** (`actions.ts`) actúan como **controladores**: reciben la entrada del usuario, invocan la lógica correspondiente y traducen los errores de dominio a mensajes presentables. Conviene precisar una **asimetría real** del proyecto: los *Server Actions* de los flujos **público** (`[slug]/actions.ts`) y de **portal del cliente** (`my/`) invocan los **casos de uso** de la capa de aplicación, mientras que los del **panel de administración** (`bookings`, `schedule`, `services`, `settings`) acceden **directamente a los repositorios** de infraestructura, sin pasar por la capa de aplicación. Esta desviación parcial de la regla de dependencias en la rama de administración se documenta como deuda arquitectónica en el Capítulo 8.
 - Los **componentes cliente** (marcados con `'use client'`, como `google-sign-in-button.tsx` o el selector de huecos) se reservan para la interactividad que requiere estado en el navegador.
 
 ## 4.6. Gestión del estado
@@ -138,7 +138,7 @@ A diferencia de una aplicación SPA tradicional, el sistema **no emplea un almac
 
 ## 4.7. Diseño de la persistencia
 
-La persistencia es **remota**, sobre una base de datos relacional PostgreSQL gestionada por Supabase. El modelo se compone de cinco tablas, evolucionadas a través de once migraciones versionadas (`supabase/migrations/`).
+La persistencia es **remota**, sobre una base de datos relacional PostgreSQL gestionada por Supabase. El modelo se compone de cinco tablas, evolucionadas a través de catorce migraciones versionadas (`supabase/migrations/`).
 
 ```mermaid
 erDiagram
@@ -201,7 +201,7 @@ Aspectos destacables del diseño relacional:
 - **Indexación** de las consultas frecuentes: `tenants(slug)`, `services(tenant_id)`, `schedules(tenant_id)` y `bookings(tenant_id, date)`, entre otros; además, se definen índices únicos sobre `tenants(owner_id)` y `tenants(stripe_account_id)`.
 - **Seguridad a nivel de fila (RLS)** habilitada en las cinco tablas; sus políticas se analizan, junto con sus limitaciones actuales, en el Capítulo 5.
 
-Cabe señalar, en aras del rigor, que el atributo `plan` presente en la entidad de dominio `Tenant` **no dispone todavía de columna en el esquema**: el adaptador de persistencia lo resuelve por defecto a `FREE`. En consecuencia, el modelo de monetización (planes FREE/PRO) está diseñado en el dominio, pero su persistencia y aplicación quedan **pendientes**, y se recogen como línea futura en el Capítulo 7.
+Cabe señalar, en aras del rigor, que el atributo `plan` presente en la entidad de dominio `Tenant` **no dispone todavía de columna en el esquema**: el adaptador de persistencia lo resuelve por defecto a `FREE`. En consecuencia, el modelo de monetización (planes FREE/PRO) está diseñado en el dominio, pero su persistencia y aplicación quedan **pendientes**, y se recogen como línea futura en el Capítulo 8.
 
 ## 4.8. Síntesis
 

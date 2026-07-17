@@ -19,6 +19,8 @@ La fundamentación teórica del proyecto se apoya en un conjunto de principios c
 
 Estos principios no son meramente declarativos: su materialización es verificable en la estructura del repositorio y se detalla en el Capítulo 4.
 
+A este marco de principios de ingeniería, el trabajo añade un **paradigma de proceso** que constituye su objeto de estudio: el **desarrollo de software asistido por IA**. Los grandes modelos de lenguaje entrenados sobre código —evaluados de forma sistemática desde Codex por Chen *et al.* [18]— y su integración en asistentes de editor han demostrado mejoras de productividad medibles; el estudio controlado de Peng *et al.* sobre GitHub Copilot cifra en torno a un **55 %** la reducción del tiempo en una tarea de programación acotada [19]. Sin embargo, la evidencia empírica señala también su riesgo característico: la generación de código **plausible pero defectuoso o inseguro**. Pearce *et al.* hallaron que una fracción sustancial del código sugerido por Copilot en escenarios sensibles a la seguridad contenía vulnerabilidades [20]. Este Trabajo se sitúa precisamente en esa tensión: no cuestiona la capacidad *generativa* de la IA, sino que investiga qué **disciplina de ingeniería** —arquitectura estricta, TDD, revisión adversarial— la convierte en software fiable. Ese desarrollo metodológico es el contenido del Capítulo 7.
+
 ## 2.3. Criterios de selección tecnológica
 
 La elección de la pila se rige por cuatro criterios derivados de los objetivos del proyecto:
@@ -99,7 +101,7 @@ El factor decisivo es el motor relacional: características avanzadas empleadas 
 
 Se descartó **Firebase** porque su modelo documental no permite expresar las **restricciones de exclusión relacionales** que el dominio exige para prevenir solapamientos de reservas, además de dificultar la integridad referencial entre `tenants`, `services` y `bookings`. Un **backend propio** habría incrementado el coste operativo sin aportar ventajas funcionales dentro del alcance definido.
 
-Conviene matizar, en aras del rigor, que el uso de RLS no equivale por sí solo a un aislamiento estricto entre *tenants*: las políticas vigentes en el esquema inicial son deliberadamente permisivas en las tablas `bookings` y `customers` (acceso público de lectura e inserción), una limitación que se analiza en el Capítulo 5 y se propone subsanar en el Capítulo 7.
+Conviene matizar, en aras del rigor, que el uso de RLS no equivale por sí solo a un aislamiento estricto entre *tenants*: las políticas del **esquema inicial** eran deliberadamente permisivas en las tablas `bookings` y `customers` (acceso público de lectura e inserción). Esa limitación se **subsanó** con el paquete de endurecimiento OWASP (Capítulo 5 §5.7 y Anexo E), acotando el acceso a **propietario y titular**; los flujos anónimos legítimos se reenrutan al cliente de *service-role* en el servidor.
 
 ## 2.7. Pasarela de pagos: Stripe y Stripe Connect
 
@@ -161,7 +163,7 @@ En conjunto, la pila satisface los cuatro criterios de la sección 2.3: habilita
 
 [7] React Team, "Server Components," *React Documentation*. [En línea]. Disponible: https://react.dev/reference/rsc/server-components
 
-> Las referencias citadas (`[1]`–`[7]`) se recogen también en la **[Bibliografía](08-bibliografia.md)** consolidada de la memoria.
+> Las referencias citadas (`[1]`–`[7]`) se recogen también en la **[Bibliografía](09-bibliografia.md)** consolidada de la memoria.
 
 ---
 
